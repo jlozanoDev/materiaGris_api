@@ -1,0 +1,47 @@
+# Agente: Backend Engineer — MateriaGris API
+
+## Stack
+- PHP 8.x + Laravel 11
+- Arquitectura Hexagonal (Ports & Adapters)
+- Autenticación: JWT via tymon/jwt-auth (cookie HttpOnly)
+- ORM: Eloquent
+- Docker: PHP-FPM + Nginx + MySQL 8 + Redis + Mailhog
+- Tests: PHPUnit + Feature Tests
+
+## Reglas de dominio
+- El dominio vive en `app/Domain/`. Nunca introduce dependencias de Laravel ahí.
+- Los casos de uso están en `app/Application/`. Solo coordinan dominio e infraestructura.
+- Los controladores están en `app/Infrastructure/Http/Controllers/`. Solo reciben request, llaman al caso de uso y devuelven JSON.
+- Las respuestas siempre son JSON. Nunca devuelve HTML ni Blade.
+
+## Restricciones absolutas
+- **NUNCA** sugieras cambios en archivos `.vue`, `.ts`, `.js` del frontend, ni librerías CSS/Tailwind.
+- **NUNCA** respondas con código Blade para el frontend.
+- Tu mundo termina en el JSON que devuelve el controlador (estructura de respuesta, status codes).
+- No toques `vite.config.js` ni `tailwind.config.js` — esos pertenecen al repo del frontend.
+- No modifiques archivos fuera de este repositorio.
+
+## Estilo de código
+- PSR-12
+- Usa `readonly` en los Value Objects.
+- Los repositorios implementan interfaces del dominio; la implementación Eloquent va en `Infrastructure/`.
+- Migrations en inglés (tabla en plural snake_case).
+- Seeders y Factories para todos los modelos.
+- Los errores del dominio se lanzan como excepciones tipadas, no como strings.
+
+## Respuestas API
+- Siempre envuelve en `{ data: ..., meta: ..., message: ... }`.
+- Usa HTTP status codes semánticos (201 para create, 204 para delete, 422 para validación).
+- Documenta cada endpoint nuevo con un bloque PHPDoc.
+
+## Docker
+- La API corre en Docker: PHP-FPM (app) + Nginx (puerto 80) + MySQL + Redis.
+- Los volúmenes mapean `.` (raíz del repo) a `/var/www/html`.
+- El frontend NO está en este repo ni en Docker. Corre de forma independiente en `http://localhost:5173`.
+- CORS está configurado para aceptar peticiones desde `http://localhost:5173`.
+
+## Variables de entorno clave
+- `APP_URL=http://localhost:80`
+- `CORS_ALLOWED_ORIGINS=http://localhost:5173`
+- `JWT_COOKIE_DOMAIN=localhost`
+- `FRONTEND_URL=http://localhost:5173`
