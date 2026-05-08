@@ -1,11 +1,11 @@
-# Materiagris API (Laravel)
+# Materiagris API (Laravel 12)
 
-API backend desarrollado con Laravel. Contiene la lógica, migraciones, seeders, autenticación JWT y los endpoints consumidos por la SPA frontend.
+API backend desarrollado con **Laravel 12**. Contiene la lógica, migraciones, seeders, autenticación JWT y los endpoints consumidos por la SPA frontend.
 
 ## Servicios incluidos (docker-compose)
 - `app` — PHP 8.2 FPM (contenedor de la aplicación)
 - `nginx` — Servidor web, expone `80` en el host (acceso a la API: http://localhost)
-- `db` — MySQL 8.0 (puerto host: `33060` → contenedor `3306`)
+- `db` — MySQL 8.0 (puerto host: `33060` → contenedor `3306`) — *opcional, por defecto SQLite*
 - `redis` — Redis (cola/cache)
 - `mailhog` — Mailhog (interfaz web: http://localhost:8025, SMTP: 1025)
 
@@ -19,6 +19,12 @@ Levantar servicios (desde la raíz del repo):
 
 ```bash
 docker-compose up -d --build
+```
+
+Instalar dependencias y configurar proyecto (primer uso):
+
+```bash
+docker exec -it materiagris_app bash -lc "composer setup"
 ```
 
 Ver logs del contenedor de la app:
@@ -45,21 +51,27 @@ docker exec -it materiagris_app bash -lc "php artisan db:seed --force"
 Ejecutar tests (PHPUnit):
 
 ```bash
-docker exec -it materiagris_app bash -lc "./vendor/bin/phpunit"
+docker exec -it materiagris_app bash -lc "composer test"
+```
+
+Modo desarrollo (servidores con hot-reload):
+
+```bash
+docker exec -it materiagris_app bash -lc "composer dev"
 ```
 
 Acceso a MySQL desde el host: `127.0.0.1:33060` (usuario/clave según `.env`).
 
 ## Variables de entorno importantes
 - Copia `.env.example` → `.env` y ajusta valores.
+- Base de datos: por defecto usa **SQLite** (`DB_CONNECTION=sqlite`). Para MySQL, descomenta las variables `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` en `.env`.
 - Variables JWT: `JWT_SECRET`, `JWT_ALGO`, `JWT_TTL`, `JWT_REFRESH_TTL`, `JWT_REFRESH_COOKIE`, `JWT_COOKIE_DOMAIN`.
-- Mail: `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`.
+- CORS: `CORS_ALLOWED_ORIGINS` (orígenes separados por coma). Por defecto incluye `http://localhost:5173`, `http://localhost:8080`, `http://materiagris.local`.
 - `FRONTEND_URL` — URL pública del frontend para enlaces en emails.
-
-Para desarrollo con Mailhog (ya incluido):
+- Mail: por defecto usa `MAIL_MAILER=log`. Para desarrollo con Mailhog:
 
 ```ini
-MAIL_MAILER=mailhog
+MAIL_MAILER=smtp
 MAIL_HOST=mailhog
 MAIL_PORT=1025
 ```
@@ -74,8 +86,5 @@ MAIL_PORT=1025
 
 ## Notas
 - La API está pensada para ser consumida por la SPA frontend (`MateriaGris_front`).
-- Si quieres que añada scripts `Makefile` o tareas de `docker-compose` específicas, lo preparo.
-
----
-
-Archivo actualizado con instrucciones de uso y comandos básicos.
+- JWT se implementa con `lcobucci/jwt` (sin paquete externo de JWT).
+- Los scripts de Composer (`setup`, `dev`, `test`) automatizan tareas comunes.
