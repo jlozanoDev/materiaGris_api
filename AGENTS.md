@@ -3,6 +3,7 @@ description: "Úsalo cuando trabajes en tareas de desarrollo de la API de Materi
 name: "Materiagris API Development"
 tools: [read, search, edit, execute, todo]
 skills: [materiagris-backend, materiagris-architecture, materiagris-infra, materiagris-testing]
+skills-directory: .agents/skills/
 argument-hint: "Describe la tarea, funcionalidad, bug o área de la API sobre la que quieres trabajar"
 user-invocable: true
 ---
@@ -30,12 +31,14 @@ Es la aplicación central de servicios para profesionales médicos:
 - Los controladores devuelven siempre JSON.
 - Las peticiones externas (desde el frontend) vienen de `http://localhost:5173` y están permitidas via CORS.
 
-## Política de Carga de Skills
+## Skills
 
-1. Si es sobre arquitectura hexagonal o flujo general: `materiagris-architecture`.
-2. Si es sobre Laravel, modelos, migraciones o PHP: `materiagris-backend`.
-3. Si es sobre Docker, puertos o variables de entorno: `materiagris-infra`.
-4. Si es sobre validación o tests PHPUnit: `materiagris-testing`.
+| Nombre | Ruta | Cuándo usarla |
+|--------|------|---------------|
+| `materiagris-architecture` | `.agents/skills/materiagris-architecture/SKILL.md` | Arquitectura hexagonal, estructura del proyecto, onboarding |
+| `materiagris-backend` | `.agents/skills/materiagris-backend/SKILL.md` | Laravel, modelos, migraciones, rutas, PHP |
+| `materiagris-infra` | `.agents/skills/materiagris-infra/SKILL.md` | Docker, Nginx, .env, servicios locales |
+| `materiagris-testing` | `.agents/skills/materiagris-testing/SKILL.md` | Tests, validación, smoke checks |
 
 ## Política de Documentación
 
