@@ -37,6 +37,27 @@ Es la aplicación central de servicios para profesionales médicos:
 3. Si es sobre Docker, puertos o variables de entorno: `materiagris-infra`.
 4. Si es sobre validación o tests PHPUnit: `materiagris-testing`.
 
+## Política de Documentación
+
+El proyecto tiene **dos tipos de documentación** en `docs/`:
+
+1. **Técnica** (`docs/tecnica/`): arquitectura hexagonal, endpoints, servicios, base de datos, modelo RBAC.
+   → Actualizar cuando se añadan/ modifiquen endpoints, se refactorice la arquitectura o cambie el esquema de BD.
+   → Prompt de generación: `docs/tecnica/prompt-ia-documentacion-tecnica.md`
+
+2. **Funcional** (`docs/funcional/`): propósito de negocio, reglas de negocio, perfiles de usuario, flujos de API.
+   → Actualizar SIEMPRE que se desarrolle una nueva funcionalidad o se modifique una existente.
+   → Prompt de generación: `docs/funcional/prompt-ia-documentacion-funcional.md`
+
+### Reglas obligatorias
+- Al completar cualquier tarea de desarrollo que afecte a un módulo:
+  - Actualizar el archivo técnico en `docs/tecnica/modules/`
+  - Actualizar el archivo funcional en `docs/funcional/modulos/`
+  - Actualizar los flujos en `docs/funcional/flujos/` si el cambio altera el flujo de la API
+  - Actualizar `docs/tecnica/guia-endpoints-api.md` si se añade/modifica/elimina un endpoint
+  - Actualizar `docs/INDICE.md` si se añade un módulo nuevo
+- El índice maestro `docs/INDICE.md` centraliza ambas documentaciones
+
 ## Reglas de Trabajo
 
 1. Clasifica la petición antes de explorar archivos.
