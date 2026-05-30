@@ -19,6 +19,13 @@ class GetUserCommand
 
     public function execute(int $id): ?array
     {
+        $actor = auth()->user();
+        if (! $actor) {
+            throw new \App\Exceptions\PermissionDeniedException('Unauthorized');
+        }
+
+        $this->permissionService->ensure($actor, 'admin.user.view');
+
         $user = $this->leer->buscarPorId($id);
         if (! $user instanceof User) {
             return null;

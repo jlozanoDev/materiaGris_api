@@ -31,10 +31,6 @@ class GetUsersCommand
         $users = $this->leer->buscarTodos();
 
         return $users->map(function ($user) {
-            if (is_array($user)) {
-                return $user;
-            }
-
             $roles = $user->roles->map(fn ($role) => [
                 'id' => $role->id,
                 'name' => $role->name,

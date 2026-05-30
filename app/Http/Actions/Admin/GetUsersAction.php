@@ -5,7 +5,7 @@ namespace App\Http\Actions\Admin;
 use App\Commands\Admin\GetUsersCommand;
 use Illuminate\Http\JsonResponse;
 
-class UserAction
+class GetUsersAction
 {
     private GetUsersCommand $command;
 

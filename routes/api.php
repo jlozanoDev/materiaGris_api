@@ -9,7 +9,7 @@ use App\Http\Actions\Auth\LogoutAction;
 use App\Http\Actions\Auth\MeAction;
 use App\Http\Actions\Auth\ForgotPasswordAction;
 use App\Http\Actions\Auth\ResetPasswordAction;
-use App\Http\Actions\Admin\UserAction;
+use App\Http\Actions\Admin\GetUsersAction;
 use App\Http\Actions\Admin\GetUserAction;
 use App\Http\Actions\Admin\CreateUserAction;
 use App\Http\Actions\Admin\UpdateUserAction;
@@ -58,7 +58,7 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
         ->middleware('require_permissions:admin.permission.view');
 
     // List users (requires view)
-    Route::get('/users', UserAction::class)->middleware('require_permissions:admin.user.view');
+    Route::get('/users', GetUsersAction::class)->middleware('require_permissions:admin.user.view');
 
     // Get single user
     Route::get('/users/{id}', GetUserAction::class)

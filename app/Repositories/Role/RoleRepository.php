@@ -53,7 +53,7 @@ class RoleRepository
     public function eliminar(Role $role): bool
     {
         if ($role->is_system) {
-            throw new \Exception('No se pueden eliminar roles del sistema.');
+            throw new \RuntimeException('No se pueden eliminar roles del sistema.', 403);
         }
         return $role->delete();
     }

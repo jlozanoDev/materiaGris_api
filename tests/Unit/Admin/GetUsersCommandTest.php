@@ -31,10 +31,10 @@ class GetUsersCommandTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
+        $mockUser = User::factory()->make(['id' => 1, 'email' => 'a@example.com']);
+
         $repo = $this->createMock(GetUserRepository::class);
-        $repo->method('buscarTodos')->willReturn(collect([
-            ['id' => 1, 'email' => 'a@example.com'],
-        ]));
+        $repo->method('buscarTodos')->willReturn(collect([$mockUser]));
 
         $permissionService = $this->createMock(PermissionService::class);
         $permissionService->expects($this->once())->method('ensure')->with($user, 'admin.user.view');
@@ -43,6 +43,7 @@ class GetUsersCommandTest extends TestCase
         $result = $command->execute();
 
         $this->assertInstanceOf(Collection::class, $result);
-        $this->assertSame([['id' => 1, 'email' => 'a@example.com']], $result->toArray());
+        $this->assertCount(1, $result);
+        $this->assertSame('a@example.com', $result->first()['email']);
     }
 }

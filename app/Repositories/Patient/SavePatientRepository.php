@@ -42,7 +42,10 @@ class SavePatientRepository
      */
     public function actualizar($id, array $data): Patient
     {
-        $patient = Patient::findOrFail($id);
+        $patient = Patient::find($id);
+        if (! $patient) {
+            throw new \RuntimeException('Paciente no encontrado');
+        }
 
         if (! empty($data['national_id']) && Patient::where('national_id', $data['national_id'])->where('id', '!=', $patient->id)->exists()) {
             throw new \RuntimeException('El dni ya existe.');

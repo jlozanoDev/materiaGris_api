@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('jwt_refresh_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('token_hash');
+            $table->string('token_hash')->index();
             $table->string('jti')->index();
             $table->string('ip')->nullable();
             $table->text('user_agent')->nullable();

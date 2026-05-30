@@ -39,8 +39,8 @@ class RefreshAction
                 config('jwt.refresh_ttl') * 24 * 60,
                 null,
                 config('jwt.cookie_domain'),
-                true,
-                true,
+                true,   // httpOnly
+                $secure,
                 false,
                 $sameSite
             ));

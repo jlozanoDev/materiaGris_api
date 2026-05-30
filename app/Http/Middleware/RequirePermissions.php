@@ -27,6 +27,10 @@ class RequirePermissions
     {
         $perms = preg_split('/[|,]/', $permissions, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
+        if (str_starts_with($mode, 'mode=')) {
+            $mode = substr($mode, 5);
+        }
+
         $user = auth()->user();
 
         if (! $user) {

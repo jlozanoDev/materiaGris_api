@@ -41,8 +41,13 @@ class CreatePatientAction
 
         try {
             $patient = $this->command->execute($validated);
+        } catch (\App\Exceptions\PermissionDeniedException $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[CreatePatientAction] ' . $e->getMessage());
+            return response()->json(['message' => 'Internal server error'], 500);
         }
 
         return response()->json($patient, 201);
