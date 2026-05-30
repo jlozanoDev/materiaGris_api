@@ -3,9 +3,9 @@
 namespace App\Commands\Admin;
 
 use App\Exceptions\PermissionDeniedException;
-use App\Models\Permission;
-use App\Models\Role;
 use App\Models\User;
+use App\Repositories\Permission\GetPermissionRepository;
+use App\Repositories\Role\RoleRepository;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\User\SaveUserRepository;
 use App\Services\AuditService;
@@ -20,19 +20,25 @@ class UpdateUserCommand
     private PermissionService $permissionService;
     private RoleAssignmentService $roleAssignmentService;
     private AuditService $auditService;
+    private RoleRepository $roleRepository;
+    private GetPermissionRepository $permissionRepository;
 
     public function __construct(
         GetUserRepository $leer,
         SaveUserRepository $escribir,
         PermissionService $permissionService,
         RoleAssignmentService $roleAssignmentService,
-        AuditService $auditService
+        AuditService $auditService,
+        RoleRepository $roleRepository,
+        GetPermissionRepository $permissionRepository,
     ) {
         $this->leer = $leer;
         $this->escribir = $escribir;
         $this->permissionService = $permissionService;
         $this->roleAssignmentService = $roleAssignmentService;
         $this->auditService = $auditService;
+        $this->roleRepository = $roleRepository;
+        $this->permissionRepository = $permissionRepository;
     }
 
     /**
@@ -71,13 +77,13 @@ class UpdateUserCommand
     {
         if (isset($data['roles_remove'])) {
             foreach ($data['roles_remove'] as $roleId) {
-                $role = Role::find($roleId);
+                $role = $this->roleRepository->buscarPorId($roleId);
                 if (! $role) {
                     continue;
                 }
 
                 if ($role->is_system && $user->id === $actor->id) {
-                    throw new \Exception('No puedes quitar roles de sistema de ti mismo.');
+                    throw new \RuntimeException('No puedes quitar roles de sistema de ti mismo.');
                 }
 
                 $this->roleAssignmentService->revokeRoleFromUser($user, $role, $actor);
@@ -87,13 +93,13 @@ class UpdateUserCommand
 
         if (isset($data['roles'])) {
             foreach ($data['roles'] as $roleId) {
-                $role = Role::find($roleId);
+                $role = $this->roleRepository->buscarPorId($roleId);
                 if (! $role) {
                     continue;
                 }
 
                 if ($role->is_system && $user->id === $actor->id) {
-                    throw new \Exception('No puedes asignarte roles de sistema a ti mismo.');
+                    throw new \RuntimeException('No puedes asignarte roles de sistema a ti mismo.');
                 }
 
                 $this->roleAssignmentService->assignRoleToUser($user, $role, $actor);
@@ -158,8 +164,8 @@ class UpdateUserCommand
                 $roleGrant = $rolePermsByPermId[$permissionId] ?? null;
 
                 if ($exists && $overridesByPermId[$permissionId] === -1 && $roleGrant === 1) {
-                    $perm = Permission::find($permissionId);
-                    throw new \Exception(
+                    $perm = $this->permissionRepository->buscarPorId($permissionId);
+                    throw new \RuntimeException(
                         sprintf(
                             'Conflicto: el usuario tiene override de denegación (-1) para "%s", pero el rol tiene grant (+1). Elimina primero el override o cambia el rol.',
                             $perm?->slug ?? $permissionId

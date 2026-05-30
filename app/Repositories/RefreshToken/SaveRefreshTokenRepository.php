@@ -4,7 +4,6 @@ namespace App\Repositories\RefreshToken;
 
 use App\Models\RefreshToken;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use DateTimeImmutable;
 
 class SaveRefreshTokenRepository
@@ -13,7 +12,7 @@ class SaveRefreshTokenRepository
     {
         return RefreshToken::create([
             'user_id' => $user->id,
-            'token_hash' => Hash::make($refreshToken),
+            'token_hash' => hash('sha256', $refreshToken),
             'jti' => $jti,
             'ip' => $ip,
             'user_agent' => $userAgent,

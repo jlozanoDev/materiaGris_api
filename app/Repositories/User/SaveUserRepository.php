@@ -8,22 +8,14 @@ use Illuminate\Support\Facades\Hash;
 use DateTimeImmutable;
 
 use Illuminate\Support\Str;
-use App\Services\PasswordResetService;
 
 /**
  * Repositorio para operaciones de escritura sobre User
  */
 class SaveUserRepository
 {
-    private PasswordResetService $passwordResetService;
-
-    public function __construct(PasswordResetService $passwordResetService)
-    {
-        $this->passwordResetService = $passwordResetService;
-    }
-
     /**
-     * Crear usuario. Se crea con contraseña aleatoria y se solicita email de restablecimiento.
+     * Crear usuario. Se crea con contraseña aleatoria.
      * @param array $data
      * @return User
      */
@@ -39,14 +31,6 @@ class SaveUserRepository
         $user->email = $data['email'];
         $user->password = Hash::make($password);
         $user->save();
-
-        // Solicitar email de reseteo para que el usuario establezca su contraseña
-        try {
-            $this->passwordResetService->solicitarReseteo($user->email);
-        } catch (\Throwable $e) {
-            // No interrumpir la creación si falla el envío; registrar y continuar
-            \Illuminate\Support\Facades\Log::error('[SaveUserRepository] error sending reset email: ' . $e->getMessage());
-        }
 
         return $user;
     }

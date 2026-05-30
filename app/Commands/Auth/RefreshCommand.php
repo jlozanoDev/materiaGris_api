@@ -5,7 +5,6 @@ namespace App\Commands\Auth;
 use App\Repositories\RefreshToken\GetRefreshTokenRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
 use App\Services\JwtService;
-use Illuminate\Support\Facades\Hash;
 
 class RefreshCommand
 {
@@ -25,8 +24,9 @@ class RefreshCommand
      */
     public function execute(string $refreshValue, string $ip, string $userAgent): array
     {
-        $rt = $this->leer->buscarUltimoNoRevocado();
-        if (! $rt || ! Hash::check($refreshValue, $rt->token_hash)) {
+        $tokenHash = hash('sha256', $refreshValue);
+        $rt = $this->leer->buscarPorHash($tokenHash);
+        if (! $rt) {
             throw new \RuntimeException('Invalid refresh token');
         }
 

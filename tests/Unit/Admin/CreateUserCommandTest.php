@@ -6,6 +6,8 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\CreateUserCommand;
 use App\Repositories\User\SaveUserRepository;
+use App\Services\PermissionService;
+use App\Services\PasswordResetService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\User;
 
@@ -18,7 +20,9 @@ class CreateUserCommandTest extends TestCase
         $this->expectException(PermissionDeniedException::class);
 
         $repo = $this->createMock(SaveUserRepository::class);
-        $command = new CreateUserCommand($repo);
+        $permissionService = $this->createMock(PermissionService::class);
+        $passwordResetService = $this->createMock(PasswordResetService::class);
+        $command = new CreateUserCommand($repo, $permissionService, $passwordResetService);
 
         $command->execute(['name' => 'Juan', 'email' => 'j@x.com']);
     }
@@ -33,11 +37,12 @@ class CreateUserCommandTest extends TestCase
         $repo = $this->createMock(SaveUserRepository::class);
         $repo->expects($this->once())->method('crear')->willReturn($expectedUser);
 
-        $permissionService = $this->createMock(\App\Services\PermissionService::class);
+        $permissionService = $this->createMock(PermissionService::class);
         $permissionService->expects($this->once())->method('ensure')->with($actor, 'admin.user.create');
-        $this->app->instance(\App\Services\PermissionService::class, $permissionService);
 
-        $command = new CreateUserCommand($repo);
+        $passwordResetService = $this->createMock(PasswordResetService::class);
+
+        $command = new CreateUserCommand($repo, $permissionService, $passwordResetService);
         $result = $command->execute(['name' => 'Nuevo', 'email' => 'new@example.com']);
 
         $this->assertInstanceOf(User::class, $result);

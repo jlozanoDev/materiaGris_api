@@ -11,12 +11,12 @@ use App\Exceptions\PermissionDeniedException;
 class GetUsersCommand
 {
     private GetUserRepository $leer;
-    private ?PermissionService $permissionService;
+    private PermissionService $permissionService;
 
-    public function __construct(GetUserRepository $leer, ?PermissionService $permissionService = null)
+    public function __construct(GetUserRepository $leer, PermissionService $permissionService)
     {
         $this->leer = $leer;
-        $this->permissionService = $permissionService ?? app(PermissionService::class);
+        $this->permissionService = $permissionService;
     }
 
     public function execute(): Collection

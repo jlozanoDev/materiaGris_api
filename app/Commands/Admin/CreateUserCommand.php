@@ -5,15 +5,24 @@ namespace App\Commands\Admin;
 use App\Repositories\User\SaveUserRepository;
 use App\Models\User;
 use App\Services\PermissionService;
+use App\Services\PasswordResetService;
 use App\Exceptions\PermissionDeniedException;
+use Illuminate\Support\Facades\Log;
 
 class CreateUserCommand
 {
     private SaveUserRepository $saveRepo;
+    private PermissionService $permissionService;
+    private PasswordResetService $passwordResetService;
 
-    public function __construct(SaveUserRepository $saveRepo)
-    {
+    public function __construct(
+        SaveUserRepository $saveRepo,
+        PermissionService $permissionService,
+        PasswordResetService $passwordResetService,
+    ) {
         $this->saveRepo = $saveRepo;
+        $this->permissionService = $permissionService;
+        $this->passwordResetService = $passwordResetService;
     }
 
     /**
@@ -27,9 +36,16 @@ class CreateUserCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($user, 'admin.user.create');
+        $this->permissionService->ensure($user, 'admin.user.create');
 
-        return $this->saveRepo->crear($data);
+        $newUser = $this->saveRepo->crear($data);
+
+        try {
+            $this->passwordResetService->solicitarReseteo($newUser->email);
+        } catch (\Throwable $e) {
+            Log::error('[CreateUserCommand] error sending reset email: ' . $e->getMessage());
+        }
+
+        return $newUser;
     }
 }

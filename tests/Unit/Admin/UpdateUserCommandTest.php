@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\UpdateUserCommand;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\User\SaveUserRepository;
+use App\Repositories\Role\RoleRepository;
+use App\Repositories\Permission\GetPermissionRepository;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
@@ -24,13 +26,17 @@ class UpdateUserCommandTest extends TestCase
         $permissionService = $this->app->make(PermissionService::class);
         $roleAssignmentService = $this->app->make(RoleAssignmentService::class);
         $auditService = $this->app->make(AuditService::class);
+        $roleRepository = $this->app->make(RoleRepository::class);
+        $permissionRepository = $this->app->make(GetPermissionRepository::class);
 
         return new UpdateUserCommand(
             $leer,
             $escribir,
             $permissionService,
             $roleAssignmentService,
-            $auditService
+            $auditService,
+            $roleRepository,
+            $permissionRepository,
         );
     }
 

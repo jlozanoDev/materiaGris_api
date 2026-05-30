@@ -19,8 +19,8 @@ class CheckHealthAction
         return $this->command->execute();
     }
 
-    public function __invoke(): array
+    public function __invoke()
     {
-        return $this->execute()->toArray();
+        return response()->json($this->execute()->toArray());
     }
 }

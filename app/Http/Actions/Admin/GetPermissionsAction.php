@@ -20,6 +20,6 @@ class GetPermissionsAction
 
     public function __invoke()
     {
-        return $this->execute();
+        return response()->json($this->execute());
     }
 }

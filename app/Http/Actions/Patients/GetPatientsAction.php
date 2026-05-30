@@ -16,7 +16,7 @@ class GetPatientsAction
 
     public function execute(Request $request)
     {
-        return $this->command->execute($request);
+        return $this->command->execute($request->query());
     }
 
     public function __invoke(Request $request)

@@ -11,11 +11,13 @@ class DeleteUserCommand
 {
     private GetUserRepository $leer;
     private SaveUserRepository $escribir;
+    private PermissionService $permissionService;
 
-    public function __construct(GetUserRepository $leer, SaveUserRepository $escribir)
+    public function __construct(GetUserRepository $leer, SaveUserRepository $escribir, PermissionService $permissionService)
     {
         $this->leer = $leer;
         $this->escribir = $escribir;
+        $this->permissionService = $permissionService;
     }
 
     /**
@@ -28,8 +30,7 @@ class DeleteUserCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($actor, 'admin.user.delete');
+        $this->permissionService->ensure($actor, 'admin.user.delete');
 
         $user = $this->leer->buscarPorId($id);
         if (! $user) return false;

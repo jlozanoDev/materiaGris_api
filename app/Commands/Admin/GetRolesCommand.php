@@ -9,10 +9,12 @@ use App\Exceptions\PermissionDeniedException;
 class GetRolesCommand
 {
     private RoleRepository $repository;
+    private PermissionService $permissionService;
 
-    public function __construct(RoleRepository $repository)
+    public function __construct(RoleRepository $repository, PermissionService $permissionService)
     {
         $this->repository = $repository;
+        $this->permissionService = $permissionService;
     }
 
     public function execute()
@@ -22,8 +24,7 @@ class GetRolesCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($user, 'admin.role.view');
+        $this->permissionService->ensure($user, 'admin.role.view');
 
         return $this->repository->listarTodos()->map(function ($role) {
             return [

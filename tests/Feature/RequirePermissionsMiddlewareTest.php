@@ -29,13 +29,13 @@ class RequirePermissionsMiddlewareTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_denied_returns_401_and_audit_created(): void
+    public function test_denied_returns_403_and_audit_created(): void
     {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->getJson('/_test/require-perm');
 
-        $response->assertStatus(401);
+        $response->assertStatus(403);
         $this->assertDatabaseHas('audits', ['type' => 'policy.denied']);
     }
 

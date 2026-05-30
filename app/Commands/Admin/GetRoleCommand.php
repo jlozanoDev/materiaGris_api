@@ -9,10 +9,12 @@ use App\Exceptions\PermissionDeniedException;
 class GetRoleCommand
 {
     private RoleRepository $repository;
+    private PermissionService $permissionService;
 
-    public function __construct(RoleRepository $repository)
+    public function __construct(RoleRepository $repository, PermissionService $permissionService)
     {
         $this->repository = $repository;
+        $this->permissionService = $permissionService;
     }
 
     public function execute(int $id)
@@ -22,12 +24,11 @@ class GetRoleCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($user, 'admin.role.view');
+        $this->permissionService->ensure($user, 'admin.role.view');
 
         $role = $this->repository->buscarPorId($id);
         if (!$role) {
-            throw new \Exception('Rol no encontrado', 404);
+            throw new \RuntimeException('Rol no encontrado', 404);
         }
 
         return [

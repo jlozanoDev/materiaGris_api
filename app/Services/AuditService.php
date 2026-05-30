@@ -45,16 +45,13 @@ class AuditService
             'user_id' => $userId,
             'target_type' => is_object($target) ? get_class($target) : ($meta['target_type'] ?? null),
             'target_id' => is_object($target) && method_exists($target, 'getKey') ? $target->getKey() : ($meta['target_id'] ?? null),
-            'ip_address' => Request::ip(),
-            'user_agent' => Request::header('User-Agent'),
+            'ip_address' => $meta['ip'] ?? Request::ip(),
+            'user_agent' => $meta['user_agent'] ?? Request::header('User-Agent'),
             'payload' => $payload ?: null,
             'meta' => $meta ?: null,
             'trace_id' => $meta['trace_id'] ?? null,
             'created_at' => now(),
         ]);
-
-        // emit event if needed
-        event('audit.logged', $audit);
 
         return $audit;
     }

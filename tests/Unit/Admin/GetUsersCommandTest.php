@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\GetUsersCommand;
 use App\Repositories\User\GetUserRepository;
+use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -19,7 +20,8 @@ class GetUsersCommandTest extends TestCase
         $this->expectException(PermissionDeniedException::class);
 
         $repo = $this->createMock(GetUserRepository::class);
-        $command = new GetUsersCommand($repo);
+        $permissionService = $this->createMock(PermissionService::class);
+        $command = new GetUsersCommand($repo, $permissionService);
 
         $command->execute();
     }
@@ -34,11 +36,10 @@ class GetUsersCommandTest extends TestCase
             ['id' => 1, 'email' => 'a@example.com'],
         ]));
 
-        $permissionService = $this->createMock(\App\Services\PermissionService::class);
+        $permissionService = $this->createMock(PermissionService::class);
         $permissionService->expects($this->once())->method('ensure')->with($user, 'admin.user.view');
-        $this->app->instance(\App\Services\PermissionService::class, $permissionService);
 
-        $command = new GetUsersCommand($repo);
+        $command = new GetUsersCommand($repo, $permissionService);
         $result = $command->execute();
 
         $this->assertInstanceOf(Collection::class, $result);

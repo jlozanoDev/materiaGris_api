@@ -28,8 +28,13 @@ class CreateRoleAction
 
             $result = $this->command->execute($data);
             return response()->json($result, 201);
-        } catch (\Exception $e) {
+        } catch (\App\Exceptions\PermissionDeniedException $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
+        } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[CreateRoleAction] ' . $e->getMessage());
+            return response()->json(['message' => 'Internal server error'], 500);
         }
     }
 }

@@ -43,7 +43,7 @@ class AdminUsersCrudTest extends TestCase
         $this->mockJwtForUserId($actor->id);
 
         $response = $this->postJson('/admin/users', ['name' => 'X', 'email' => 'x@example.com'], ['Authorization' => 'Bearer token']);
-        $response->assertStatus(401);
+        $response->assertStatus(403);
     }
 
     public function test_create_user_when_allowed()

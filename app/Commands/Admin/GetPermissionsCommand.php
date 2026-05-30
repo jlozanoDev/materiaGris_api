@@ -9,10 +9,12 @@ use App\Exceptions\PermissionDeniedException;
 class GetPermissionsCommand
 {
     private GetPermissionRepository $leer;
+    private PermissionService $permissionService;
 
-    public function __construct(GetPermissionRepository $leer)
+    public function __construct(GetPermissionRepository $leer, PermissionService $permissionService)
     {
         $this->leer = $leer;
+        $this->permissionService = $permissionService;
     }
 
     public function execute()
@@ -22,8 +24,7 @@ class GetPermissionsCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($user, 'admin.permission.view');
+        $this->permissionService->ensure($user, 'admin.permission.view');
 
         $permissions = $this->leer->buscarTodos();
 

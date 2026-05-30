@@ -42,5 +42,8 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials' => (function () {
+        $env = trim((string) env('CORS_ALLOWED_ORIGINS', ''));
+        return $env !== '*';
+    })(),
 ];

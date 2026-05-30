@@ -34,7 +34,7 @@ class UpdateRoleCommand
 
         $role = $this->repository->buscarPorId($id);
         if (!$role) {
-            throw new \Exception('Rol no encontrado', 404);
+            throw new \RuntimeException('Rol no encontrado', 404);
         }
 
         // Capture previous state for audit

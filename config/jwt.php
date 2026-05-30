@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'secret' => env('JWT_SECRET', env('APP_KEY')),
+    'secret' => env('JWT_SECRET'),
     'algo' => env('JWT_ALGO', 'HS256'),
     'access_ttl' => env('JWT_TTL', 15), // minutes
     'refresh_ttl' => env('JWT_REFRESH_TTL', 14), // days

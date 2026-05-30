@@ -16,8 +16,6 @@ class MeAction
 
     public function execute(Request $request)
     {
-        // Delegar la lógica de negocio (selección de user id desde request/session)
-        // al comando para mantener la action delgada.
         $user = $request->user();
         if (! $user) {
             return null;
@@ -29,6 +27,9 @@ class MeAction
     public function __invoke(Request $request)
     {
         $result = $this->execute($request);
+        if ($result === null) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
         return response()->json($result);
     }
 }

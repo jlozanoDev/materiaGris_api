@@ -15,8 +15,8 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof PermissionDeniedException) {
             return new JsonResponse([
-                'message' => $e->getMessage() ?: 'Unauthorized',
-            ], 401);
+                'message' => $e->getMessage() ?: 'Forbidden',
+            ], 403);
         }
 
         return parent::render($request, $e);

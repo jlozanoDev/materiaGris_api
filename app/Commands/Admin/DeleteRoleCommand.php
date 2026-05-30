@@ -11,11 +11,13 @@ class DeleteRoleCommand
 {
     private RoleRepository $repository;
     private AuditService $auditService;
+    private PermissionService $permissionService;
 
-    public function __construct(RoleRepository $repository, AuditService $auditService)
+    public function __construct(RoleRepository $repository, AuditService $auditService, PermissionService $permissionService)
     {
         $this->repository = $repository;
         $this->auditService = $auditService;
+        $this->permissionService = $permissionService;
     }
 
     public function execute(int $id)
@@ -25,16 +27,15 @@ class DeleteRoleCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $permissionService = app(PermissionService::class);
-        $permissionService->ensure($user, 'admin.role.delete');
+        $this->permissionService->ensure($user, 'admin.role.delete');
 
         $role = $this->repository->buscarPorId($id);
         if (!$role) {
-            throw new \Exception('Rol no encontrado', 404);
+            throw new \RuntimeException('Rol no encontrado', 404);
         }
 
         if ($role->is_system) {
-            throw new \Exception('No se pueden eliminar roles del sistema', 403);
+            throw new \RuntimeException('No se pueden eliminar roles del sistema', 403);
         }
 
         $roleData = $role->toArray();

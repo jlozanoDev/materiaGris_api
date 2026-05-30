@@ -77,7 +77,7 @@ class PasswordResetService
 
     private function buildLink(string $email, string $token): string
     {
-        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
+        $frontendUrl = rtrim(config('app.frontend_url'), '/');
 
         return $frontendUrl . '/reset-password?' . http_build_query([
             'token' => $token,

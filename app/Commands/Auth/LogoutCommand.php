@@ -4,7 +4,6 @@ namespace App\Commands\Auth;
 
 use App\Repositories\RefreshToken\GetRefreshTokenRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
-use Illuminate\Support\Facades\Hash;
 
 class LogoutCommand
 {
@@ -26,8 +25,9 @@ class LogoutCommand
             throw new \RuntimeException('No refresh token');
         }
 
-        $rt = $this->leer->buscarUltimoNoRevocado();
-        if (! $rt || ! Hash::check($refreshValue, $rt->token_hash)) {
+        $tokenHash = hash('sha256', $refreshValue);
+        $rt = $this->leer->buscarPorHash($tokenHash);
+        if (! $rt) {
             throw new \RuntimeException('Invalid refresh token');
         }
 

@@ -3,7 +3,6 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\AuthenticateJwt;
 
 class Kernel extends HttpKernel
@@ -33,7 +32,6 @@ class Kernel extends HttpKernel
      * The application's route middleware.
      */
     protected $routeMiddleware = [
-        'auth' => Authenticate::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth.jwt' => AuthenticateJwt::class,
         'require_permissions' => \App\Http\Middleware\RequirePermissions::class,

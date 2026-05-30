@@ -31,6 +31,8 @@ class RefreshAction
         try {
             $tokens = $this->execute($request);
 
+            $secure = config('app.env') === 'production';
+            $sameSite = $secure ? 'None' : 'Lax';
             Cookie::queue(Cookie::make(
                 config('jwt.cookie_name'),
                 $tokens['refresh_token'],
@@ -40,7 +42,7 @@ class RefreshAction
                 true,
                 true,
                 false,
-                'None'
+                $sameSite
             ));
 
             return [

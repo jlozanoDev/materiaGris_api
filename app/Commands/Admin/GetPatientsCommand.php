@@ -3,20 +3,25 @@
 namespace App\Commands\Admin;
 
 use App\Repositories\Patient\PatientReadRepository;
-use Illuminate\Http\Request;
+use App\Services\PermissionService;
+use App\Exceptions\PermissionDeniedException;
 
 class GetPatientsCommand
 {
-    private PatientReadRepository $leer;
+    public function __construct(
+        private PatientReadRepository $leer,
+        private PermissionService $permissionService,
+    ) {}
 
-    public function __construct(PatientReadRepository $leer)
+    public function execute(array $filters = [])
     {
-        $this->leer = $leer;
-    }
+        $user = auth()->user();
+        if (! $user) {
+            throw new PermissionDeniedException('Unauthorized');
+        }
 
-    public function execute(Request $request)
-    {
-        $filters = $request->query();
+        $this->permissionService->ensure($user, 'patient.view');
+
         return $this->leer->buscarPorFiltros($filters);
     }
 }
