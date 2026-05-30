@@ -19,6 +19,9 @@
 # Docker
 docker/app/Dockerfile.bak
 
+# SDD
+/.atl
+
 # IDE
 /.fleet
 /.idea
