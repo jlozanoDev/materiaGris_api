@@ -13,6 +13,10 @@ class PatientReport extends Model
 
     protected $table = 'patient_reports';
 
+    protected $attributes = [
+        'values' => '{}',
+    ];
+
     protected $fillable = [
         'patient_id',
         'user_id',

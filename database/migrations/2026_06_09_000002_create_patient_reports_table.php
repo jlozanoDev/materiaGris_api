@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('template_id')->nullable()->constrained('report_templates')->nullOnDelete();
             $table->string('status')->default('draft');
             $table->json('template_structure_snapshot');
-            $table->json('values')->default('{}');
+            $table->json('values');
             $table->string('signature_path')->nullable();
             $table->string('pdf_path')->nullable();
             $table->timestamp('signed_at')->nullable();
