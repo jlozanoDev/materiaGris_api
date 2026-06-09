@@ -25,6 +25,11 @@ use App\Http\Actions\Admin\UpdateRoleAction;
 use App\Http\Actions\Admin\DeleteRoleAction;
 
 use App\Http\Actions\Admin\GetPermissionsAction;
+use App\Http\Actions\Admin\TipoInforme\ListTiposInformeAction;
+use App\Http\Actions\Admin\TipoInforme\CreateTipoInformeAction;
+use App\Http\Actions\Admin\TipoInforme\GetTipoInformeAction;
+use App\Http\Actions\Admin\TipoInforme\UpdateTipoInformeAction;
+use App\Http\Actions\Admin\TipoInforme\DeleteTipoInformeAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +106,21 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::delete('/roles/{id}', DeleteRoleAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:admin.role.delete');
+
+    // Tipos de informe (template CRUD)
+    Route::get('/tipos-informe', ListTiposInformeAction::class)
+        ->middleware('require_permissions:admin.tipoinforme.view');
+    Route::post('/tipos-informe', CreateTipoInformeAction::class)
+        ->middleware('require_permissions:admin.tipoinforme.create');
+    Route::get('/tipos-informe/{id}', GetTipoInformeAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:admin.tipoinforme.view');
+    Route::put('/tipos-informe/{id}', UpdateTipoInformeAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:admin.tipoinforme.update');
+    Route::delete('/tipos-informe/{id}', DeleteTipoInformeAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:admin.tipoinforme.delete');
 });
 
 // Patients routes (grouped) - protected by JWT
