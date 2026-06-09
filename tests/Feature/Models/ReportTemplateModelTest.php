@@ -17,6 +17,7 @@ class ReportTemplateModelTest extends TestCase
         $template = ReportTemplate::factory()->create([
             'name' => 'Informe Médico General',
             'description' => 'Plantilla para informes médicos generales',
+            'is_active' => true,
         ]);
 
         $this->assertDatabaseHas('report_templates', [

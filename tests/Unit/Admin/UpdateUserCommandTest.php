@@ -16,9 +16,9 @@ use App\Services\PermissionService;
 use App\Services\RoleAssignmentService;
 use App\Services\AuditService;
 
-#[RefreshDatabase]
 class UpdateUserCommandTest extends TestCase
 {
+    use RefreshDatabase;
     protected function getCommand(User $actor): UpdateUserCommand
     {
         $leer = $this->app->make(GetUserRepository::class);

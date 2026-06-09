@@ -15,6 +15,12 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        // Forzar base de datos SQLite en memoria para todos los tests
+        config([
+            'database.default' => 'sqlite',
+            'database.connections.sqlite.database' => ':memory:',
+        ]);
+
         return $app;
     }
 }
