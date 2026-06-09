@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Commands\Admin\TipoInforme;
+namespace App\Commands\Admin\ReportTemplate;
 
-use App\Repositories\TipoInforme\TipoInformeSaveRepository;
+use App\Repositories\ReportTemplate\ReportTemplateSaveRepository;
 use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\ReportTemplate;
 
-class CreateTipoInformeCommand
+class CreateReportTemplateCommand
 {
     public function __construct(
-        private TipoInformeSaveRepository $repo,
+        private ReportTemplateSaveRepository $repo,
         private PermissionService $permissionService,
     ) {}
 
@@ -21,7 +21,7 @@ class CreateTipoInformeCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $this->permissionService->ensure($user, 'admin.tipoinforme.create');
+        $this->permissionService->ensure($user, 'admin.reporttemplate.create');
 
         return $this->repo->crear($data);
     }

@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Repositories\TipoInforme;
+namespace App\Repositories\ReportTemplate;
 
 use App\Models\ReportTemplate;
 use App\Models\PatientReport;
 
-class TipoInformeSaveRepository
+class ReportTemplateSaveRepository
 {
-    /**
-     * Create a new report template.
-     *
-     * @param array $data
-     * @return ReportTemplate
-     * @throws \RuntimeException when uniqueness constraints fail
-     */
     public function crear(array $data): ReportTemplate
     {
         if (! empty($data['name'])) {
@@ -32,15 +25,6 @@ class TipoInformeSaveRepository
         return ReportTemplate::create($data);
     }
 
-    /**
-     * Update an existing report template by ID.
-     * Validates uniqueness excluding the current template.
-     *
-     * @param int $id
-     * @param array $data
-     * @return ReportTemplate
-     * @throws \RuntimeException when template not found or uniqueness fails
-     */
     public function actualizar(int $id, array $data): ReportTemplate
     {
         $template = ReportTemplate::find($id);
@@ -67,14 +51,6 @@ class TipoInformeSaveRepository
         return $template;
     }
 
-    /**
-     * Soft delete a template by ID.
-     * Throws RuntimeException if template has active patient reports referencing it.
-     *
-     * @param int $id
-     * @return void
-     * @throws \RuntimeException when template not found or has referenced reports
-     */
     public function eliminar(int $id): void
     {
         $template = ReportTemplate::find($id);
@@ -82,7 +58,6 @@ class TipoInformeSaveRepository
             throw new \RuntimeException('Tipo de informe no encontrado');
         }
 
-        // Check for existing patient reports referencing this template
         $hasReports = PatientReport::where('template_id', $id)->exists();
         if ($hasReports) {
             throw new \RuntimeException('No se puede eliminar: hay informes de pacientes que usan este tipo de informe.');

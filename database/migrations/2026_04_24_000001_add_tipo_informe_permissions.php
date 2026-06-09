@@ -11,9 +11,9 @@ return new class extends Migration
         if (!$adminId) return;
 
         $categoryId = DB::table('permission_categories')->insertGetId([
-            'name' => 'Tipos informes',
+            'name' => 'Report templates',
             'slug' => 'conf-tipos-informes',
-            'description' => 'Permisos relacionados con la gestión de tipos de informes.',
+            'description' => 'Permisos relacionados con la gestión de report templates.',
             'order' => 12,
             'parent_id' => $adminId,
             'created_at' => now(),
@@ -22,28 +22,28 @@ return new class extends Migration
 
         $permissions = [
             [
-                'name' => 'Ver tipos informes',
+                'name' => 'Ver report templates',
                 'slug' => 'admin.tipoinforme.view',
                 'action' => 'view',
-                'description' => 'Permite ver y consultar el listado de tipos de informes.',
+                'description' => 'Permite ver y consultar el listado de report templates.',
             ],
             [
-                'name' => 'Crear tipos informes',
+                'name' => 'Crear report templates',
                 'slug' => 'admin.tipoinforme.create',
                 'action' => 'create',
-                'description' => 'Permite crear nuevos tipos de informes.',
+                'description' => 'Permite crear nuevos report templates.',
             ],
             [
-                'name' => 'Modificar tipos informes',
+                'name' => 'Modificar report templates',
                 'slug' => 'admin.tipoinforme.update',
                 'action' => 'update',
-                'description' => 'Permite modificar los datos de los tipos de informes existentes.',
+                'description' => 'Permite modificar los datos de report templates existentes.',
             ],
             [
-                'name' => 'Eliminar tipos informes',
+                'name' => 'Eliminar report templates',
                 'slug' => 'admin.tipoinforme.delete',
                 'action' => 'delete',
-                'description' => 'Permite eliminar tipos de informes del sistema.',
+                'description' => 'Permite eliminar report templates del sistema.',
             ],
         ];
 

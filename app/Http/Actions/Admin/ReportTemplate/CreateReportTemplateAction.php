@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Actions\Admin\TipoInforme;
+namespace App\Http\Actions\Admin\ReportTemplate;
 
-use App\Commands\Admin\TipoInforme\CreateTipoInformeCommand;
-use App\Http\Requests\Admin\TipoInforme\CreateTipoInformeRequest;
+use App\Commands\Admin\ReportTemplate\CreateReportTemplateCommand;
+use App\Http\Requests\Admin\ReportTemplate\CreateReportTemplateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
-class CreateTipoInformeAction
+class CreateReportTemplateAction
 {
     public function __construct(
-        private CreateTipoInformeCommand $command,
+        private CreateReportTemplateCommand $command,
     ) {}
 
-    public function __invoke(CreateTipoInformeRequest $request): JsonResponse
+    public function __invoke(CreateReportTemplateRequest $request): JsonResponse
     {
         try {
             $validated = $request->validated();
@@ -24,7 +24,7 @@ class CreateTipoInformeAction
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (\Exception $e) {
-            Log::error('CreateTipoInformeAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('CreateReportTemplateAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Internal server error'], 500);
         }
     }

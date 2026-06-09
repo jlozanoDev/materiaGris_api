@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Actions\Admin\TipoInforme;
+namespace App\Http\Actions\Admin\ReportTemplate;
 
-use App\Commands\Admin\TipoInforme\ListTiposInformeCommand;
+use App\Commands\Admin\ReportTemplate\ListReportTemplatesCommand;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class ListTiposInformeAction
+class ListReportTemplatesAction
 {
     public function __construct(
-        private ListTiposInformeCommand $command,
+        private ListReportTemplatesCommand $command,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -30,7 +30,7 @@ class ListTiposInformeAction
         } catch (\App\Exceptions\PermissionDeniedException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
         } catch (\Exception $e) {
-            Log::error('ListTiposInformeAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('ListReportTemplatesAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Internal server error'], 500);
         }
     }

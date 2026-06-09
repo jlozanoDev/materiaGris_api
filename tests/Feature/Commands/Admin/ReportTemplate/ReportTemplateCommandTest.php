@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Commands\Admin\TipoInforme;
+namespace Tests\Feature\Commands\Admin\ReportTemplate;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,7 +10,7 @@ use App\Models\PatientReport;
 use App\Services\JwtService;
 use App\Exceptions\PermissionDeniedException;
 
-class TipoInformeCommandTest extends TestCase
+class ReportTemplateCommandTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -45,34 +45,29 @@ class TipoInformeCommandTest extends TestCase
         return ['Authorization' => 'Bearer token'];
     }
 
-    // ─── LIST COMMAND ──────────────────────────────────────
-
     public function test_list_command_requires_permission(): void
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        // No permission granted
 
-        $response = $this->getJson('/admin/tipos-informe', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates', $this->authHeader());
 
         $response->assertStatus(403);
     }
 
     public function test_list_command_requires_authentication(): void
     {
-        $response = $this->getJson('/admin/tipos-informe');
+        $response = $this->getJson('/admin/report-templates');
 
         $response->assertStatus(401);
     }
-
-    // ─── CREATE COMMAND ────────────────────────────────────
 
     public function test_create_command_requires_permission(): void
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
 
-        $response = $this->postJson('/admin/tipos-informe', [
+        $response = $this->postJson('/admin/report-templates', [
             'name' => 'Test',
             'structure' => [['label' => 'Test']],
         ], $this->authHeader());
@@ -82,22 +77,19 @@ class TipoInformeCommandTest extends TestCase
 
     public function test_create_command_error_propagation(): void
     {
-        // Permission granted, but duplicate name should propagate from repo
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        $this->grantPermission($user, 'admin.tipoinforme.create');
+        $this->grantPermission($user, 'admin.reporttemplate.create');
 
         ReportTemplate::factory()->create(['name' => 'Duplicado']);
 
-        $response = $this->postJson('/admin/tipos-informe', [
+        $response = $this->postJson('/admin/report-templates', [
             'name' => 'Duplicado',
             'structure' => [['label' => 'Test']],
         ], $this->authHeader());
 
         $response->assertStatus(422);
     }
-
-    // ─── GET COMMAND ───────────────────────────────────────
 
     public function test_get_command_requires_permission(): void
     {
@@ -106,7 +98,7 @@ class TipoInformeCommandTest extends TestCase
 
         $template = ReportTemplate::factory()->create();
 
-        $response = $this->getJson("/admin/tipos-informe/{$template->id}", $this->authHeader());
+        $response = $this->getJson("/admin/report-templates/{$template->id}", $this->authHeader());
 
         $response->assertStatus(403);
     }
@@ -115,14 +107,12 @@ class TipoInformeCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        $this->grantPermission($user, 'admin.tipoinforme.view');
+        $this->grantPermission($user, 'admin.reporttemplate.view');
 
-        $response = $this->getJson('/admin/tipos-informe/99999', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates/99999', $this->authHeader());
 
         $response->assertStatus(404);
     }
-
-    // ─── UPDATE COMMAND ────────────────────────────────────
 
     public function test_update_command_requires_permission(): void
     {
@@ -131,7 +121,7 @@ class TipoInformeCommandTest extends TestCase
 
         $template = ReportTemplate::factory()->create();
 
-        $response = $this->putJson("/admin/tipos-informe/{$template->id}", [
+        $response = $this->putJson("/admin/report-templates/{$template->id}", [
             'name' => 'New Name',
         ], $this->authHeader());
 
@@ -142,16 +132,14 @@ class TipoInformeCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        $this->grantPermission($user, 'admin.tipoinforme.update');
+        $this->grantPermission($user, 'admin.reporttemplate.update');
 
-        $response = $this->putJson('/admin/tipos-informe/99999', [
+        $response = $this->putJson('/admin/report-templates/99999', [
             'name' => 'Ghost',
         ], $this->authHeader());
 
         $response->assertStatus(404);
     }
-
-    // ─── DELETE COMMAND ────────────────────────────────────
 
     public function test_delete_command_requires_permission(): void
     {
@@ -160,7 +148,7 @@ class TipoInformeCommandTest extends TestCase
 
         $template = ReportTemplate::factory()->create();
 
-        $response = $this->deleteJson("/admin/tipos-informe/{$template->id}", [], $this->authHeader());
+        $response = $this->deleteJson("/admin/report-templates/{$template->id}", [], $this->authHeader());
 
         $response->assertStatus(403);
     }
@@ -169,12 +157,12 @@ class TipoInformeCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        $this->grantPermission($user, 'admin.tipoinforme.delete');
+        $this->grantPermission($user, 'admin.reporttemplate.delete');
 
         $template = ReportTemplate::factory()->create();
         PatientReport::factory()->create(['template_id' => $template->id]);
 
-        $response = $this->deleteJson("/admin/tipos-informe/{$template->id}", [], $this->authHeader());
+        $response = $this->deleteJson("/admin/report-templates/{$template->id}", [], $this->authHeader());
 
         $response->assertStatus(409);
     }
@@ -183,42 +171,40 @@ class TipoInformeCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
-        $this->grantPermission($user, 'admin.tipoinforme.delete');
+        $this->grantPermission($user, 'admin.reporttemplate.delete');
 
-        $response = $this->deleteJson('/admin/tipos-informe/99999', [], $this->authHeader());
+        $response = $this->deleteJson('/admin/report-templates/99999', [], $this->authHeader());
 
         $response->assertStatus(404);
     }
 
-    // ─── UNAUTHENTICATED ───────────────────────────────────
-
     public function test_list_requires_authentication(): void
     {
-        $response = $this->getJson('/admin/tipos-informe');
+        $response = $this->getJson('/admin/report-templates');
         $response->assertStatus(401);
     }
 
     public function test_create_requires_authentication(): void
     {
-        $response = $this->postJson('/admin/tipos-informe', ['name' => 'X', 'structure' => []]);
+        $response = $this->postJson('/admin/report-templates', ['name' => 'X', 'structure' => []]);
         $response->assertStatus(401);
     }
 
     public function test_get_requires_authentication(): void
     {
-        $response = $this->getJson('/admin/tipos-informe/1');
+        $response = $this->getJson('/admin/report-templates/1');
         $response->assertStatus(401);
     }
 
     public function test_update_requires_authentication(): void
     {
-        $response = $this->putJson('/admin/tipos-informe/1', ['name' => 'X']);
+        $response = $this->putJson('/admin/report-templates/1', ['name' => 'X']);
         $response->assertStatus(401);
     }
 
     public function test_delete_requires_authentication(): void
     {
-        $response = $this->deleteJson('/admin/tipos-informe/1');
+        $response = $this->deleteJson('/admin/report-templates/1');
         $response->assertStatus(401);
     }
 }

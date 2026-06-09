@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Actions\Admin\TipoInforme;
+namespace Tests\Feature\Actions\Admin\ReportTemplate;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,7 +9,7 @@ use App\Models\ReportTemplate;
 use App\Models\PatientReport;
 use App\Services\JwtService;
 
-class TipoInformeCrudTest extends TestCase
+class ReportTemplateCrudTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -52,31 +52,27 @@ class TipoInformeCrudTest extends TestCase
         return ['Authorization' => 'Bearer token'];
     }
 
-    // ─── LIST ──────────────────────────────────────────────
-
     public function test_list_returns_paginated_templates(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
         ReportTemplate::factory()->count(3)->create();
         ReportTemplate::factory()->create(['is_active' => false]);
-        // Create one and soft-delete it
         $deleted = ReportTemplate::factory()->create();
         $deleted->delete();
 
-        $response = $this->getJson('/admin/tipos-informe', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates', $this->authHeader());
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data', 'meta' => ['current_page', 'last_page', 'per_page', 'total']]);
-        // Soft-deleted excluded — only 4 visible (3 active + 1 inactive)
         $this->assertCount(4, $response->json('data'));
     }
 
     public function test_list_empty_returns_200_with_empty_data(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
-        $response = $this->getJson('/admin/tipos-informe', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates', $this->authHeader());
 
         $response->assertStatus(200);
         $this->assertIsArray($response->json('data'));
@@ -85,13 +81,13 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_list_filter_by_active(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
         ReportTemplate::factory()->create(['is_active' => true, 'name' => 'Activo A']);
         ReportTemplate::factory()->create(['is_active' => true, 'name' => 'Activo B']);
         ReportTemplate::factory()->create(['is_active' => false, 'name' => 'Inactivo']);
 
-        $response = $this->getJson('/admin/tipos-informe?is_active=true', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates?is_active=true', $this->authHeader());
 
         $response->assertStatus(200);
         $this->assertCount(2, $response->json('data'));
@@ -99,13 +95,13 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_list_search_by_name(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
         ReportTemplate::factory()->create(['name' => 'Informe Radiologico']);
         ReportTemplate::factory()->create(['name' => 'Informe Cardiologico']);
         ReportTemplate::factory()->create(['name' => 'Receta Medica']);
 
-        $response = $this->getJson('/admin/tipos-informe?q=radiol', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates?q=radiol', $this->authHeader());
 
         $response->assertStatus(200);
         $data = $response->json('data');
@@ -113,11 +109,9 @@ class TipoInformeCrudTest extends TestCase
         $this->assertStringContainsString('Radiol', $data[0]['name']);
     }
 
-    // ─── CREATE ────────────────────────────────────────────
-
     public function test_create_returns_201_with_created_template(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.create');
+        $this->actingWithPermission('admin.reporttemplate.create');
 
         $payload = [
             'name' => 'Informe de Alta',
@@ -129,7 +123,7 @@ class TipoInformeCrudTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson('/admin/tipos-informe', $payload, $this->authHeader());
+        $response = $this->postJson('/admin/report-templates', $payload, $this->authHeader());
 
         $response->assertStatus(201);
         $response->assertJsonFragment(['name' => 'Informe de Alta']);
@@ -139,9 +133,9 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_create_with_invalid_data_returns_422(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.create');
+        $this->actingWithPermission('admin.reporttemplate.create');
 
-        $response = $this->postJson('/admin/tipos-informe', [
+        $response = $this->postJson('/admin/report-templates', [
             'name' => '',
             'structure' => 'not-an-array',
         ], $this->authHeader());
@@ -154,7 +148,7 @@ class TipoInformeCrudTest extends TestCase
         $user = User::factory()->create();
         $this->mockJwtForUserId($user->id);
 
-        $response = $this->postJson('/admin/tipos-informe', [
+        $response = $this->postJson('/admin/report-templates', [
             'name' => 'Test',
             'structure' => [['label' => 'Test']],
         ], $this->authHeader());
@@ -164,11 +158,11 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_create_with_duplicate_name_returns_422(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.create');
+        $this->actingWithPermission('admin.reporttemplate.create');
 
         ReportTemplate::factory()->create(['name' => 'Informe Unico']);
 
-        $response = $this->postJson('/admin/tipos-informe', [
+        $response = $this->postJson('/admin/report-templates', [
             'name' => 'Informe Unico',
             'structure' => [['label' => 'Test']],
         ], $this->authHeader());
@@ -176,15 +170,13 @@ class TipoInformeCrudTest extends TestCase
         $response->assertStatus(422);
     }
 
-    // ─── GET SINGLE ────────────────────────────────────────
-
     public function test_get_returns_template_by_id(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
         $template = ReportTemplate::factory()->create(['name' => 'Template X']);
 
-        $response = $this->getJson("/admin/tipos-informe/{$template->id}", $this->authHeader());
+        $response = $this->getJson("/admin/report-templates/{$template->id}", $this->authHeader());
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['name' => 'Template X', 'id' => $template->id]);
@@ -192,34 +184,32 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_get_nonexistent_returns_404(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
-        $response = $this->getJson('/admin/tipos-informe/99999', $this->authHeader());
+        $response = $this->getJson('/admin/report-templates/99999', $this->authHeader());
 
         $response->assertStatus(404);
     }
 
     public function test_get_soft_deleted_returns_404(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.view');
+        $this->actingWithPermission('admin.reporttemplate.view');
 
         $template = ReportTemplate::factory()->create();
         $template->delete();
 
-        $response = $this->getJson("/admin/tipos-informe/{$template->id}", $this->authHeader());
+        $response = $this->getJson("/admin/report-templates/{$template->id}", $this->authHeader());
 
         $response->assertStatus(404);
     }
 
-    // ─── UPDATE ────────────────────────────────────────────
-
     public function test_update_returns_200_with_updated_template(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.update');
+        $this->actingWithPermission('admin.reporttemplate.update');
 
         $template = ReportTemplate::factory()->create(['name' => 'Original', 'is_active' => true]);
 
-        $response = $this->putJson("/admin/tipos-informe/{$template->id}", [
+        $response = $this->putJson("/admin/report-templates/{$template->id}", [
             'name' => 'Renombrado',
             'is_active' => false,
         ], $this->authHeader());
@@ -231,9 +221,9 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_update_nonexistent_returns_404(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.update');
+        $this->actingWithPermission('admin.reporttemplate.update');
 
-        $response = $this->putJson('/admin/tipos-informe/99999', [
+        $response = $this->putJson('/admin/report-templates/99999', [
             'name' => 'Ghost',
         ], $this->authHeader());
 
@@ -247,22 +237,20 @@ class TipoInformeCrudTest extends TestCase
 
         $template = ReportTemplate::factory()->create();
 
-        $response = $this->putJson("/admin/tipos-informe/{$template->id}", [
+        $response = $this->putJson("/admin/report-templates/{$template->id}", [
             'name' => 'Attempt',
         ], $this->authHeader());
 
         $response->assertStatus(403);
     }
 
-    // ─── DELETE ────────────────────────────────────────────
-
     public function test_delete_soft_deletes_template(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.delete');
+        $this->actingWithPermission('admin.reporttemplate.delete');
 
         $template = ReportTemplate::factory()->create();
 
-        $response = $this->deleteJson("/admin/tipos-informe/{$template->id}", [], $this->authHeader());
+        $response = $this->deleteJson("/admin/report-templates/{$template->id}", [], $this->authHeader());
 
         $response->assertStatus(204);
         $this->assertSoftDeleted('report_templates', ['id' => $template->id]);
@@ -270,21 +258,21 @@ class TipoInformeCrudTest extends TestCase
 
     public function test_delete_nonexistent_returns_404(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.delete');
+        $this->actingWithPermission('admin.reporttemplate.delete');
 
-        $response = $this->deleteJson('/admin/tipos-informe/99999', [], $this->authHeader());
+        $response = $this->deleteJson('/admin/report-templates/99999', [], $this->authHeader());
 
         $response->assertStatus(404);
     }
 
     public function test_delete_with_referenced_reports_returns_409(): void
     {
-        $this->actingWithPermission('admin.tipoinforme.delete');
+        $this->actingWithPermission('admin.reporttemplate.delete');
 
         $template = ReportTemplate::factory()->create();
         PatientReport::factory()->create(['template_id' => $template->id]);
 
-        $response = $this->deleteJson("/admin/tipos-informe/{$template->id}", [], $this->authHeader());
+        $response = $this->deleteJson("/admin/report-templates/{$template->id}", [], $this->authHeader());
 
         $response->assertStatus(409);
         $this->assertNotSoftDeleted('report_templates', ['id' => $template->id]);

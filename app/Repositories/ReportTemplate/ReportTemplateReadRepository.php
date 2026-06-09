@@ -1,22 +1,15 @@
 <?php
 
-namespace App\Repositories\TipoInforme;
+namespace App\Repositories\ReportTemplate;
 
 use App\Models\ReportTemplate;
 
-class TipoInformeReadRepository
+class ReportTemplateReadRepository
 {
-    /**
-     * List templates with optional filters, excluding soft-deleted.
-     *
-     * @param array $filters Supported keys: is_active (bool|null), q (string search on name/description), per_page (int)
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
     public function listar(array $filters = [])
     {
         $query = ReportTemplate::query();
 
-        // Filter by active status
         if (array_key_exists('is_active', $filters)) {
             $val = $filters['is_active'];
             if ($val !== null && $val !== '' && $val !== 'all') {
@@ -27,7 +20,6 @@ class TipoInformeReadRepository
             }
         }
 
-        // Search by name or description
         if (! empty($filters['q'])) {
             $q = $filters['q'];
             $query->where(function ($sub) use ($q) {
@@ -41,12 +33,6 @@ class TipoInformeReadRepository
         return $query->orderBy('name')->paginate($perPage);
     }
 
-    /**
-     * Find a single template by ID, excluding soft-deleted.
-     *
-     * @param int $id
-     * @return ReportTemplate|null
-     */
     public function buscarPorId(int $id): ?ReportTemplate
     {
         return ReportTemplate::find($id);

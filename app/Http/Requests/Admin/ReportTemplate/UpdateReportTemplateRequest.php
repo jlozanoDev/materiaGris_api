@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Admin\TipoInforme;
+namespace App\Http\Requests\Admin\ReportTemplate;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTipoInformeRequest extends FormRequest
+class UpdateReportTemplateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Permission is enforced by route middleware
         return true;
     }
 
