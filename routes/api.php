@@ -30,6 +30,13 @@ use App\Http\Actions\Admin\ReportTemplate\CreateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\GetReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\UpdateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\DeleteReportTemplateAction;
+use App\Http\Actions\Reports\ListReportsAction;
+use App\Http\Actions\Reports\InitReportAction;
+use App\Http\Actions\Reports\GetReportAction;
+use App\Http\Actions\Reports\SaveDraftReportAction;
+use App\Http\Actions\Reports\SignReportAction;
+use App\Http\Actions\Reports\CloseReportAction;
+use App\Http\Actions\Reports\DownloadPdfReportAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,4 +135,27 @@ Route::prefix('patients')->middleware('auth.jwt')->group(function () {
     Route::get('/find', GetPatientsAction::class)->middleware('require_permissions:patient.view');
     Route::post('/', CreatePatientAction::class)->middleware('require_permissions:patient.create');
     Route::put('/{id}', UpdatePatientAction::class)->middleware('require_permissions:patient.update');
+});
+
+// Reports routes - protected by JWT
+Route::prefix('reports')->middleware('auth.jwt')->group(function () {
+    Route::get('/', ListReportsAction::class)
+        ->middleware('require_permissions:report.view');
+    Route::post('/', InitReportAction::class)
+        ->middleware('require_permissions:report.create');
+    Route::get('/{id}', GetReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.view');
+    Route::put('/{id}', SaveDraftReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.edit');
+    Route::post('/{id}/sign', SignReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.sign');
+    Route::post('/{id}/close', CloseReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.close');
+    Route::get('/{id}/pdf', DownloadPdfReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.download-pdf');
 });
