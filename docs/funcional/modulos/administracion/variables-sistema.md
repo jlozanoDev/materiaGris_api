@@ -32,8 +32,8 @@ Ejemplos:
 | `fecha` | 7 | Variantes de fecha y hora |
 | `usuario` | 8 | Datos del profesional que genera el informe |
 | `medico` | 10 | Datos del médico tratante |
-| `informe` | 4 | Metadatos del informe en curso |
-| **Total** | **53** | |
+| `informe` | 7 | Metadatos del informe en curso |
+| **Total** | **56** | |
 
 ## Variables disponibles
 
@@ -113,6 +113,9 @@ Ejemplos:
 | `tipo` | Tipo de informe |
 | `fecha_creacion` | Fecha de creación |
 | `fecha_firma` | Fecha de firma |
+| `pagina_actual` | Página actual |
+| `pagina_total` | Total de páginas |
+| `pagina_actual_de_total` | Página X de Y |
 
 ## Endpoint
 

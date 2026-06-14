@@ -77,6 +77,9 @@ class GetSystemVariablesCommand
             ['category' => 'informe',  'key' => 'tipo',            'label' => 'Tipo de informe',            'description' => 'Tipo de informe según la plantilla'],
             ['category' => 'informe',  'key' => 'fecha_creacion',  'label' => 'Fecha de creación',          'description' => 'Fecha en que se inició el informe'],
             ['category' => 'informe',  'key' => 'fecha_firma',     'label' => 'Fecha de firma',             'description' => 'Fecha en que se firmó el informe'],
+            ['category' => 'informe',  'key' => 'pagina_actual',          'label' => 'Página actual',               'description' => 'Número de la página actual'],
+            ['category' => 'informe',  'key' => 'pagina_total',           'label' => 'Total de páginas',            'description' => 'Cantidad total de páginas del informe'],
+            ['category' => 'informe',  'key' => 'pagina_actual_de_total', 'label' => 'Página X de Y',              'description' => 'Página actual sobre total (ej: Página 3 de 12)'],
         ];
     }
 

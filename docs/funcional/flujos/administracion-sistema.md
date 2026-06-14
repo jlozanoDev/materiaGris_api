@@ -66,7 +66,7 @@
 ### Listar Variables
 1. Frontend envía `GET /api/admin/system-variables`.
 2. API responde `200` con catálogo de variables agrupadas por categoría (`paciente`, `clinica`, `fecha`, `usuario`, `medico`, `informe`).
-3. Es solo lectura — 53 variables en total.
+3. Es solo lectura — 56 variables en total.
 4. El frontend usa estos datos para autocompletado en el builder de plantillas (sintaxis `{categoria.clave}`).
 
 ## Flujo de Error — Intento de Eliminar Rol de Sistema
