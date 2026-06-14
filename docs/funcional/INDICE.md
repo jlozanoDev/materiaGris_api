@@ -23,6 +23,7 @@
 | Admin — Usuarios | [`modulos/administracion/usuarios.md`](./modulos/administracion/usuarios.md) | CRUD de usuarios del sistema |
 | Admin — Roles | [`modulos/administracion/roles.md`](./modulos/administracion/roles.md) | Roles y asignación de permisos |
 | Admin — Permisos | [`modulos/administracion/permisos.md`](./modulos/administracion/permisos.md) | Catálogo de permisos del sistema |
+| Admin — Variables del Sistema | [`modulos/administracion/variables-sistema.md`](./modulos/administracion/variables-sistema.md) | Variables para autocompletado en plantillas de informe |
 
 ## Flujos de API
 
@@ -42,6 +43,7 @@
 | Admin — Usuarios | ✅ Documentado | ✅ Completo | Alta |
 | Admin — Roles | ✅ Documentado | ✅ Completo | Alta |
 | Admin — Permisos | ✅ Documentado | ✅ Completo | Media |
+| Admin — Variables del Sistema | ✅ Documentado | ✅ Completo | Media |
 | Consultas médicas | ❌ Pendiente | ❌ No implementado | Futura |
 
 ✅ Documentado / Implementado · ⚠️ Parcial / En progreso · ❌ No existe / No implementado

@@ -9,7 +9,8 @@ Todas las rutas están bajo el prefijo `/api/admin` y protegidas por `auth.jwt`.
 | Usuarios | 5 (CRUD) |
 | Roles | 5 (CRUD) |
 | Permisos | 1 (read-only) |
-| **Total** | **11** |
+| Variables del Sistema | 1 (read-only) |
+| **Total** | **12** |
 
 ## Middleware Aplicado
 
@@ -25,7 +26,7 @@ Ir a:
 
 ## Estado General
 
-✅ Implementado — Los 11 endpoints están operativos.
+✅ Implementado — Los 12 endpoints están operativos.
 
 ## Pendientes del Módulo Admin (global)
 

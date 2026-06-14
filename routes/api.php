@@ -30,6 +30,7 @@ use App\Http\Actions\Admin\ReportTemplate\CreateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\GetReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\UpdateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\DeleteReportTemplateAction;
+use App\Http\Actions\Admin\SystemVariable\GetSystemVariablesAction;
 use App\Http\Actions\Reports\ListReportsAction;
 use App\Http\Actions\Reports\InitReportAction;
 use App\Http\Actions\Reports\GetReportAction;
@@ -128,6 +129,9 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::delete('/report-templates/{id}', DeleteReportTemplateAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:admin.reporttemplate.delete');
+
+    // System variables catalog (for report template builder autocomplete)
+    Route::get('/system-variables', GetSystemVariablesAction::class);
 });
 
 // Patients routes (grouped) - protected by JWT

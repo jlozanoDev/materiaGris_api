@@ -37,3 +37,4 @@
 | admin — users | `tecnica/modules/admin/usuarios-crud.md` | [`funcional/modulos/administracion/usuarios.md`](../funcional/modulos/administracion/usuarios.md) |
 | admin — roles | `tecnica/modules/admin/roles-crud.md` | [`funcional/modulos/administracion/roles.md`](../funcional/modulos/administracion/roles.md) |
 | admin — permissions | `tecnica/modules/admin/permisos-crud.md` | [`funcional/modulos/administracion/permisos.md`](../funcional/modulos/administracion/permisos.md) |
+| admin — system-variables | `tecnica/modules/admin/panel-administracion.md` | [`funcional/modulos/administracion/variables-sistema.md`](../funcional/modulos/administracion/variables-sistema.md) |

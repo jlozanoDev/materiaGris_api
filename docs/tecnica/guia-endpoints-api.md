@@ -61,6 +61,12 @@ Todas las rutas de administración requieren `auth.jwt`.
 | PUT | `/api/admin/roles/{id}` | `admin.role.update` | `UpdateRoleAction` | Actualizar rol |
 | DELETE | `/api/admin/roles/{id}` | `admin.role.delete` | `DeleteRoleAction` | Eliminar rol |
 
+### Variables del Sistema
+
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| GET | `/api/admin/system-variables` | — (solo `auth.jwt`) | `GetSystemVariablesAction` | Catálogo de variables para plantillas de informe |
+
 ---
 
 ## Patients
@@ -81,9 +87,9 @@ Todas las rutas requieren `auth.jwt`.
 |-----------|-----------|-------------|--------------|
 | Health | 1 | 0 | 0 |
 | Auth | 6 | 1 | 0 |
-| Admin | 11 | 11 | 11 |
+| Admin | 12 | 12 | 11 |
 | Patients | 3 | 3 | 3 |
-| **Total** | **21** | **15** | **14** |
+| **Total** | **22** | **16** | **14** |
 
 ## Middlewares
 
