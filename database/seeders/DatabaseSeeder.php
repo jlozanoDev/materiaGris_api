@@ -23,5 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PatientsSeeder::class);
         // Asignar rol de administrador al usuario de pruebas
         $this->call(AssignAdminRoleToTestUserSeeder::class);
+        // Usuario con rol Profesional
+        $this->call(ProfessionalUserSeeder::class);
     }
 }
