@@ -63,17 +63,6 @@ class Patient extends Model
         'date_of_birth' => 'date',
         'last_visit_at' => 'datetime',
         'is_active' => 'boolean',
-        'email' => 'string',
-        'phone' => 'string',
-        'mobile' => 'string',
-        'contact_name' => 'string',
-        'contact_phone' => 'string',
-        'address_line1' => 'string',
-        'address_line2' => 'string',
-        'neighborhood' => 'string',
-        'postal_code' => 'string',
-        'state' => 'string',
-        'country' => 'string',
     ];
 
     /**

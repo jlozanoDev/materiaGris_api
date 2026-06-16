@@ -7,6 +7,12 @@ use Carbon\Carbon;
 
 class PatientReadRepository
 {
+    public function buscarPorId(int $id): ?Patient
+    {
+        return Patient::find($id);
+    }
+
+
     public function buscarPorFiltros(array $filters = [])
     {
         $query = Patient::query();

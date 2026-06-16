@@ -17,7 +17,7 @@ use App\Http\Actions\Admin\DeleteUserAction;
 use App\Http\Actions\Patients\GetPatientsAction;
 use App\Http\Actions\Patients\CreatePatientAction;
 use App\Http\Actions\Patients\UpdatePatientAction;
-
+use App\Http\Actions\Patients\GetPatientAction;
 use App\Http\Actions\Admin\GetRolesAction;
 use App\Http\Actions\Admin\GetRoleAction;
 use App\Http\Actions\Admin\CreateRoleAction;
@@ -138,6 +138,7 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
 Route::prefix('patients')->middleware('auth.jwt')->group(function () {
     Route::get('/find', GetPatientsAction::class)->middleware('require_permissions:patient.view');
     Route::post('/', CreatePatientAction::class)->middleware('require_permissions:patient.create');
+    Route::get('/{id}', GetPatientAction::class)->whereNumber('id')->middleware('require_permissions:patient.view');
     Route::put('/{id}', UpdatePatientAction::class)->middleware('require_permissions:patient.update');
 });
 
