@@ -139,7 +139,7 @@ class ReportsCrudTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'data' => [['id', 'patient_id', 'user_id', 'status', 'values', 'patient', 'user', 'template']],
+            'data' => [['id', 'patient_name', 'author_name', 'template_name', 'status', 'createdAt', 'updatedAt']],
             'meta' => ['current_page', 'last_page', 'per_page', 'total'],
         ]);
         $this->assertCount(4, $response->json('data'));

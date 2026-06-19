@@ -18,10 +18,11 @@ class PatientReportReadRepository
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['patient_name'])) {
+        if (! empty($filters['patient'])) {
             $query->whereHas('patient', function ($q) use ($filters) {
-                $q->where('name', 'like', "%{$filters['patient_name']}%")
-                  ->orWhere('lastname', 'like', "%{$filters['patient_name']}%");
+                $q->where('first_name', 'like', "%{$filters['patient']}%")
+                  ->orWhere('last_name', 'like', "%{$filters['patient']}%")
+                  ->orWhere('second_last_name', 'like', "%{$filters['patient']}%");
             });
         }
 
