@@ -10,6 +10,10 @@ class PatientReportReadRepository
     {
         $query = PatientReport::with(['patient', 'user', 'template']);
 
+        if (! empty($filters['patient_id'])) {
+            $query->where('patient_id', $filters['patient_id']);
+        }
+
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }

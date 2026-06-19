@@ -160,6 +160,23 @@ class ReportsCrudTest extends TestCase
         $this->assertEquals('signed', $response->json('data.0.status'));
     }
 
+    public function test_list_filters_by_patient_id(): void
+    {
+        $this->actingWithPermission('report.view');
+
+        $patient1 = Patient::factory()->create();
+        $patient2 = Patient::factory()->create();
+
+        PatientReport::factory()->create(['patient_id' => $patient1->id]);
+        PatientReport::factory()->create(['patient_id' => $patient1->id]);
+        PatientReport::factory()->create(['patient_id' => $patient2->id]);
+
+        $response = $this->getJson("/reports?patient_id={$patient1->id}", $this->authHeader());
+
+        $response->assertStatus(200);
+        $this->assertCount(2, $response->json('data'));
+    }
+
     public function test_list_requires_permission(): void
     {
         $user = User::factory()->create();

@@ -33,6 +33,13 @@ class ReportTemplateReadRepository
         return $query->orderBy('name')->paginate($perPage);
     }
 
+    public function listarActivas(): \Illuminate\Support\Collection
+    {
+        return ReportTemplate::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function buscarPorId(int $id): ?ReportTemplate
     {
         return ReportTemplate::find($id);

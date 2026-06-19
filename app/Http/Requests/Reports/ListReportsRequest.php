@@ -14,6 +14,7 @@ class ListReportsRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'patient_id' => ['nullable', 'integer'],
             'status' => ['nullable', 'string', 'in:draft,signed,closed'],
             'patient_name' => ['nullable', 'string', 'max:255'],
             'date_from' => ['nullable', 'date'],

@@ -38,6 +38,7 @@ use App\Http\Actions\Reports\SaveDraftReportAction;
 use App\Http\Actions\Reports\SignReportAction;
 use App\Http\Actions\Reports\CloseReportAction;
 use App\Http\Actions\Reports\DownloadPdfReportAction;
+use App\Http\Actions\Reports\GetActiveTemplatesAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -163,4 +164,10 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::get('/{id}/pdf', DownloadPdfReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.download-pdf');
+});
+
+// Templates routes - protected by JWT
+Route::prefix('templates')->middleware('auth.jwt')->group(function () {
+    Route::get('/active', GetActiveTemplatesAction::class)
+        ->middleware('require_permissions:report.create');
 });

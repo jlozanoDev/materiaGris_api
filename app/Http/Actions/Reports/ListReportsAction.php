@@ -16,7 +16,7 @@ class ListReportsAction
     public function __invoke(ListReportsRequest $request): JsonResponse
     {
         try {
-            $filters = $request->only(['status', 'patient_name', 'date_from', 'date_to', 'template_id', 'per_page']);
+            $filters = $request->only(['patient_id', 'status', 'patient_name', 'date_from', 'date_to', 'template_id', 'per_page']);
             $paginator = $this->command->execute($filters);
             return response()->json([
                 'data' => $paginator->items(),
