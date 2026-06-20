@@ -25,5 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AssignAdminRoleToTestUserSeeder::class);
         // Usuario con rol Profesional
         $this->call(ProfessionalUserSeeder::class);
+        // Plantillas de informes médicos
+        $this->call(ReportTemplatesSeeder::class);
     }
 }
