@@ -33,12 +33,12 @@ Chain strategy: pending
 - [x] **T4** — Create `LlmInteraction` model (HasFactory, `$fillable`, `$casts` for json columns, `patientReport()` BelongsTo) + factory. ~70L.
 - [x] **T5** — Update `ReportTemplateFactory` to include `ai_help_description` in generated column structure. ~8L.
 
-## Phase 2: Core LLM Service (T6–T9)
+## Phase 2: Core LLM Service (T6–T9) ✅
 
-- [ ] **T6** — Create `LlmExtractorService`: `extract()`, `buildSystemPrompt()` (flatten template sections→rows→columns, use `field` + `ai_help_description` fallback `label`), `sanitizeTranscript()` (strip fences, delimiters, HTML), `buildUserMessage()` (transcript + patientContext: age, gender, last 10 reports), HTTP POST via `Http::withToken()->timeout(30)`, JSON parse + 1 retry, PII-safe logging, interaction persistence. Depends on T1,T2,T4. ~180L.
-- [ ] **T7** — Write unit tests for `sanitizeTranscript`: strips code fences, strips delimiters, strips HTML tags, normalizes whitespace. Write FIRST, run `php artisan test --filter=LlmExtractorServiceTest`, then implement. Depends on T6. ~40L.
-- [ ] **T8** — Write unit tests for prompt building: `buildSystemPrompt` includes all flattened fields with `field` key, `ai_help_description` fallback to `label`, patient age/gender in user message, last 10 reports included. Write FIRST, run, then implement. Depends on T6. ~50L.
-- [ ] **T9** — Write unit tests for JSON parsing: valid JSON returns array, invalid JSON throws `LlmResponseException`, response with missing template keys throws `LlmResponseException`, extra keys discarded. Write FIRST, run, then implement. Depends on T6. ~60L.
+- [x] **T6** — Create `LlmExtractorService`: `extract()`, `buildSystemPrompt()` (flatten template sections→rows→columns, use `field` + `ai_help_description` fallback `label`), `sanitizeTranscript()` (strip fences, delimiters, HTML), `buildUserMessage()` (transcript + patientContext: age, gender, last 10 reports), HTTP POST via `Http::withToken()->timeout(30)`, JSON parse + 1 retry, PII-safe logging, interaction persistence. Depends on T1,T2,T4. ~330L.
+- [x] **T7** — Write unit tests for `sanitizeTranscript`: strips code fences, strips delimiters, strips HTML tags, normalizes whitespace. Write FIRST, run `php artisan test --filter=LlmExtractorServiceTest`, then implement. Depends on T6. ~40L.
+- [x] **T8** — Write unit tests for prompt building: `buildSystemPrompt` includes all flattened fields with `field` key, `ai_help_description` fallback to `label`, patient age/gender in user message, last 10 reports included. Write FIRST, run, then implement. Depends on T6. ~50L.
+- [x] **T9** — Write unit tests for JSON parsing: valid JSON returns array, invalid JSON throws `LlmResponseException`, response with missing template keys throws `LlmResponseException`, extra keys discarded. Write FIRST, run, then implement. Depends on T6. ~60L.
 
 ## Phase 3: Business Logic (T10–T11)
 
