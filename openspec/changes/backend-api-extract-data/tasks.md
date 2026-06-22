@@ -27,11 +27,11 @@ Chain strategy: pending
 
 ## Phase 1: Foundation (T1–T5)
 
-- [ ] **T1** — Create `config/llm.php` with `provider`, `api_key`, `model`, `base_url`, `timeout` (30s), `retry_attempts` (1) from env vars. No deps. ~25L.
-- [ ] **T2** — Create 4 exception classes: `LlmTimeoutException`, `LlmResponseException`, `LlmUnavailableException`, `TemplateNotFoundException` (extend `Exception`). Follow `PermissionDeniedException` pattern. No deps. ~32L.
-- [ ] **T3** — Create migration `create_llm_interactions_table`: `id`, `patient_report_id` (FK), `provider`, `model`, `request_payload` (json), `response_payload` (json), `processing_time_ms`, `created_at`, `updated_at`. No deps. ~35L.
-- [ ] **T4** — Create `LlmInteraction` model (HasFactory, `$fillable`, `$casts` for json columns, `patientReport()` BelongsTo) + factory. Depends on T3. ~70L.
-- [ ] **T5** — Add `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL` entries to `.env.example`. No deps. ~6L.
+- [x] **T1** — Create `config/llm.php` with `provider`, `api_key`, `model`, `base_url`, `timeout` (30s), `retry_attempts` (1) from env vars. Add all LLM_ env vars to `.env.example`. ~25L.
+- [x] **T2** — Create 4 exception classes: `LlmTimeoutException`, `LlmResponseException`, `LlmUnavailableException`, `TemplateNotFoundException` (extend `Exception`). Follow `PermissionDeniedException` pattern. ~32L.
+- [x] **T3** — Create migration `create_llm_interactions_table`: `id`, `patient_report_id` (FK cascadeOnDelete), `request_payload` (json), `response_payload` (json, nullable), `processing_time_ms` (integer, nullable), `timestamps`. ~35L.
+- [x] **T4** — Create `LlmInteraction` model (HasFactory, `$fillable`, `$casts` for json columns, `patientReport()` BelongsTo) + factory. ~70L.
+- [x] **T5** — Update `ReportTemplateFactory` to include `ai_help_description` in generated column structure. ~8L.
 
 ## Phase 2: Core LLM Service (T6–T9)
 
