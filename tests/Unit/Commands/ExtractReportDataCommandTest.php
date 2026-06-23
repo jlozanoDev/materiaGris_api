@@ -7,8 +7,10 @@ use App\Repositories\Report\PatientReportReadRepository;
 use App\Repositories\ReportTemplate\ReportTemplateReadRepository;
 use App\Services\PermissionService;
 use App\Services\LlmExtractorService;
+use App\Exceptions\LlmTimeoutException;
 use App\Exceptions\PermissionDeniedException;
 use App\Exceptions\TemplateNotFoundException;
+use App\Models\LlmInteraction;
 use App\Models\PatientReport;
 use App\Models\ReportTemplate;
 use App\Models\Patient;
@@ -93,6 +95,10 @@ class ExtractReportDataCommandTest extends TestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('extracted_data', $result);
         $this->assertEquals('Dolor de cabeza', $result['extracted_data']['motivo_consulta']);
+
+        $this->assertDatabaseHas('llm_interactions', [
+            'patient_report_id' => $report->id,
+        ]);
     }
 
     #[Test]
@@ -226,5 +232,86 @@ class ExtractReportDataCommandTest extends TestCase
         $this->expectException(TemplateNotFoundException::class);
 
         $command->execute(1, 'Paciente presenta dolor', 5, $user);
+    }
+
+    #[Test]
+    public function test_execute_saves_llm_interaction_on_llm_failure(): void
+    {
+        $user = User::factory()->create();
+        $patient = Patient::factory()->create([
+            'date_of_birth' => '1980-01-01',
+            'gender' => 'Masculino',
+        ]);
+
+        $report = PatientReport::factory()->create([
+            'patient_id' => $patient->id,
+            'user_id' => $user->id,
+            'template_structure_snapshot' => ['sections' => [['id' => 1, 'label' => 'Section 1']]],
+            'values' => [],
+        ]);
+
+        $template = ReportTemplate::factory()->create([
+            'is_active' => true,
+        ]);
+
+        // Mock LLM service to throw a timeout exception
+        $llmService = $this->createMock(LlmExtractorService::class);
+        $llmService->expects($this->once())
+            ->method('extract')
+            ->willThrowException(new LlmTimeoutException('LLM request timed out after 30 seconds'));
+
+        $permissionService = $this->createMock(PermissionService::class);
+        $permissionService->expects($this->once())
+            ->method('ensure')
+            ->with($user, 'report.edit');
+
+        $reportRepo = $this->createMock(PatientReportReadRepository::class);
+        $reportRepo->expects($this->once())
+            ->method('buscarPorId')
+            ->with($report->id)
+            ->willReturn($report);
+
+        $templateRepo = $this->createMock(ReportTemplateReadRepository::class);
+        $templateRepo->expects($this->once())
+            ->method('buscarPorId')
+            ->with($template->id)
+            ->willReturn($template);
+
+        $command = new ExtractReportDataCommand(
+            $reportRepo,
+            $templateRepo,
+            $permissionService,
+            $llmService,
+        );
+
+        try {
+            $command->execute($report->id, 'Paciente presenta dolor', $template->id, $user);
+            $this->fail('Expected LlmTimeoutException was not thrown');
+        } catch (LlmTimeoutException $e) {
+            // Verify the LlmInteraction was saved despite the exception
+            $this->assertDatabaseHas('llm_interactions', [
+                'patient_report_id' => $report->id,
+            ]);
+
+            $interaction = LlmInteraction::where('patient_report_id', $report->id)->first();
+            $this->assertNotNull($interaction);
+
+            // Verify request_payload metadata
+            $requestPayload = $interaction->request_payload;
+            $this->assertArrayHasKey('template_field_count', $requestPayload);
+            $this->assertArrayHasKey('transcript_length', $requestPayload);
+            $this->assertArrayHasKey('patient_context_keys', $requestPayload);
+
+            // Verify response_payload contains error info (not null)
+            $responsePayload = $interaction->response_payload;
+            $this->assertArrayHasKey('error', $responsePayload);
+            $this->assertEquals('LlmTimeoutException', $responsePayload['error']);
+            $this->assertArrayHasKey('message', $responsePayload);
+
+            // Verify processing_time_ms is set
+            $this->assertNotNull($interaction->processing_time_ms);
+            $this->assertIsInt($interaction->processing_time_ms);
+            $this->assertGreaterThanOrEqual(0, $interaction->processing_time_ms);
+        }
     }
 }

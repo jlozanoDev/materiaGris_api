@@ -59,22 +59,44 @@ class ExtractReportDataCommand
 
         $patientContext = $this->buildPatientContext($report);
 
-        $result = $this->llmService->extract($templateStructure, $transcript, $patientContext);
+        // Build request metadata (PII-safe — no transcript text)
+        $requestPayload = [
+            'template_field_count' => is_countable($templateStructure['sections'] ?? [])
+                ? count($templateStructure['sections'])
+                : 0,
+            'transcript_length' => mb_strlen($transcript),
+            'patient_context_keys' => array_keys($patientContext),
+        ];
 
-        LlmInteraction::create([
-            'patient_report_id' => $reportId,
-            'request_payload' => [
-                'template_field_count' => is_countable($templateStructure['sections'] ?? [])
-                    ? count($templateStructure['sections'])
-                    : 0,
-                'transcript_length' => strlen($transcript),
-                'patient_context_keys' => array_keys($patientContext),
-            ],
-            'response_payload' => $result,
-            'processing_time_ms' => $result['processing_time_ms'] ?? 0,
-        ]);
+        $startTime = microtime(true);
 
-        return $result;
+        try {
+            $result = $this->llmService->extract($templateStructure, $transcript, $patientContext);
+            $processingTimeMs = (int) ((microtime(true) - $startTime) * 1000);
+
+            LlmInteraction::create([
+                'patient_report_id' => $reportId,
+                'request_payload' => $requestPayload,
+                'response_payload' => $result,
+                'processing_time_ms' => $processingTimeMs,
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            $processingTimeMs = (int) ((microtime(true) - $startTime) * 1000);
+
+            LlmInteraction::create([
+                'patient_report_id' => $reportId,
+                'request_payload' => $requestPayload,
+                'response_payload' => [
+                    'error' => class_basename($e),
+                    'message' => $e->getMessage(),
+                ],
+                'processing_time_ms' => $processingTimeMs,
+            ]);
+
+            throw $e;
+        }
     }
 
     /**

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\LlmResponseException;
 use App\Exceptions\LlmTimeoutException;
 use App\Exceptions\LlmUnavailableException;
-use App\Models\LlmInteraction;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -220,30 +219,6 @@ class LlmExtractorService
             'confidence_scores' => $confidenceScores,
             'warnings' => $warnings,
         ];
-    }
-
-    /**
-     * Log an LLM interaction to the database (PII-safe).
-     *
-     * @param int               $reportId         The patient report ID
-     * @param array             $requestPayload   The original request payload (metadata only)
-     * @param array|string      $responsePayload  The LLM response payload
-     * @param int               $processingTimeMs Processing time in milliseconds
-     */
-    public function logInteraction(int $reportId, array $requestPayload, array|string $responsePayload, int $processingTimeMs): void
-    {
-        LlmInteraction::create([
-            'patient_report_id' => $reportId,
-            'request_payload' => [
-                'template_field_count' => $requestPayload['template_field_count'] ?? 0,
-                'transcript_length' => $requestPayload['transcript_length'] ?? 0,
-                'patient_context_keys' => $requestPayload['patient_context_keys'] ?? [],
-            ],
-            'response_payload' => is_string($responsePayload)
-                ? ['raw' => $responsePayload]
-                : $responsePayload,
-            'processing_time_ms' => $processingTimeMs,
-        ]);
     }
 
     /**
