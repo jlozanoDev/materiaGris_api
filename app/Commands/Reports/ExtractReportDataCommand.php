@@ -4,6 +4,7 @@ namespace App\Commands\Reports;
 
 use App\Exceptions\PermissionDeniedException;
 use App\Exceptions\TemplateNotFoundException;
+use App\Models\LlmInteraction;
 use App\Models\PatientReport;
 use App\Models\User;
 use App\Repositories\Report\PatientReportReadRepository;
@@ -58,7 +59,22 @@ class ExtractReportDataCommand
 
         $patientContext = $this->buildPatientContext($report);
 
-        return $this->llmService->extract($templateStructure, $transcript, $patientContext);
+        $result = $this->llmService->extract($templateStructure, $transcript, $patientContext);
+
+        LlmInteraction::create([
+            'patient_report_id' => $reportId,
+            'request_payload' => [
+                'template_field_count' => is_countable($templateStructure['sections'] ?? [])
+                    ? count($templateStructure['sections'])
+                    : 0,
+                'transcript_length' => strlen($transcript),
+                'patient_context_keys' => array_keys($patientContext),
+            ],
+            'response_payload' => $result,
+            'processing_time_ms' => $result['processing_time_ms'] ?? 0,
+        ]);
+
+        return $result;
     }
 
     /**

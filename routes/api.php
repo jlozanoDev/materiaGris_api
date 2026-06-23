@@ -9,22 +9,21 @@ use App\Http\Actions\Auth\LogoutAction;
 use App\Http\Actions\Auth\MeAction;
 use App\Http\Actions\Auth\ForgotPasswordAction;
 use App\Http\Actions\Auth\ResetPasswordAction;
-use App\Http\Actions\Admin\GetUsersAction;
-use App\Http\Actions\Admin\GetUserAction;
-use App\Http\Actions\Admin\CreateUserAction;
-use App\Http\Actions\Admin\UpdateUserAction;
-use App\Http\Actions\Admin\DeleteUserAction;
+use App\Http\Actions\Admin\User\GetUsersAction;
+use App\Http\Actions\Admin\User\GetUserAction;
+use App\Http\Actions\Admin\User\CreateUserAction;
+use App\Http\Actions\Admin\User\UpdateUserAction;
+use App\Http\Actions\Admin\User\DeleteUserAction;
+use App\Http\Actions\Admin\Role\GetRolesAction;
+use App\Http\Actions\Admin\Role\GetRoleAction;
+use App\Http\Actions\Admin\Role\CreateRoleAction;
+use App\Http\Actions\Admin\Role\UpdateRoleAction;
+use App\Http\Actions\Admin\Role\DeleteRoleAction;
+use App\Http\Actions\Admin\Role\GetPermissionsAction;
 use App\Http\Actions\Patients\GetPatientsAction;
 use App\Http\Actions\Patients\CreatePatientAction;
 use App\Http\Actions\Patients\UpdatePatientAction;
 use App\Http\Actions\Patients\GetPatientAction;
-use App\Http\Actions\Admin\GetRolesAction;
-use App\Http\Actions\Admin\GetRoleAction;
-use App\Http\Actions\Admin\CreateRoleAction;
-use App\Http\Actions\Admin\UpdateRoleAction;
-use App\Http\Actions\Admin\DeleteRoleAction;
-
-use App\Http\Actions\Admin\GetPermissionsAction;
 use App\Http\Actions\Admin\ReportTemplate\ListReportTemplatesAction;
 use App\Http\Actions\Admin\ReportTemplate\CreateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\GetReportTemplateAction;
@@ -39,6 +38,7 @@ use App\Http\Actions\Reports\SignReportAction;
 use App\Http\Actions\Reports\CloseReportAction;
 use App\Http\Actions\Reports\DownloadPdfReportAction;
 use App\Http\Actions\Reports\GetActiveTemplatesAction;
+use App\Http\Actions\Reports\ExtractReportDataAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,6 +164,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::get('/{id}/pdf', DownloadPdfReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.download-pdf');
+    Route::post('/{id}/extract-data', ExtractReportDataAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.edit');
 });
 
 // Templates routes - protected by JWT

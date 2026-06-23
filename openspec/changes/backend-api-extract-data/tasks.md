@@ -45,12 +45,12 @@ Chain strategy: pending
 - [x] **T10** — Create `ExtractReportDataCommand`: `PermissionService::ensure(report.edit)`, `PatientReport::findOrFail`, `ReportTemplate::findOrFail` + active check → `TemplateNotFoundException`, fetch Patient (age, gender), fetch last 10 PatientReport values, call `LlmExtractorService::extract()`, save `LlmInteraction`, return array. Depends on T6. ~80L.
 - [x] **T11** — Write unit tests for Command: mock `LlmExtractorService`, verify permission check, report lookup, template validation, patient context fetch, interaction persisted. Write FIRST, run, then implement. Depends on T10. ~60L.
 
-## Phase 4: HTTP Layer (T12–T14)
+## Phase 4: HTTP Layer (T12–T14) ✅
 
-- [ ] **T12** — Create `ExtractReportDataRequest`: `transcript` (required|string|min:1), `template_id` (required|integer|exists:report_templates,id). Follow `SaveDraftReportRequest` pattern. Depends on T10. ~30L.
-- [ ] **T13** — Create `ExtractReportDataAction`: `__invoke(Request, $id)`, delegates to Command, maps exceptions to HTTP codes (per design error mapping table: 400/403/404/422/500/503), wraps in `{ data, meta, message }` envelope. Follow `SaveDraftReportAction` pattern. Depends on T10,T12. ~50L.
-- [ ] **T14** — Add route in `routes/api.php`: `Route::post('/{id}/extract-data', ExtractReportDataAction::class)->whereNumber('id')->middleware('require_permissions:report.edit')` inside existing `reports` prefix group. Add import. Depends on T13. ~3L modified.
+- [x] **T12** — Create `ExtractReportDataRequest`: `transcript` (required|string|min:1), `template_id` (required|integer|exists:report_templates,id). Follow `SaveDraftReportRequest` pattern. Depends on T10. ~30L. *(Done in PR 3)*
+- [x] **T13** — Create `ExtractReportDataAction`: `__invoke(Request, $id)`, delegates to Command, maps exceptions to HTTP codes (per design error mapping table: 400/403/404/422/500/503), wraps in `{ data, meta, message }` envelope. Follow `SaveDraftReportAction` pattern. Depends on T10,T12. ~50L.
+- [x] **T14** — Add route in `routes/api.php`: `Route::post('/{id}/extract-data', ExtractReportDataAction::class)->whereNumber('id')->middleware('require_permissions:report.edit')` inside existing `reports` prefix group. Add import. Depends on T13. ~3L modified.
 
-## Phase 5: Integration Tests (T15)
+## Phase 5: Integration Tests (T15) ✅
 
-- [ ] **T15** — Write 10 Feature tests using `actingWithPermission` pattern: (1) happy path 200 with mocked LLM, (2) no JWT → 401, (3) no `report.edit` → 403, (4) empty transcript → 422, (5) invalid template → 400, (6) report not found → 404, (7) LLM timeout → 500, (8) malformed JSON after retry → 500, (9) LlmInteraction saved on success, (10) extra fields discarded. Write FIRST, run `php artisan test --filter=ExtractReportDataTest`, then green. Depends on T14. ~280L.
+- [x] **T15** — Write 10 Feature tests using `actingWithPermission` pattern: (1) happy path 200 with mocked LLM, (2) no JWT → 401, (3) no `report.edit` → 403, (4) empty transcript → 422, (5) invalid template → 400, (6) report not found → 404, (7) LLM timeout → 500, (8) malformed JSON after retry → 500, (9) LlmInteraction saved on success, (10) extra fields discarded. Write FIRST, run `php artisan test --filter=ExtractReportDataTest`, then green. Depends on T14. ~280L.
