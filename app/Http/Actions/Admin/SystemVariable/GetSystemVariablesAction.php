@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions\Admin\SystemVariable;
 
-use App\Commands\Admin\GetSystemVariablesCommand;
+use App\Commands\Admin\SystemVariable\GetSystemVariablesCommand;
 
 class GetSystemVariablesAction
 {

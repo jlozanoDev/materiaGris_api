@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions\Patients;
 
-use App\Commands\Admin\GetPatientCommand;
+use App\Commands\Admin\Patient\GetPatientCommand;
 use App\Exceptions\PermissionDeniedException;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

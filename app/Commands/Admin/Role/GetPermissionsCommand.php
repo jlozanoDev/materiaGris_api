@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Admin;
+namespace App\Commands\Admin\Role;
 
 use App\Repositories\Permission\GetPermissionRepository;
 use App\Services\PermissionService;

@@ -7,7 +7,7 @@ use App\Models\PermissionCategory;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\JwtService;
-use App\Commands\Admin\GetPermissionsCommand;
+use App\Commands\Admin\Role\GetPermissionsCommand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

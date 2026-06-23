@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\Role;
 
-use App\Commands\Admin\GetRolesCommand;
+use App\Commands\Admin\Role\GetRolesCommand;
 use Illuminate\Http\JsonResponse;
 
 class GetRolesAction

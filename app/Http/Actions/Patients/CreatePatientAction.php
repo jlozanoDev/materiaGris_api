@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions\Patients;
 
-use App\Commands\Admin\CreatePatientCommand;
+use App\Commands\Admin\Patient\CreatePatientCommand;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 

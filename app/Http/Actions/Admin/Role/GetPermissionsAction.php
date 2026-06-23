@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\Role;
 
-use App\Commands\Admin\GetPermissionsCommand;
+use App\Commands\Admin\Role\GetPermissionsCommand;
 
 class GetPermissionsAction
 {

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Commands\Admin\GetPatientsCommand;
+use App\Commands\Admin\Patient\GetPatientsCommand;
 use App\Services\JwtService;
 use App\Models\User;
 use App\Models\Permission;

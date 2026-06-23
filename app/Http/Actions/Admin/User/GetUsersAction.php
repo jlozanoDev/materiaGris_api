@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\User;
 
-use App\Commands\Admin\GetUsersCommand;
+use App\Commands\Admin\User\GetUsersCommand;
 use Illuminate\Http\JsonResponse;
 
 class GetUsersAction

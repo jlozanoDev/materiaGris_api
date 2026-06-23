@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Commands\Admin\GetUsersCommand;
+use App\Commands\Admin\User\GetUsersCommand;
 use App\Services\JwtService;
 use App\Models\User;
 use Tests\TestCase;

@@ -4,7 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Commands\Admin\CreateUserCommand;
+use App\Commands\Admin\User\CreateUserCommand;
 use App\Repositories\User\SaveUserRepository;
 use App\Services\PermissionService;
 use App\Services\PasswordResetService;

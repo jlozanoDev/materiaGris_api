@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\User;
 
-use App\Commands\Admin\GetUserCommand;
+use App\Commands\Admin\User\GetUserCommand;
 use Illuminate\Http\Request;
 
 class GetUserAction

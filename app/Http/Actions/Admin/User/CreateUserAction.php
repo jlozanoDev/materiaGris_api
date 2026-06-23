@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\User;
 
-use App\Commands\Admin\CreateUserCommand;
+use App\Commands\Admin\User\CreateUserCommand;
 use App\Http\Requests\Admin\CreateUserRequest;
 use Illuminate\Http\Request;
 

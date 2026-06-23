@@ -4,7 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Commands\Admin\UpdateUserCommand;
+use App\Commands\Admin\User\UpdateUserCommand;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\User\SaveUserRepository;
 use App\Repositories\Role\RoleRepository;

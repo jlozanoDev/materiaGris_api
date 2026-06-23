@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Admin;
+namespace App\Commands\Admin\Patient;
 
 use App\Models\Patient;
 use App\Repositories\Patient\PatientReadRepository;

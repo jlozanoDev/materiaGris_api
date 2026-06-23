@@ -4,7 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Commands\Admin\GetUsersCommand;
+use App\Commands\Admin\User\GetUsersCommand;
 use App\Repositories\User\GetUserRepository;
 use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;

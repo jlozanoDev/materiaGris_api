@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\User;
 
-use App\Commands\Admin\DeleteUserCommand;
+use App\Commands\Admin\User\DeleteUserCommand;
 use Illuminate\Http\Request;
 
 class DeleteUserAction

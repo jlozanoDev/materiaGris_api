@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\User;
 
-use App\Commands\Admin\UpdateUserCommand;
+use App\Commands\Admin\User\UpdateUserCommand;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use Illuminate\Http\Request;
 

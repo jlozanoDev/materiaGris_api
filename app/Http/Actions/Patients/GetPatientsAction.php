@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions\Patients;
 
-use App\Commands\Admin\GetPatientsCommand;
+use App\Commands\Admin\Patient\GetPatientsCommand;
 use Illuminate\Http\Request;
 
 class GetPatientsAction

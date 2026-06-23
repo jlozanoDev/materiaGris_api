@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Admin;
+namespace App\Commands\Admin\SystemVariable;
 
 class GetSystemVariablesCommand
 {

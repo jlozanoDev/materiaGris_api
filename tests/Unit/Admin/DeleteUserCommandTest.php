@@ -4,7 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Commands\Admin\DeleteUserCommand;
+use App\Commands\Admin\User\DeleteUserCommand;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\User\SaveUserRepository;
 use App\Services\PermissionService;

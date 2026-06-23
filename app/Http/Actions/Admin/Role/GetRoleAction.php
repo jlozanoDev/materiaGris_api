@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Actions\Admin;
+namespace App\Http\Actions\Admin\Role;
 
-use App\Commands\Admin\DeleteRoleCommand;
+use App\Commands\Admin\Role\GetRoleCommand;
 use Illuminate\Http\JsonResponse;
 
-class DeleteRoleAction
+class GetRoleAction
 {
-    private DeleteRoleCommand $command;
+    private GetRoleCommand $command;
 
-    public function __construct(DeleteRoleCommand $command)
+    public function __construct(GetRoleCommand $command)
     {
         $this->command = $command;
     }
@@ -17,14 +17,14 @@ class DeleteRoleAction
     public function __invoke(int $id): JsonResponse
     {
         try {
-            $this->command->execute($id);
-            return response()->json(null, 204);
+            $result = $this->command->execute($id);
+            return response()->json($result);
         } catch (\App\Exceptions\PermissionDeniedException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('[DeleteRoleAction] ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('[GetRoleAction] ' . $e->getMessage());
             return response()->json(['message' => 'Internal server error'], 500);
         }
     }

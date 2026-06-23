@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Admin;
+namespace App\Commands\Admin\User;
 
 use App\Exceptions\PermissionDeniedException;
 use App\Models\User;
