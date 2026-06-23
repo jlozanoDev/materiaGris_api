@@ -12,6 +12,8 @@ services:
       - composer_cache:/tmp/composer
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - appnet
 

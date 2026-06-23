@@ -263,13 +263,17 @@ class LlmExtractorService
             throw new LlmUnavailableException(
                 'LLM service unavailable: ' . $e->getMessage()
             );
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            throw new LlmUnavailableException(
+                'LLM service unavailable: ' . $e->getMessage()
+            );
         }
 
         if ($response->status() === 503) {
             throw new LlmUnavailableException('LLM service returned 503 Unavailable');
         }
 
-        if ($response->timedOut()) {
+        if (method_exists($response, 'timedOut') && $response->timedOut()) {
             throw new LlmTimeoutException('LLM request timed out after ' . $timeout . ' seconds');
         }
 
@@ -299,12 +303,16 @@ class LlmExtractorService
                         ];
                     }
 
-                    // Handle nested fields inside a column
+                    // Handle nested fields inside a column (supports both 'key' and 'field' conventions)
                     if (isset($column['fields']) && is_array($column['fields'])) {
                         foreach ($column['fields'] as $field) {
+                            $fieldKey = $field['key'] ?? $field['field'] ?? null;
+                            if ($fieldKey === null) {
+                                continue;
+                            }
                             $fields[] = [
-                                'field' => $field['field'],
-                                'label' => $field['label'] ?? $field['field'],
+                                'field' => $fieldKey,
+                                'label' => $field['label'] ?? $fieldKey,
                                 'type' => $field['type'] ?? 'text',
                                 'ai_help_description' => $field['ai_help_description'] ?? null,
                             ];
