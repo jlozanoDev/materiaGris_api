@@ -27,6 +27,7 @@
 | **Admin — Usuarios** | [`modules/admin/usuarios-crud.md`](./modules/admin/usuarios-crud.md) |
 | **Admin — Roles** | [`modules/admin/roles-crud.md`](./modules/admin/roles-crud.md) |
 | **Admin — Permisos** | [`modules/admin/permisos-crud.md`](./modules/admin/permisos-crud.md) |
+| **Reports — Dictado y Autocompletado** | [`modules/reports/modulo-dictado-autocompletado.md`](./modules/reports/modulo-dictado-autocompletado.md) |
 
 ## Referencia cruzada con funcional
 
@@ -38,3 +39,4 @@
 | admin — roles | `tecnica/modules/admin/roles-crud.md` | [`funcional/modulos/administracion/roles.md`](../funcional/modulos/administracion/roles.md) |
 | admin — permissions | `tecnica/modules/admin/permisos-crud.md` | [`funcional/modulos/administracion/permisos.md`](../funcional/modulos/administracion/permisos.md) |
 | admin — system-variables | `tecnica/modules/admin/panel-administracion.md` | [`funcional/modulos/administracion/variables-sistema.md`](../funcional/modulos/administracion/variables-sistema.md) |
+| reports — dictado y autocompletado | `tecnica/modules/reports/modulo-dictado-autocompletado.md` | [`funcional/modulos/dictado-autocompletado.md`](../funcional/modulos/dictado-autocompletado.md) |
