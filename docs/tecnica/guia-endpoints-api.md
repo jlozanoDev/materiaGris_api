@@ -69,6 +69,44 @@ Todas las rutas de administración requieren `auth.jwt`.
 
 ---
 
+## Reports
+
+Todas las rutas requieren `auth.jwt`.
+
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| POST | `/api/reports/{id}/extract-data` | `report.edit` | `ExtractReportDataAction` | Extraer datos clínicos desde transcripción con IA |
+
+### POST /reports/{id}/extract-data
+
+Recibe una transcripción de audio y una plantilla, extrae datos clínicos estructurados usando un LLM.
+
+**Request Body:**
+```json
+{
+  "transcript": "string (requerido)",
+  "template_id": "integer (requerido)"
+}
+```
+
+**Response 200:**
+```json
+{
+  "data": {
+    "extracted_data": { "field_key": "value", ... },
+    "confidence_scores": { "field_key": 0.95, ... },
+    "warnings": ["Campo 'alergias' no encontrado"],
+    "processing_time_ms": 1250
+  },
+  "meta": {},
+  "message": "Datos extraídos correctamente"
+}
+```
+
+**Error codes:** 400 (template inválido), 403 (sin permiso), 404 (report no encontrado), 422 (validación), 500 (error LLM), 503 (IA no disponible)
+
+---
+
 ## Patients
 
 Todas las rutas requieren `auth.jwt`.
@@ -89,7 +127,8 @@ Todas las rutas requieren `auth.jwt`.
 | Auth | 6 | 1 | 0 |
 | Admin | 12 | 12 | 11 |
 | Patients | 3 | 3 | 3 |
-| **Total** | **22** | **16** | **14** |
+| Reports | 1 | 1 | 1 |
+| **Total** | **23** | **17** | **15** |
 
 ## Middlewares
 
