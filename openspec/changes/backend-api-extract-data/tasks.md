@@ -40,10 +40,10 @@ Chain strategy: pending
 - [x] **T8** — Write unit tests for prompt building: `buildSystemPrompt` includes all flattened fields with `field` key, `ai_help_description` fallback to `label`, patient age/gender in user message, last 10 reports included. Write FIRST, run, then implement. Depends on T6. ~50L.
 - [x] **T9** — Write unit tests for JSON parsing: valid JSON returns array, invalid JSON throws `LlmResponseException`, response with missing template keys throws `LlmResponseException`, extra keys discarded. Write FIRST, run, then implement. Depends on T6. ~60L.
 
-## Phase 3: Business Logic (T10–T11)
+## Phase 3: Business Logic (T10–T11) ✅
 
-- [ ] **T10** — Create `ExtractReportDataCommand`: `PermissionService::ensure(report.edit)`, `PatientReport::findOrFail`, `ReportTemplate::findOrFail` + active check → `TemplateNotFoundException`, fetch Patient (age, gender), fetch last 10 PatientReport values, call `LlmExtractorService::extract()`, save `LlmInteraction`, return array. Depends on T6. ~80L.
-- [ ] **T11** — Write unit tests for Command: mock `LlmExtractorService`, verify permission check, report lookup, template validation, patient context fetch, interaction persisted. Write FIRST, run, then implement. Depends on T10. ~60L.
+- [x] **T10** — Create `ExtractReportDataCommand`: `PermissionService::ensure(report.edit)`, `PatientReport::findOrFail`, `ReportTemplate::findOrFail` + active check → `TemplateNotFoundException`, fetch Patient (age, gender), fetch last 10 PatientReport values, call `LlmExtractorService::extract()`, save `LlmInteraction`, return array. Depends on T6. ~80L.
+- [x] **T11** — Write unit tests for Command: mock `LlmExtractorService`, verify permission check, report lookup, template validation, patient context fetch, interaction persisted. Write FIRST, run, then implement. Depends on T10. ~60L.
 
 ## Phase 4: HTTP Layer (T12–T14)
 
