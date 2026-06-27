@@ -9,6 +9,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+      - ./docker/app/conf.d/99-uploads.ini:/usr/local/etc/php/conf.d/99-uploads.ini:ro
       - composer_cache:/tmp/composer
     env_file:
       - .env
