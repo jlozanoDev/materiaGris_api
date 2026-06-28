@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Exceptions\LlmResponseException;
+use App\Exceptions\AiResponseException;
 use App\Services\LlmExtractorService;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -223,7 +223,7 @@ class LlmExtractorServiceTest extends TestCase
     {
         $service = $this->createService();
 
-        $this->expectException(LlmResponseException::class);
+        $this->expectException(AiResponseException::class);
 
         $service->parseLlmResponse('{ invalid json }', ['motivo_consulta']);
     }
@@ -285,7 +285,7 @@ class LlmExtractorServiceTest extends TestCase
     {
         $service = $this->createService();
 
-        $this->expectException(LlmResponseException::class);
+        $this->expectException(AiResponseException::class);
 
         $service->parseLlmResponse('', ['motivo_consulta']);
     }

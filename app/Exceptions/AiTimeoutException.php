@@ -4,9 +4,9 @@ namespace App\Exceptions;
 
 use Exception;
 
-class LlmTimeoutException extends Exception
+class AiTimeoutException extends Exception
 {
-    protected $message = 'LLM request timed out';
+    protected $message = 'AI request timed out';
 
     public function getHttpCode(): int
     {

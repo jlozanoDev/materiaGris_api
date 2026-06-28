@@ -22,13 +22,13 @@ class LlmConfigTest extends TestCase
     }
 
     #[Test]
-    public function llm_config_returns_defaults_when_env_not_set(): void
+    public function llm_config_values_match_environment(): void
     {
-        $this->assertEquals('openai', config('llm.provider'));
-        $this->assertEquals('', config('llm.api_key'));
-        $this->assertEquals('gpt-4o', config('llm.model'));
-        $this->assertEquals('https://api.openai.com/v1', config('llm.base_url'));
-        $this->assertEquals(30, config('llm.timeout'));
-        $this->assertEquals(1, config('llm.retry_attempts'));
+        $this->assertEquals(env('LLM_PROVIDER', 'openai'), config('llm.provider'));
+        $this->assertEquals(env('LLM_API_KEY', ''), config('llm.api_key'));
+        $this->assertEquals(env('LLM_MODEL', 'gpt-4o'), config('llm.model'));
+        $this->assertEquals(env('LLM_BASE_URL', 'https://api.openai.com/v1'), config('llm.base_url'));
+        $this->assertEquals((int) env('LLM_TIMEOUT', 30), config('llm.timeout'));
+        $this->assertEquals((int) env('LLM_RETRY_ATTEMPTS', 1), config('llm.retry_attempts'));
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Http\Actions\Reports;
 
 use App\Commands\Reports\ExtractReportDataCommand;
-use App\Exceptions\LlmResponseException;
-use App\Exceptions\LlmTimeoutException;
-use App\Exceptions\LlmUnavailableException;
+use App\Exceptions\AiResponseException;
+use App\Exceptions\AiTimeoutException;
+use App\Exceptions\AiUnavailableException;
 use App\Exceptions\PermissionDeniedException;
 use App\Exceptions\TemplateNotFoundException;
 use App\Http\Requests\Reports\ExtractReportDataRequest;
@@ -45,11 +45,11 @@ class ExtractReportDataAction
             return response()->json([
                 'message' => $e->getMessage() ?: 'Plantilla no válida',
             ], 400);
-        } catch (LlmTimeoutException | LlmResponseException $e) {
+        } catch (AiTimeoutException | AiResponseException $e) {
             return response()->json([
                 'message' => 'Error al procesar con IA',
             ], 500);
-        } catch (LlmUnavailableException $e) {
+        } catch (AiUnavailableException $e) {
             return response()->json([
                 'message' => 'Servicio de IA temporalmente no disponible',
             ], 503);

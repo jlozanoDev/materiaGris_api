@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Exceptions\LlmResponseException;
-use App\Exceptions\LlmTimeoutException;
-use App\Exceptions\LlmUnavailableException;
+use App\Exceptions\AiResponseException;
+use App\Exceptions\AiTimeoutException;
+use App\Exceptions\AiUnavailableException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -25,9 +25,9 @@ class LlmExtractorService
      * @param array  $patientContext    Patient context with edad, sexo, medicacion, last_reports
      * @return array{extracted_data: array, confidence_scores: array, warnings: array, processing_time_ms: int}
      *
-     * @throws LlmTimeoutException
-     * @throws LlmResponseException
-     * @throws LlmUnavailableException
+     * @throws AiTimeoutException
+     * @throws AiResponseException
+     * @throws AiUnavailableException
      */
     public function extract(array $templateStructure, string $transcript, array $patientContext): array
     {
@@ -43,9 +43,9 @@ class LlmExtractorService
 
         try {
             $response = $this->callLlm($payload);
-        } catch (LlmTimeoutException $e) {
+        } catch (AiTimeoutException $e) {
             throw $e;
-        } catch (LlmUnavailableException $e) {
+        } catch (AiUnavailableException $e) {
             throw $e;
         }
 
@@ -53,13 +53,13 @@ class LlmExtractorService
 
         try {
             $parsed = $this->parseLlmResponse($assistantContent, $fieldKeys);
-        } catch (LlmResponseException $e) {
+        } catch (AiResponseException $e) {
             // Retry once on parse failure
             try {
                 $response = $this->callLlm($payload);
                 $assistantContent = $this->extractAssistantContent($response->body());
                 $parsed = $this->parseLlmResponse($assistantContent, $fieldKeys);
-            } catch (LlmResponseException $retryException) {
+            } catch (AiResponseException $retryException) {
                 throw $retryException;
             }
         }
@@ -182,18 +182,18 @@ class LlmExtractorService
      * @param array  $templateFieldKeys List of expected field keys from the template
      * @return array{extracted_data: array, confidence_scores: array, warnings: array}
      *
-     * @throws LlmResponseException If JSON is invalid or empty
+     * @throws AiResponseException If JSON is invalid or empty
      */
     public function parseLlmResponse(string $responseBody, array $templateFieldKeys): array
     {
         if (empty($responseBody)) {
-            throw new LlmResponseException('Empty response from LLM');
+            throw new AiResponseException('Empty response from LLM');
         }
 
         $data = json_decode($responseBody, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new LlmResponseException(
+            throw new AiResponseException(
                 'Invalid JSON response from LLM: ' . json_last_error_msg()
             );
         }
@@ -247,8 +247,8 @@ class LlmExtractorService
      * @param array $payload The request payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws LlmTimeoutException
-     * @throws LlmUnavailableException
+     * @throws AiTimeoutException
+     * @throws AiUnavailableException
      */
     public function callLlm(array $payload): Response
     {
@@ -260,21 +260,21 @@ class LlmExtractorService
                 ->timeout($timeout)
                 ->post($baseUrl . '/chat/completions', $payload);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            throw new LlmUnavailableException(
+            throw new AiUnavailableException(
                 'LLM service unavailable: ' . $e->getMessage()
             );
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            throw new LlmUnavailableException(
+            throw new AiUnavailableException(
                 'LLM service unavailable: ' . $e->getMessage()
             );
         }
 
         if ($response->status() === 503) {
-            throw new LlmUnavailableException('LLM service returned 503 Unavailable');
+            throw new AiUnavailableException('LLM service returned 503 Unavailable');
         }
 
         if (method_exists($response, 'timedOut') && $response->timedOut()) {
-            throw new LlmTimeoutException('LLM request timed out after ' . $timeout . ' seconds');
+            throw new AiTimeoutException('LLM request timed out after ' . $timeout . ' seconds');
         }
 
         return $response;
@@ -331,20 +331,20 @@ class LlmExtractorService
      * @param string $responseBody Raw HTTP response body
      * @return string The assistant's message content (JSON string)
      *
-     * @throws LlmResponseException
+     * @throws AiResponseException
      */
     private function extractAssistantContent(string $responseBody): string
     {
         $data = json_decode($responseBody, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new LlmResponseException('Invalid JSON in LLM response wrapper');
+            throw new AiResponseException('Invalid JSON in LLM response wrapper');
         }
 
         $content = $data['choices'][0]['message']['content'] ?? null;
 
         if ($content === null) {
-            throw new LlmResponseException('No content in LLM response');
+            throw new AiResponseException('No content in LLM response');
         }
 
         return $content;

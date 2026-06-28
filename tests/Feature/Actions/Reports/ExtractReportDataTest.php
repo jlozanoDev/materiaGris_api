@@ -10,8 +10,8 @@ use App\Models\ReportTemplate;
 use App\Models\PatientReport;
 use App\Models\LlmInteraction;
 use App\Services\LlmExtractorService;
-use App\Exceptions\LlmTimeoutException;
-use App\Exceptions\LlmResponseException;
+use App\Exceptions\AiTimeoutException;
+use App\Exceptions\AiResponseException;
 
 class ExtractReportDataTest extends TestCase
 {
@@ -240,7 +240,7 @@ class ExtractReportDataTest extends TestCase
         $this->mock(LlmExtractorService::class, function ($mock) {
             $mock->shouldReceive('extract')
                 ->once()
-                ->andThrow(new LlmTimeoutException('LLM request timed out'));
+                ->andThrow(new AiTimeoutException('LLM request timed out'));
         });
 
         $response = $this->postJson(
@@ -266,7 +266,7 @@ class ExtractReportDataTest extends TestCase
         $this->mock(LlmExtractorService::class, function ($mock) {
             $mock->shouldReceive('extract')
                 ->once()
-                ->andThrow(new LlmResponseException('Malformed JSON response from LLM'));
+                ->andThrow(new AiResponseException('Malformed JSON response from LLM'));
         });
 
         $response = $this->postJson(

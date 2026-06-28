@@ -4,10 +4,10 @@ namespace App\Exceptions;
 
 use Exception;
 
-class LlmResponseException extends Exception
+class AiUnavailableException extends Exception
 {
     public function getHttpCode(): int
     {
-        return 500;
+        return 503;
     }
 }

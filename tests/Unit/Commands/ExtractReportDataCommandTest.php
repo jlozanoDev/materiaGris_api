@@ -7,7 +7,7 @@ use App\Repositories\Report\PatientReportReadRepository;
 use App\Repositories\ReportTemplate\ReportTemplateReadRepository;
 use App\Services\PermissionService;
 use App\Services\LlmExtractorService;
-use App\Exceptions\LlmTimeoutException;
+use App\Exceptions\AiTimeoutException;
 use App\Exceptions\PermissionDeniedException;
 use App\Exceptions\TemplateNotFoundException;
 use App\Models\LlmInteraction;
@@ -258,7 +258,7 @@ class ExtractReportDataCommandTest extends TestCase
         $llmService = $this->createMock(LlmExtractorService::class);
         $llmService->expects($this->once())
             ->method('extract')
-            ->willThrowException(new LlmTimeoutException('LLM request timed out after 30 seconds'));
+            ->willThrowException(new AiTimeoutException('LLM request timed out after 30 seconds'));
 
         $permissionService = $this->createMock(PermissionService::class);
         $permissionService->expects($this->once())
@@ -286,8 +286,8 @@ class ExtractReportDataCommandTest extends TestCase
 
         try {
             $command->execute($report->id, 'Paciente presenta dolor', $template->id, $user);
-            $this->fail('Expected LlmTimeoutException was not thrown');
-        } catch (LlmTimeoutException $e) {
+            $this->fail('Expected AiTimeoutException was not thrown');
+        } catch (AiTimeoutException $e) {
             // Verify the LlmInteraction was saved despite the exception
             $this->assertDatabaseHas('llm_interactions', [
                 'patient_report_id' => $report->id,
@@ -305,7 +305,7 @@ class ExtractReportDataCommandTest extends TestCase
             // Verify response_payload contains error info (not null)
             $responsePayload = $interaction->response_payload;
             $this->assertArrayHasKey('error', $responsePayload);
-            $this->assertEquals('LlmTimeoutException', $responsePayload['error']);
+            $this->assertEquals('AiTimeoutException', $responsePayload['error']);
             $this->assertArrayHasKey('message', $responsePayload);
 
             // Verify processing_time_ms is set
