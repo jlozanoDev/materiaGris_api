@@ -59,9 +59,17 @@ class TranscribeReportCommand
         }
 
         // 3. Audio processing — PII/PHI safe: encode to base64 in memory, never stored
-        $audioBase64 = base64_encode($audio->get());
+        $audioContent = $audio->get();
         $mimeType = $audio->getMimeType();
-        $audioSizeBytes = $audio->getSize();
+
+        // MiMo only accepts mp3, flac, m4a, wav, ogg — convert webm from browser MediaRecorder
+        if ($mimeType === 'audio/webm' || $mimeType === 'video/webm') {
+            $audioContent = $this->convertToMp3($audioContent);
+            $mimeType = 'audio/mpeg';
+        }
+
+        $audioBase64 = base64_encode($audioContent);
+        $audioSizeBytes = strlen($audioContent);
 
         // 4. STT call with persistence on success AND failure
         try {
@@ -126,5 +134,53 @@ class TranscribeReportCommand
 
             throw $e;
         }
+    }
+
+    /**
+     * Convert audio to mp3 using FFmpeg (pipe-based, no disk I/O).
+     *
+     * @throws AiResponseException if conversion fails
+     */
+    private function convertToMp3(string $audioContent): string
+    {
+        // Verify FFmpeg is available
+        $ffmpegPath = trim(shell_exec('command -v ffmpeg 2>/dev/null') ?? '');
+
+        if (empty($ffmpegPath)) {
+            throw new AiResponseException('FFmpeg not available for audio conversion');
+        }
+
+        $descriptors = [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ];
+
+        $process = proc_open(
+            [$ffmpegPath, '-i', 'pipe:0', '-f', 'mp3', '-b:a', '64k', '-loglevel', 'error', 'pipe:1'],
+            $descriptors,
+            $pipes,
+        );
+
+        if (! is_resource($process)) {
+            throw new AiResponseException('Failed to start FFmpeg for audio conversion');
+        }
+
+        fwrite($pipes[0], $audioContent);
+        fclose($pipes[0]);
+
+        $converted = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        if ($exitCode !== 0 || empty($converted)) {
+            throw new AiResponseException('FFmpeg audio conversion failed: ' . ($stderr ?: 'unknown error'));
+        }
+
+        return $converted;
     }
 }

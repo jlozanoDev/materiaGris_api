@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 \
     curl \
     procps \
+    ffmpeg \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo_mysql bcmath gd mbstring xml zip intl exif pcntl \
     && pecl install redis && docker-php-ext-enable redis \
