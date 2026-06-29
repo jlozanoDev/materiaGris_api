@@ -95,9 +95,12 @@ class SpeakerClassifierServiceTest extends TestCase
     #[Test]
     public function test_classify_ambiguous_falls_back_to_llm(): void
     {
-        // Fake the LLM call
+        $llmBaseUrl = rtrim(config('llm.base_url', 'https://api.openai.com/v1'), '/');
+        $expectedUrl = $llmBaseUrl . '/chat/completions';
+
+        // Fake the LLM call using the actual configured URL
         Http::fake([
-            'api.openai.com/*' => Http::response([
+            $expectedUrl => Http::response([
                 'choices' => [
                     [
                         'message' => [
@@ -128,8 +131,8 @@ class SpeakerClassifierServiceTest extends TestCase
         $this->assertEquals('Paciente', $result[3]['speaker']);
 
         // Verify that the fake HTTP call was actually made (LLM fallback was triggered)
-        Http::assertSent(function ($request) {
-            return $request->url() === 'https://api.openai.com/v1/chat/completions'
+        Http::assertSent(function ($request) use ($expectedUrl) {
+            return $request->url() === $expectedUrl
                 && $request->method() === 'POST';
         });
     }

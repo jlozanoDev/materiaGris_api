@@ -35,9 +35,9 @@ class SpeakerClassifierService
     {
         $speakerTexts = $this->groupBySpeaker($segments);
 
-        // Single speaker — assign "Médico"
+        // Single speaker — use heuristics to determine role
         if (count($speakerTexts) <= 1) {
-            return $this->mapSingleSpeaker($segments);
+            return $this->classifySingleSpeaker($segments, $speakerTexts);
         }
 
         // Try heuristics first
@@ -73,8 +73,9 @@ class SpeakerClassifierService
         }
 
         $result = [];
+        $maxSpeaker = array_search(max($scores), $scores, true);
         foreach ($scores as $speaker => $score) {
-            $result[$speaker] = $score > 0 ? 'Médico' : 'Paciente';
+            $result[$speaker] = $speaker === $maxSpeaker ? 'Médico' : 'Paciente';
         }
 
         return $result;
@@ -122,10 +123,17 @@ class SpeakerClassifierService
      * @param array<int, array{speaker: string, text: string, start: float, end: float}> $segments
      * @return array<int, array{speaker: string, text: string, start: float, end: float}>
      */
-    private function mapSingleSpeaker(array $segments): array
+    private function classifySingleSpeaker(array $segments, array $speakerTexts): array
     {
-        return array_map(function ($segment) {
-            $segment['speaker'] = 'Médico';
+        $speaker = array_key_first($speakerTexts);
+        $fullText = mb_strtolower(implode(' ', $speakerTexts[$speaker]));
+        $score = $this->scoreSpeaker($fullText);
+
+        // Score > 0 → more doctor-like → Médico. Otherwise → Paciente.
+        $role = $score > 0 ? 'Médico' : 'Paciente';
+
+        return array_map(function ($segment) use ($role) {
+            $segment['speaker'] = $role;
             return $segment;
         }, $segments);
     }
