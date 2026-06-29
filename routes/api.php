@@ -39,6 +39,7 @@ use App\Http\Actions\Reports\CloseReportAction;
 use App\Http\Actions\Reports\DownloadPdfReportAction;
 use App\Http\Actions\Reports\GetActiveTemplatesAction;
 use App\Http\Actions\Reports\ExtractReportDataAction;
+use App\Http\Actions\Reports\TranscribeReportAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -165,6 +166,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
         ->whereNumber('id')
         ->middleware('require_permissions:report.download-pdf');
     Route::post('/{id}/extract-data', ExtractReportDataAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.edit');
+    Route::post('/{id}/transcribe', TranscribeReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.edit');
 });

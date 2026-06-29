@@ -18,7 +18,7 @@ class TranscribeReportRequest extends FormRequest
     {
         return [
             'audio' => ['required', 'file', 'mimes:webm,wav,mp3,mp4,ogg,m4a,flac', 'max:25600'],
-            'diarization' => ['required', 'boolean'],
+            'diarization' => ['nullable', 'boolean'],
             'language' => ['nullable', 'string', 'size:2'],
         ];
     }
@@ -30,7 +30,6 @@ class TranscribeReportRequest extends FormRequest
             'audio.file' => 'El audio debe ser un archivo válido',
             'audio.mimes' => 'Formato de audio no soportado. Formatos aceptados: webm, wav, mp3, mp4, ogg, m4a, flac',
             'audio.max' => 'El archivo de audio excede el tamaño máximo permitido de 25MB',
-            'diarization.required' => 'El campo diarization es obligatorio',
             'diarization.boolean' => 'diarization debe ser verdadero o falso',
             'language.string' => 'El idioma debe ser una cadena de texto',
             'language.size' => 'El idioma debe ser un código ISO 639-1 de 2 caracteres',

@@ -66,6 +66,7 @@ class SpeechToTextService
         }
 
         $processingTimeMs = (int) ((microtime(true) - $startTime) * 1000);
+        
 
         return new TranscribeResult(
             transcript: $result->transcript,
@@ -279,7 +280,11 @@ class SpeechToTextService
         $content = $data['choices'][0]['message']['content'] ?? null;
 
         if ($content === null) {
-            throw new AiResponseException('No content in STT response');
+            // Include response structure for debugging (no transcript content here — it would be inside 'content')
+            throw new AiResponseException(
+                'No content in STT response. API returned: ' . json_encode(array_keys($data))
+                . '. Top-level keys: ' . substr(json_encode($data), 0, 500)
+            );
         }
 
         return $content;

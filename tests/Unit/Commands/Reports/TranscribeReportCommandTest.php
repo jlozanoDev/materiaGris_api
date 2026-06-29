@@ -4,6 +4,7 @@ namespace Tests\Unit\Commands\Reports;
 
 use App\Commands\Reports\TranscribeReportCommand;
 use App\DTOs\TranscribeResult;
+use App\Exceptions\AiTimeoutException;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\LlmInteraction;
 use App\Models\PatientReport;
@@ -11,6 +12,7 @@ use App\Models\Patient;
 use App\Models\User;
 use App\Repositories\Report\PatientReportReadRepository;
 use App\Services\PermissionService;
+use App\Services\SpeakerClassifierService;
 use App\Services\SpeechToTextService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -69,10 +71,21 @@ class TranscribeReportCommandTest extends TestCase
             ->with($report->id)
             ->willReturn($report);
 
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+        $classifier->expects($this->once())
+            ->method('classify')
+            ->willReturnCallback(function (array $segments): array {
+                return array_map(function (array $seg): array {
+                    $seg['speaker'] = $seg['speaker'] === 'Speaker 1' ? 'Médico' : 'Paciente';
+                    return $seg;
+                }, $segments);
+            });
+
         $command = new TranscribeReportCommand(
             $reportRepo,
             $sttService,
             $permissionService,
+            $classifier,
         );
 
         $result = $command->execute($report->id, $audio, true, null, $user);
@@ -107,10 +120,21 @@ class TranscribeReportCommandTest extends TestCase
             ->method('buscarPorId')
             ->willReturn($report);
 
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+        $classifier->expects($this->once())
+            ->method('classify')
+            ->willReturnCallback(function (array $segments): array {
+                return array_map(function (array $seg): array {
+                    $seg['speaker'] = $seg['speaker'] === 'Speaker 1' ? 'Médico' : 'Paciente';
+                    return $seg;
+                }, $segments);
+            });
+
         $command = new TranscribeReportCommand(
             $reportRepo,
             $sttService,
             $permissionService,
+            $classifier,
         );
 
         $command->execute($report->id, $audio, true, null, $user);
@@ -138,10 +162,13 @@ class TranscribeReportCommandTest extends TestCase
         $sttService = $this->createMock(SpeechToTextService::class);
         $sttService->expects($this->never())->method('transcribe');
 
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+
         $command = new TranscribeReportCommand(
             $reportRepo,
             $sttService,
             $permissionService,
+            $classifier,
         );
 
         $this->expectException(PermissionDeniedException::class);
@@ -168,10 +195,13 @@ class TranscribeReportCommandTest extends TestCase
         $sttService = $this->createMock(SpeechToTextService::class);
         $sttService->expects($this->never())->method('transcribe');
 
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+
         $command = new TranscribeReportCommand(
             $reportRepo,
             $sttService,
             $permissionService,
+            $classifier,
         );
 
         $this->expectException(ModelNotFoundException::class);
@@ -213,10 +243,21 @@ class TranscribeReportCommandTest extends TestCase
             ->method('buscarPorId')
             ->willReturn($report);
 
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+        $classifier->expects($this->once())
+            ->method('classify')
+            ->willReturnCallback(function (array $segments): array {
+                return array_map(function (array $seg): array {
+                    $seg['speaker'] = $seg['speaker'] === 'Speaker 1' ? 'Médico' : 'Paciente';
+                    return $seg;
+                }, $segments);
+            });
+
         $command = new TranscribeReportCommand(
             $reportRepo,
             $sttService,
             $permissionService,
+            $classifier,
         );
 
         $command->execute($report->id, $audio, true, null, $user);
@@ -246,6 +287,71 @@ class TranscribeReportCommandTest extends TestCase
         $this->assertArrayHasKey('processing_time_ms', $responsePayload);
         $this->assertArrayHasKey('diarization_applied', $responsePayload);
 
-        $this->assertArrayNotHasKey('transcript', $responsePayload);
+        $this->assertArrayHasKey('transcript', $responsePayload);
+        $this->assertArrayHasKey('segments', $responsePayload);
+    }
+
+    #[Test]
+    public function test_execute_persists_llm_interaction_on_stt_failure(): void
+    {
+        $user = User::factory()->create();
+        $patient = Patient::factory()->create();
+        $report = PatientReport::factory()->create([
+            'patient_id' => $patient->id,
+            'user_id' => $user->id,
+        ]);
+
+        $audio = UploadedFile::fake()->create('audio.wav', 1024, 'audio/wav');
+
+        $sttService = $this->createMock(SpeechToTextService::class);
+        $sttService->expects($this->once())
+            ->method('transcribe')
+            ->willThrowException(new AiTimeoutException('STT request timed out after 120 seconds'));
+
+        $permissionService = $this->createMock(PermissionService::class);
+        $permissionService->expects($this->once())
+            ->method('ensure');
+
+        $reportRepo = $this->createMock(PatientReportReadRepository::class);
+        $reportRepo->expects($this->once())
+            ->method('buscarPorId')
+            ->willReturn($report);
+
+        $classifier = $this->createMock(SpeakerClassifierService::class);
+
+        $command = new TranscribeReportCommand(
+            $reportRepo,
+            $sttService,
+            $permissionService,
+            $classifier,
+        );
+
+        try {
+            $command->execute($report->id, $audio, true, null, $user);
+            $this->fail('Expected AiTimeoutException was not thrown');
+        } catch (AiTimeoutException $e) {
+            $this->assertEquals('STT request timed out after 120 seconds', $e->getMessage());
+        }
+
+        // Verify LlmInteraction persisted even on failure
+        $this->assertDatabaseHas('llm_interactions', [
+            'patient_report_id' => $report->id,
+            'type' => LlmInteraction::TYPE_STT,
+        ]);
+
+        $interaction = LlmInteraction::where('patient_report_id', $report->id)->first();
+        $this->assertNotNull($interaction);
+
+        // Request payload should have metadata (no audio content)
+        $requestPayload = $interaction->request_payload;
+        $this->assertArrayHasKey('audio_size_bytes', $requestPayload);
+        $this->assertArrayHasKey('audio_format', $requestPayload);
+        $this->assertArrayNotHasKey('audio_content', $requestPayload);
+
+        // Response payload should have error info
+        $responsePayload = $interaction->response_payload;
+        $this->assertArrayHasKey('error', $responsePayload);
+        $this->assertArrayHasKey('error_message', $responsePayload);
+        $this->assertEquals('STT request timed out after 120 seconds', $responsePayload['error_message']);
     }
 }
