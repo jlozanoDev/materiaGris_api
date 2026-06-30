@@ -28,6 +28,8 @@
 | **Admin — Roles** | [`modules/admin/roles-crud.md`](./modules/admin/roles-crud.md) |
 | **Admin — Permisos** | [`modules/admin/permisos-crud.md`](./modules/admin/permisos-crud.md) |
 | **Reports — Dictado y Autocompletado** | [`modules/reports/modulo-dictado-autocompletado.md`](./modules/reports/modulo-dictado-autocompletado.md) |
+| **Reports — CRUD** | [`modules/reports/modulo-informes.md`](./modules/reports/modulo-informes.md) |
+| **Admin — Plantillas de Informe** | [`modules/reports/modulo-plantillas.md`](./modules/reports/modulo-plantillas.md) |
 
 ## Referencia cruzada con funcional
 
@@ -40,3 +42,5 @@
 | admin — permissions | `tecnica/modules/admin/permisos-crud.md` | [`funcional/modulos/administracion/permisos.md`](../funcional/modulos/administracion/permisos.md) |
 | admin — system-variables | `tecnica/modules/admin/panel-administracion.md` | [`funcional/modulos/administracion/variables-sistema.md`](../funcional/modulos/administracion/variables-sistema.md) |
 | reports — dictado y autocompletado | `tecnica/modules/reports/modulo-dictado-autocompletado.md` | [`funcional/modulos/dictado-autocompletado.md`](../funcional/modulos/dictado-autocompletado.md) |
+| reports — CRUD | `tecnica/modules/reports/modulo-informes.md` | [`funcional/modulos/informes.md`](../funcional/modulos/informes.md) |
+| admin — report templates | `tecnica/modules/reports/modulo-plantillas.md` | [`funcional/modulos/plantillas-informes.md`](../funcional/modulos/plantillas-informes.md) |

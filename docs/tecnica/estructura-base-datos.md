@@ -1,6 +1,6 @@
 # Estructura de Base de Datos — MateriaGris API
 
-Generado a partir de las migraciones de Laravel. 19 tablas en total.
+Generado a partir de las migraciones de Laravel. 22 tablas en total.
 
 ---
 
@@ -139,7 +139,73 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 
 ---
 
-## 12. `permission_categories`
+## 12. `patient_reports`
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| `id` | bigint unsigned | PK, AUTO_INCREMENT |
+| `patient_id` | bigint unsigned | NOT NULL, FK → `patients.id` |
+| `user_id` | bigint unsigned | NOT NULL, FK → `users.id` |
+| `template_id` | bigint unsigned | NULLABLE, FK → `report_templates.id` ON DELETE SET NULL |
+| `status` | varchar(255) | NOT NULL, DEFAULT `'draft'`, INDEX. Valores: `draft`, `signed`, `closed` |
+| `template_structure_snapshot` | json | NOT NULL |
+| `values` | json | NOT NULL, DEFAULT `'{}'` |
+| `signature_path` | varchar(255) | NULLABLE |
+| `pdf_path` | varchar(255) | NULLABLE |
+| `signed_at` | timestamp | NULLABLE |
+| `closed_at` | timestamp | NULLABLE |
+| `created_at` | timestamp | NULLABLE |
+| `updated_at` | timestamp | NULLABLE |
+
+**Índices:** `patient_id`, `user_id`, `status`, `(patient_id, status)`.
+
+**Modelo:** `App\Models\PatientReport` — `$casts: ['status' => ReportStatus::class, 'values' => 'array', 'template_structure_snapshot' => 'array']`, `$fillable: ['patient_id', 'user_id', 'template_id', 'status', 'template_structure_snapshot', 'values', 'signature_path', 'pdf_path', 'signed_at', 'closed_at']`.
+
+**Relaciones:** `patient()` (BelongsTo Patient), `user()` (BelongsTo User), `template()` (BelongsTo ReportTemplate, withTrashed).
+
+---
+
+## 13. `report_templates`
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| `id` | bigint unsigned | PK, AUTO_INCREMENT |
+| `name` | varchar(255) | NOT NULL |
+| `description` | text | NULLABLE |
+| `is_active` | boolean | NOT NULL, DEFAULT `true` |
+| `structure` | json | NOT NULL — define secciones→filas→columnas→campos del formulario |
+| `created_at` | timestamp | NULLABLE |
+| `updated_at` | timestamp | NULLABLE |
+| `deleted_at` | timestamp | NULLABLE (soft delete) |
+
+**Modelo:** `App\Models\ReportTemplate` — `SoftDeletes`, `$casts: ['structure' => 'array', 'is_active' => 'boolean']`.
+
+**Seed data:** 3 plantillas creadas por `ReportTemplatesSeeder`: Historia Clínica General (HCG), Informe de Alta (IA), Consentimiento Informado (CI).
+
+---
+
+## 14. `llm_interactions`
+
+Registra cada interacción con servicios de IA (transcripción STT y extracción de datos).
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| `id` | bigint unsigned | PK, AUTO_INCREMENT |
+| `patient_report_id` | bigint unsigned | NOT NULL, FK → `patient_reports.id` ON DELETE CASCADE |
+| `type` | varchar(50) | NULLABLE, DEFAULT `'extraction'`. Valores: `extraction`, `stt` |
+| `request_payload` | json | NOT NULL — payload enviado al LLM (metadatos, no incluye PII) |
+| `response_payload` | json | NULLABLE — respuesta del LLM |
+| `processing_time_ms` | integer | NULLABLE |
+| `created_at` | timestamp | NULLABLE |
+| `updated_at` | timestamp | NULLABLE |
+
+**Modelo:** `App\Models\LlmInteraction` — `$casts: ['request_payload' => 'array', 'response_payload' => 'array']`, `$fillable: ['patient_report_id', 'type', 'request_payload', 'response_payload', 'processing_time_ms']`.
+
+**Relaciones:** `patientReport()` (BelongsTo PatientReport).
+
+---
+
+## 15. `permission_categories`
 
 | Columna | Tipo | Restricciones |
 |---------|------|---------------|
@@ -166,7 +232,7 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 
 ---
 
-## 13. `permissions`
+## 16. `permissions`
 
 | Columna | Tipo | Restricciones |
 |---------|------|---------------|
@@ -200,7 +266,7 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 
 ---
 
-## 14. `roles`
+## 17. `roles`
 
 | Columna | Tipo | Restricciones |
 |---------|------|---------------|
@@ -218,7 +284,7 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 
 ---
 
-## 15. `role_permissions`
+## 18. `role_permissions`
 
 Pivote: roles ↔ permissions con `grant` (1 = permitir, -1 = denegar).
 
@@ -226,7 +292,7 @@ Pivote: roles ↔ permissions con `grant` (1 = permitir, -1 = denegar).
 
 ---
 
-## 16. `user_roles`
+## 19. `user_roles`
 
 Asignación de roles a usuarios. Soporta trazabilidad.
 
@@ -235,7 +301,7 @@ Asignación de roles a usuarios. Soporta trazabilidad.
 
 ---
 
-## 17. `user_permissions`
+## 20. `user_permissions`
 
 Overrides directos por usuario. Traza origen (`role`|`user`).
 
@@ -243,7 +309,7 @@ Overrides directos por usuario. Traza origen (`role`|`user`).
 
 ---
 
-## 18. `user_effective_permissions`
+## 21. `user_effective_permissions`
 
 Tabla de materialización. Almacena el permiso efectivo calculado.
 
@@ -253,7 +319,7 @@ Tabla de materialización. Almacena el permiso efectivo calculado.
 
 ---
 
-## 19. `audits`
+## 22. `audits`
 
 Registro append-only de eventos del sistema.
 
@@ -269,6 +335,11 @@ Registro append-only de eventos del sistema.
 |-------|-----------|------------|-----------|
 | `jwt_refresh_tokens` | `user_id` | `users.id` | CASCADE |
 | `addresses` | `user_id` | `users.id` | CASCADE |
+| `patient_reports` | `patient_id` | `patients.id` | — |
+| `patient_reports` | `user_id` | `users.id` | — |
+| `patient_reports` | `template_id` | `report_templates.id` | SET NULL |
+| `report_templates` | (sin FK directas) | | |
+| `llm_interactions` | `patient_report_id` | `patient_reports.id` | CASCADE |
 | `permissions` | `category_id` | `permission_categories.id` | SET NULL |
 | `permission_categories` | `parent_id` | `permission_categories.id` | CASCADE |
 | `role_permissions` | `role_id` | `roles.id` | CASCADE |

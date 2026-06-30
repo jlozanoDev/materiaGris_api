@@ -25,6 +25,8 @@
 | Admin — Permisos | [`modulos/administracion/permisos.md`](./modulos/administracion/permisos.md) | Catálogo de permisos del sistema |
 | Admin — Variables del Sistema | [`modulos/administracion/variables-sistema.md`](./modulos/administracion/variables-sistema.md) | Variables para autocompletado en plantillas de informe |
 | Dictado y autocompletado de informes | [`modulos/dictado-autocompletado.md`](./modulos/dictado-autocompletado.md) | Extracción de datos clínicos desde transcripción con IA |
+| Informes de pacientes | [`modulos/informes.md`](./modulos/informes.md) | CRUD de informes: crear, editar, firmar, cerrar, descargar PDF |
+| Plantillas de informe | [`modulos/plantillas-informes.md`](./modulos/plantillas-informes.md) | Gestión de plantillas de informe con estructura JSON dinámica |
 
 ## Flujos de API
 
@@ -34,6 +36,7 @@
 | Gestión de pacientes | [`flujos/gestion-pacientes.md`](./flujos/gestion-pacientes.md) | Buscar, crear y editar pacientes vía API |
 | Administración del sistema | [`flujos/administracion-sistema.md`](./flujos/administracion-sistema.md) | CRUD de usuarios, roles y permisos vía API |
 | Dictado y autocompletado de informes | [`flujos/dictado-autocompletado.md`](./flujos/dictado-autocompletado.md) | Transcripción → extracción de datos clínicos con IA |
+| Gestión de informes | [`flujos/gestion-informes.md`](./flujos/gestion-informes.md) | Flujo completo: crear, editar, firmar, cerrar y descargar informes |
 
 ## Estado de cobertura
 
@@ -46,6 +49,8 @@
 | Admin — Roles | ✅ Documentado | ✅ Completo | Alta |
 | Admin — Permisos | ✅ Documentado | ✅ Completo | Media |
 | Admin — Variables del Sistema | ✅ Documentado | ✅ Completo | Media |
+| Informes de pacientes | ✅ Documentado | ✅ Completo | Alta |
+| Plantillas de informe | ✅ Documentado | ✅ Completo | Alta |
 | Consultas médicas | ❌ Pendiente | ❌ No implementado | Futura |
 | Dictado y autocompletado de informes | ✅ Documentado | ✅ Completo | Alta |
 

@@ -67,7 +67,19 @@ Todas las rutas de administración requieren `auth.jwt`.
 |--------|-----|---------|--------|-------------|
 | GET | `/api/admin/system-variables` | — (solo `auth.jwt`) | `GetSystemVariablesAction` | Catálogo de variables para plantillas de informe |
 
+### Plantillas de Informe (Report Templates)
+
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| GET | `/api/admin/report-templates` | `admin.reporttemplate.view` | `ListReportTemplatesAction` | Listar plantillas |
+| POST | `/api/admin/report-templates` | `admin.reporttemplate.create` | `CreateReportTemplateAction` | Crear plantilla |
+| GET | `/api/admin/report-templates/{id}` | `admin.reporttemplate.view` | `GetReportTemplateAction` | Obtener plantilla |
+| PUT | `/api/admin/report-templates/{id}` | `admin.reporttemplate.update` | `UpdateReportTemplateAction` | Actualizar plantilla |
+| DELETE | `/api/admin/report-templates/{id}` | `admin.reporttemplate.delete` | `DeleteReportTemplateAction` | Eliminar plantilla |
+
 ---
+
+
 
 ## Reports
 
@@ -75,35 +87,25 @@ Todas las rutas requieren `auth.jwt`.
 
 | Método | URI | Permiso | Action | Descripción |
 |--------|-----|---------|--------|-------------|
-| POST | `/api/reports/{id}/extract-data` | `report.edit` | `ExtractReportDataAction` | Extraer datos clínicos desde transcripción con IA |
+| GET | `/api/reports` | `report.view` | `ListReportsAction` | Listar informes |
+| POST | `/api/reports` | `report.create` | `InitReportAction` | Crear (iniciar) informe |
+| GET | `/api/reports/{id}` | `report.view` | `GetReportAction` | Obtener informe |
+| PUT | `/api/reports/{id}` | `report.edit` | `SaveDraftReportAction` | Guardar borrador |
+| POST | `/api/reports/{id}/sign` | `report.sign` | `SignReportAction` | Firmar informe |
+| POST | `/api/reports/{id}/close` | `report.close` | `CloseReportAction` | Cerrar informe |
+| GET | `/api/reports/{id}/pdf` | `report.download-pdf` | `DownloadPdfReportAction` | Descargar PDF |
+| POST | `/api/reports/{id}/extract-data` | `report.edit` | `ExtractReportDataAction` | Extraer datos clínicos con IA |
+| POST | `/api/reports/{id}/transcribe` | `report.edit` | `TranscribeReportAction` | Transcribir audio |
 
-### POST /reports/{id}/extract-data
+---
 
-Recibe una transcripción de audio y una plantilla, extrae datos clínicos estructurados usando un LLM.
+## Templates
 
-**Request Body:**
-```json
-{
-  "transcript": "string (requerido)",
-  "template_id": "integer (requerido)"
-}
-```
+Todas las rutas requieren `auth.jwt`.
 
-**Response 200:**
-```json
-{
-  "data": {
-    "extracted_data": { "field_key": "value", ... },
-    "confidence_scores": { "field_key": 0.95, ... },
-    "warnings": ["Campo 'alergias' no encontrado"],
-    "processing_time_ms": 1250
-  },
-  "meta": {},
-  "message": "Datos extraídos correctamente"
-}
-```
-
-**Error codes:** 400 (template inválido), 403 (sin permiso), 404 (report no encontrado), 422 (validación), 500 (error LLM), 503 (IA no disponible)
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| GET | `/api/templates/active` | `report.create` | `GetActiveTemplatesAction` | Listar plantillas activas |
 
 ---
 
@@ -115,6 +117,7 @@ Todas las rutas requieren `auth.jwt`.
 |--------|-----|---------|--------|-------------|
 | GET | `/api/patients/find` | `patient.view` | `GetPatientsAction` | Buscar pacientes |
 | POST | `/api/patients` | `patient.create` | `CreatePatientAction` | Crear paciente |
+| GET | `/api/patients/{id}` | `patient.view` | `GetPatientAction` | Obtener paciente |
 | PUT | `/api/patients/{id}` | `patient.update` | `UpdatePatientAction` | Actualizar paciente |
 
 ---
@@ -125,10 +128,11 @@ Todas las rutas requieren `auth.jwt`.
 |-----------|-----------|-------------|--------------|
 | Health | 1 | 0 | 0 |
 | Auth | 6 | 1 | 0 |
-| Admin | 12 | 12 | 11 |
-| Patients | 3 | 3 | 3 |
-| Reports | 1 | 1 | 1 |
-| **Total** | **23** | **17** | **15** |
+| Admin | 17 | 17 | 16 |
+| Patients | 4 | 4 | 4 |
+| Reports | 9 | 9 | 9 |
+| Templates | 1 | 1 | 1 |
+| **Total** | **38** | **32** | **30** |
 
 ## Middlewares
 

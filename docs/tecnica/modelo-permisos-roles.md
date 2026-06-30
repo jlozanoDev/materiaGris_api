@@ -104,9 +104,24 @@ Route::post('/admin/users', ...)->middleware('require_permissions:admin.user.cre
     "admin.user.create": true,
     "admin.user.update": true,
     "admin.user.delete": true,
+    "admin.role.view": true,
+    "admin.role.create": true,
+    "admin.role.update": true,
+    "admin.role.delete": true,
+    "admin.permission.view": true,
+    "admin.reporttemplate.view": true,
+    "admin.reporttemplate.create": true,
+    "admin.reporttemplate.update": true,
+    "admin.reporttemplate.delete": true,
     "patient.view": true,
     "patient.create": true,
-    "patient.update": true
+    "patient.update": true,
+    "report.view": true,
+    "report.create": true,
+    "report.edit": true,
+    "report.sign": true,
+    "report.close": true,
+    "report.download-pdf": true
   },
   "permissions_version": "2026-04-12T08:00:00Z"
 }

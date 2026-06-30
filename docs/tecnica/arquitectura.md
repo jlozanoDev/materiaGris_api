@@ -61,8 +61,10 @@ Response JSON (← Action)
 app/
 ├── Commands/                    # Casos de uso (Application Layer)
 │   ├── Admin/                   #   admin users, roles, permissions
+│   │   └── ReportTemplate/      #     report template CRUD commands
 │   ├── Auth/                    #   login, logout, refresh, me, forgot/reset
-│   └── Health/                  #   health check
+│   ├── Health/                  #   health check
+│   └── Reports/                 #   reports CRUD commands (List, Init, SaveDraft, Sign, Close, DownloadPdf, ExtractData, Transcribe)
 │
 ├── Exceptions/                  # Excepciones de dominio
 │   ├── Handler.php
@@ -71,9 +73,11 @@ app/
 ├── Http/
 │   ├── Actions/                 # HTTP Adapters (Presentation Layer)
 │   │   ├── Admin/               #   adaptadores para admin
+│   │   │   └── ReportTemplate/  #     adaptadores para CRUD de plantillas
 │   │   ├── Auth/                #   adaptadores para auth
 │   │   ├── Health/              #   adaptadores para health
-│   │   └── Patients/            #   adaptadores para patients
+│   │   ├── Patients/            #   adaptadores para patients
+│   │   └── Reports/             #   adaptadores para reports (CRUD, transcribe, extract-data)
 │   │
 │   ├── Controllers/             # (residual, no usado activamente)
 │   │
@@ -98,10 +102,13 @@ app/
 ├── Models/                      # Modelos Eloquent (Data Access)
 │   ├── Audit.php
 │   ├── HealthStatus.php         # DTO, no BD
+│   ├── LlmInteraction.php       # Interacciones con LLM (STT y extracción)
 │   ├── Patient.php
+│   ├── PatientReport.php        # Informes de pacientes
 │   ├── Permission.php
 │   ├── PermissionCategory.php
 │   ├── RefreshToken.php
+│   ├── ReportTemplate.php       # Plantillas de informes
 │   ├── Role.php
 │   └── User.php
 │
@@ -121,6 +128,9 @@ app/
 │   ├── RefreshToken/
 │   │   ├── GetRefreshTokenRepository.php
 │   │   └── SaveRefreshTokenRepository.php
+│   ├── Report/
+│   │   ├── PatientReportReadRepository.php
+│   │   └── PatientReportSaveRepository.php
 │   ├── Role/
 │   │   └── RoleRepository.php
 │   └── User/
@@ -132,7 +142,9 @@ app/
     ├── JwtService.php
     ├── PasswordResetService.php
     ├── PermissionService.php
-    └── RoleAssignmentService.php
+    ├── RoleAssignmentService.php
+    ├── SpeakerClassifierService.php   # Clasifica segmentos como Médico/Paciente por heurística + LLM
+    └── SpeechToTextService.php        # Servicio de transcripción de audio (Whisper/OpenAI-compatible)
 ```
 
 ## Inyección de Dependencias
@@ -167,3 +179,6 @@ class GetPatientsAction {
 | Admin — Users | 5 | 4 | 2 | 1 | RoleAssignmentService |
 | Admin — Roles | 5 | 5 | 1 | 1 | PermissionService |
 | Admin — Permissions | 1 | 1 | 1 | 2 | PermissionService |
+| Admin — Report Templates | 5 | 5 | 0 | 1 | 0 |
+| Reports — CRUD | 7 | 7 | 2 | 1 | PermissionService |
+| Reports — Dictado | 2 | 2 | 0 | 2 | SpeakerClassifierService, SpeechToTextService |

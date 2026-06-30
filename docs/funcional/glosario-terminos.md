@@ -19,3 +19,9 @@
 | **Soft Delete** | Eliminación lógica: el registro no se borra físicamente sino que se marca con un timestamp `deleted_at`. |
 | **NSS** | Número de Seguridad Social (u otro identificador nacional único del paciente). |
 | **Auditoría** | Registro inmutable de eventos relevantes del sistema (inicios de sesión, cambios de permisos, accesos denegados). |
+| **Informe** | Documento clínico digital generado a partir de una plantilla. Contiene los datos estructurados de una consulta o episodio médico. Sigue un ciclo de vida: borrador → firmado → cerrado. |
+| **Plantilla de Informe** | Definición reutilizable de la estructura de un informe. Organizada en secciones, filas, columnas y campos con tipos específicos (texto, número, fecha, selección, etc.). |
+| **Firma de Informe** | Acción de firmar electrónicamente un informe mediante imagen PNG capturada del dispositivo. Bloquea el contenido del informe y cambia su estado a `signed`. |
+| **Cierre de Informe** | Acción de cerrar un informe firmado, que genera automáticamente el PDF final y cambia su estado a `closed`. Una vez cerrado, solo está disponible para descarga. |
+| **Campo de Plantilla** | Unidad mínima de una plantilla de informe. Cada campo tiene un tipo, etiqueta, validaciones y opcionalmente una descripción semántica (`ai_help_description`) para la extracción con IA. |
+| **Variable de Sistema** | Valor dinámico que se resuelve en tiempo de renderizado del informe, delimitado por `{...}`. Ejemplos: `{paciente.nombre}`, `{medico.matricula}`, `{fecha.actual}`. |

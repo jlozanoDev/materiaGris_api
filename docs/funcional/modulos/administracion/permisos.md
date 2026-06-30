@@ -58,9 +58,19 @@ Proveer un catálogo legible de todos los permisos del sistema, organizados por 
 | `admin.role.update` | update | Roles y Permisos |
 | `admin.role.delete` | delete | Roles y Permisos |
 | `admin.permission.view` | view | Roles y Permisos |
+| `admin.reporttemplate.view` | view | Report Templates |
+| `admin.reporttemplate.create` | create | Report Templates |
+| `admin.reporttemplate.update` | update | Report Templates |
+| `admin.reporttemplate.delete` | delete | Report Templates |
 | `patient.view` | view | Pacientes |
 | `patient.create` | create | Pacientes |
 | `patient.update` | update | Pacientes |
+| `report.view` | view | Informes |
+| `report.create` | create | Informes |
+| `report.edit` | update | Informes |
+| `report.sign` | sign | Informes |
+| `report.close` | close | Informes |
+| `report.download-pdf` | download | Informes |
 
 ## Dependencias
 - Permiso: `admin.permission.view`.
