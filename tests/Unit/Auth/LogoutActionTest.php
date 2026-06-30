@@ -40,4 +40,20 @@ class LogoutActionTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Http\JsonResponse::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
     }
+
+    public function test_invoke_returns_logged_out_message_on_success(): void
+    {
+        $command = $this->createMock(LogoutCommand::class);
+        $command->expects($this->once())->method('execute');
+
+        $action = new LogoutAction($command);
+
+        $request = Request::create('/auth/logout', 'POST');
+
+        $result = $action->__invoke($request);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message', $result);
+        $this->assertEquals('Logged out', $result['message']);
+    }
 }
