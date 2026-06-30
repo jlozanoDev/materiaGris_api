@@ -2,6 +2,7 @@
 
 namespace App\Commands\Admin\Role;
 
+use App\DTOs\RoleDetail;
 use App\Repositories\Role\RoleRepository;
 use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
@@ -17,7 +18,7 @@ class GetRoleCommand
         $this->permissionService = $permissionService;
     }
 
-    public function execute(int $id)
+    public function execute(int $id): RoleDetail
     {
         $user = auth()->user();
         if (! $user) {
@@ -31,19 +32,17 @@ class GetRoleCommand
             throw new \RuntimeException('Rol no encontrado', 404);
         }
 
-        return [
-            'id' => $role->id,
-            'name' => $role->name,
-            'slug' => $role->slug,
-            'description' => $role->description,
-            'is_system' => (bool) $role->is_system,
-            'permissions' => $role->permissions->map(function($p) {
-                return [
-                    'id' => $p->id,
-                    'slug' => $p->slug,
-                    'grant' => (int) $p->pivot->grant
-                ];
-            })
-        ];
+        return new RoleDetail(
+            id: $role->id,
+            name: $role->name,
+            slug: $role->slug,
+            description: $role->description,
+            isSystem: (bool) $role->is_system,
+            permissions: $role->permissions->map(fn ($p) => [
+                'id' => $p->id,
+                'slug' => $p->slug,
+                'grant' => (int) $p->pivot->grant,
+            ])->toArray(),
+        );
     }
 }

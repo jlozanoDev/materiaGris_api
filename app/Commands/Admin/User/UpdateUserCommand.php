@@ -2,6 +2,7 @@
 
 namespace App\Commands\Admin\User;
 
+use App\DTOs\UserDetail;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\User;
 use App\Repositories\Permission\GetPermissionRepository;
@@ -44,10 +45,10 @@ class UpdateUserCommand
     /**
      * @param int $id User ID to update
      * @param array{name?:string,email?:string,active?:bool,roles?:array<int>,roles_remove?:array<int>,permissions?:array{permission_id:int,grant:int}[]} $data
-     * @return array{id:int,name:string,email:string,active:bool,roles:array{id:int,name:string,slug:string,is_system:bool}[],user_permissions:array{permission_id:int,slug:string,grant:int,origin:string,origin_id:?int}[],effective_permissions:array<string,int>}|null
+     * @return UserDetail|null
      * @throws \Exception
      */
-    public function execute(int $id, array $data): ?array
+    public function execute(int $id, array $data): ?UserDetail
     {
         $actor = auth()->user();
         if (! $actor) {
@@ -215,39 +216,11 @@ class UpdateUserCommand
         return $data;
     }
 
-    /**
-     * @return array{id:int,name:string,email:string,active:bool,roles:array{id:int,name:string,slug:string,is_system:bool}[],user_permissions:array{permission_id:int,slug:string,grant:int,origin:string,origin_id:?int}[],effective_permissions:array<string,int>}
-     */
-    private function construirRespuesta(User $user): array
+    private function construirRespuesta(User $user): UserDetail
     {
         $user->load('roles');
         $user->load('userPermissions');
 
-        $roles = $user->roles->map(fn ($role) => [
-            'id' => $role->id,
-            'name' => $role->name,
-            'slug' => $role->slug,
-            'is_system' => (bool) $role->is_system,
-        ])->toArray();
-
-        $userPermissions = $user->userPermissions->map(fn ($permission) => [
-            'permission_id' => $permission->id,
-            'slug' => $permission->slug,
-            'grant' => (int) $permission->pivot->grant,
-            'origin' => $permission->pivot->origin,
-            'origin_id' => $permission->pivot->origin_id,
-        ])->toArray();
-
-        $effectivePermissions = $this->permissionService->getEffectivePermissions($user);
-
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'active' => (bool) $user->active,
-            'roles' => $roles,
-            'user_permissions' => $userPermissions,
-            'effective_permissions' => $effectivePermissions,
-        ];
+        return UserDetail::fromUser($user, $this->permissionService);
     }
 }

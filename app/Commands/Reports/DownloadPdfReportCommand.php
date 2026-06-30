@@ -2,6 +2,7 @@
 
 namespace App\Commands\Reports;
 
+use App\DTOs\PdfFileInfo;
 use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\PatientReport;
@@ -15,7 +16,7 @@ class DownloadPdfReportCommand
         private PermissionService $permissionService,
     ) {}
 
-    public function execute(int $id): array
+    public function execute(int $id): PdfFileInfo
     {
         $user = auth()->user();
         if (! $user) {
@@ -44,9 +45,9 @@ class DownloadPdfReportCommand
 
         $fullPath = Storage::disk('local')->path($report->pdf_path);
 
-        return [
-            'path' => $fullPath,
-            'filename' => 'informe_' . $report->id . '.pdf',
-        ];
+        return new PdfFileInfo(
+            path: $fullPath,
+            filename: 'informe_' . $report->id . '.pdf',
+        );
     }
 }

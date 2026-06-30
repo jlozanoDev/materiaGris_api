@@ -3,6 +3,7 @@
 namespace Tests\Unit\Auth;
 
 use App\Commands\Auth\LoginCommand;
+use App\DTOs\TokenPair;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
 use App\Services\JwtService;
@@ -25,13 +26,13 @@ class LoginCommandTest extends TestCase
         $leer = $this->createMock(GetUserRepository::class);
         $leer->method('buscarPorEmail')->with($email)->willReturn($user);
 
-        $tokens = [
+        $tokens = TokenPair::fromArray([
             'access_token' => 'access',
             'refresh_token' => 'refresh',
             'jti' => 'jti-123',
             'access_expires_at' => now()->addHour()->timestamp,
             'refresh_expires_at' => now()->addDays(14)->timestamp,
-        ];
+        ]);
 
         $jwt = $this->createMock(JwtService::class);
         $jwt->method('issue')->with($user->id, [])->willReturn($tokens);
@@ -39,11 +40,11 @@ class LoginCommandTest extends TestCase
         $refreshEscribir = $this->createMock(SaveRefreshTokenRepository::class);
         $refreshEscribir->expects($this->once())->method('guardar')->with(
             $user,
-            $tokens['refresh_token'],
-            $tokens['jti'],
+            $tokens->refreshToken,
+            $tokens->jti,
             $ip,
             $userAgent,
-            $tokens['refresh_expires_at']
+            $tokens->refreshExpiresAt
         );
 
         $command = new LoginCommand($leer, $refreshEscribir, $jwt);

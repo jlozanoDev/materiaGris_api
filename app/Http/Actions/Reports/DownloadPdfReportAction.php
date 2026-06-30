@@ -3,6 +3,7 @@
 namespace App\Http\Actions\Reports;
 
 use App\Commands\Reports\DownloadPdfReportCommand;
+use App\DTOs\PdfFileInfo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +17,7 @@ class DownloadPdfReportAction
     {
         try {
             $result = $this->command->execute($id);
-            return response()->download($result['path'], $result['filename'], [
+            return response()->download($result->path, $result->filename, [
                 'Content-Type' => 'application/pdf',
             ]);
         } catch (\App\Exceptions\PermissionDeniedException $e) {

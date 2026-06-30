@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\TokenPair;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -22,7 +23,7 @@ class JwtService
         $this->config = Configuration::forSymmetricSigner(new Sha256(), \Lcobucci\JWT\Signer\Key\InMemory::plainText($secret));
     }
 
-    public function issue(int $userId, array $scopes = []): array
+    public function issue(int $userId, array $scopes = []): TokenPair
     {
         $now = new DateTimeImmutable();
         $accessTtl = config('jwt.access_ttl', 15);
@@ -41,13 +42,13 @@ class JwtService
         $refreshToken = bin2hex(random_bytes(64));
         $refreshExpires = $now->add(new DateInterval('P' . $refreshTtlDays . 'D'));
 
-        return [
-            'access_token' => $accessToken->toString(),
-            'access_expires_at' => $accessToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format(DateTimeImmutable::ATOM),
-            'refresh_token' => $refreshToken,
-            'refresh_expires_at' => $refreshExpires->format(DateTimeImmutable::ATOM),
-            'jti' => $jti,
-        ];
+        return new TokenPair(
+            accessToken: $accessToken->toString(),
+            accessExpiresAt: $accessToken->claims()->get(RegisteredClaims::EXPIRATION_TIME)->format(DateTimeImmutable::ATOM),
+            refreshToken: $refreshToken,
+            refreshExpiresAt: $refreshExpires->format(DateTimeImmutable::ATOM),
+            jti: $jti,
+        );
     }
 
     public function parseAndValidate(string $jwt)

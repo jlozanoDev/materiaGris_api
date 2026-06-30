@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DTOs\ExtractionResult;
+use App\DTOs\PatientContext;
 use App\Exceptions\AiResponseException;
 use App\Exceptions\AiTimeoutException;
 use App\Exceptions\AiUnavailableException;
@@ -22,14 +24,14 @@ class LlmExtractorService
      *
      * @param array  $templateStructure The template structure snapshot (sections → rows → columns → fields)
      * @param string $transcript        Raw transcription text
-     * @param array  $patientContext    Patient context with edad, sexo, medicacion, last_reports
-     * @return array{extracted_data: array, confidence_scores: array, warnings: array, processing_time_ms: int}
+     * @param PatientContext $patientContext Patient context
+     * @return ExtractionResult
      *
      * @throws AiTimeoutException
      * @throws AiResponseException
      * @throws AiUnavailableException
      */
-    public function extract(array $templateStructure, string $transcript, array $patientContext): array
+    public function extract(array $templateStructure, string $transcript, PatientContext $patientContext): ExtractionResult
     {
         $startTime = microtime(true);
 
@@ -68,7 +70,7 @@ class LlmExtractorService
 
         $parsed['processing_time_ms'] = $processingTimeMs;
 
-        return $parsed;
+        return ExtractionResult::fromArray($parsed);
     }
 
     /**
@@ -141,25 +143,25 @@ class LlmExtractorService
      * Build the user message combining patient context and transcript.
      *
      * @param string $transcript     Sanitized transcript
-     * @param array  $patientContext Patient context with edad, sexo, medicacion, last_reports
+     * @param PatientContext $patientContext Patient context
      * @return string The user message
      */
-    public function buildUserMessage(string $transcript, array $patientContext): string
+    public function buildUserMessage(string $transcript, PatientContext $patientContext): string
     {
-        $medication = ! empty($patientContext['medicacion'])
-            ? $patientContext['medicacion']
+        $medication = ! empty($patientContext->medicacion)
+            ? $patientContext->medicacion
             : 'No reportada';
 
         $lines = [
             'DATOS DEL PACIENTE:',
-            '- Edad: ' . ($patientContext['edad'] ?? 'No especificada'),
-            '- Sexo: ' . ($patientContext['sexo'] ?? 'No especificado'),
+            '- Edad: ' . ($patientContext->edad ?? 'No especificada'),
+            '- Sexo: ' . ($patientContext->sexo ?? 'No especificado'),
             '- Medicación reportada: ' . $medication,
         ];
 
-        if (! empty($patientContext['last_reports'])) {
+        if (! empty($patientContext->lastReports)) {
             $lines[] = '- Historial clínico reciente:';
-            foreach ($patientContext['last_reports'] as $report) {
+            foreach ($patientContext->lastReports as $report) {
                 if (is_array($report)) {
                     $lines[] = '  ' . json_encode($report, JSON_UNESCAPED_UNICODE);
                 } else {

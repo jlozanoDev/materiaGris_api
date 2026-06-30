@@ -2,6 +2,7 @@
 
 namespace App\Commands\Auth;
 
+use App\DTOs\TokenPair;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
 use App\Services\JwtService;
@@ -23,7 +24,7 @@ class LoginCommand
     /**
      * @throws \RuntimeException on nombre de usuario o contraseña inválidos
      */
-    public function execute(string $email, string $password, string $ip, string $userAgent): array
+    public function execute(string $email, string $password, string $ip, string $userAgent): TokenPair
     {
         $user = $this->leer->buscarPorEmail($email);
         if (! $user || ! Hash::check($password, $user->password)) {
@@ -32,7 +33,7 @@ class LoginCommand
 
         $tokens = $this->jwtService->issue($user->id, []);
 
-        $this->refreshEscribir->guardar($user, $tokens['refresh_token'], $tokens['jti'], $ip, $userAgent, $tokens['refresh_expires_at']);
+        $this->refreshEscribir->guardar($user, $tokens->refreshToken, $tokens->jti, $ip, $userAgent, $tokens->refreshExpiresAt);
 
         return $tokens;
     }

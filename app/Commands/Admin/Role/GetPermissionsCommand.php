@@ -2,6 +2,7 @@
 
 namespace App\Commands\Admin\Role;
 
+use App\DTOs\PermissionSummary;
 use App\Repositories\Permission\GetPermissionRepository;
 use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
@@ -31,19 +32,18 @@ class GetPermissionsCommand
         return $permissions->map(function ($permission) {
             $categoryName = $permission->category ? $permission->category->full_name : 'Sin Categoría';
             $description = $permission->description;
-            
+
             if ($permission->category) {
-                // Prepend hierarchy to description as requested
                 $description = $permission->category->full_name . ': ' . $description;
             }
 
-            return [
-                'id' => $permission->id,
-                'slug' => $permission->slug,
-                'name' => $permission->name,
-                'category' => $categoryName,
-                'description' => $description,
-            ];
+            return new PermissionSummary(
+                id: $permission->id,
+                slug: $permission->slug,
+                name: $permission->name,
+                category: $categoryName,
+                description: $description,
+            );
         });
     }
 }

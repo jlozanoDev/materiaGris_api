@@ -4,6 +4,7 @@ namespace Tests\Unit\Auth;
 
 use App\Http\Actions\Auth\LoginAction;
 use App\Commands\Auth\LoginCommand;
+use App\DTOs\TokenPair;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Tests\TestCase;
@@ -12,13 +13,13 @@ class LoginActionTest extends TestCase
 {
     public function test_invoke_returns_tokens_and_queues_cookie_on_success(): void
     {
-        $tokens = [
+        $tokens = TokenPair::fromArray([
             'access_token' => 'access',
             'refresh_token' => 'refresh',
             'access_expires_at' => now()->addHour()->timestamp,
             'refresh_expires_at' => now()->addDays(14)->timestamp,
             'jti' => 'jti-1',
-        ];
+        ]);
 
         $command = $this->createMock(LoginCommand::class);
         $command->expects($this->once())->method('execute')->willReturn($tokens);

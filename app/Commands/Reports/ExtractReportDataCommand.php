@@ -2,6 +2,8 @@
 
 namespace App\Commands\Reports;
 
+use App\DTOs\ExtractionResult;
+use App\DTOs\PatientContext;
 use App\Exceptions\PermissionDeniedException;
 use App\Exceptions\TemplateNotFoundException;
 use App\Models\LlmInteraction;
@@ -29,13 +31,13 @@ class ExtractReportDataCommand
      * @param string $transcript The consultation transcript
      * @param int    $templateId The report template ID
      * @param User   $user       The authenticated user
-     * @return array{extracted_data: array, confidence_scores: array, warnings: array, processing_time_ms: int}
+     * @return ExtractionResult
      *
      * @throws PermissionDeniedException
      * @throws ModelNotFoundException
      * @throws TemplateNotFoundException
      */
-    public function execute(int $reportId, string $transcript, int $templateId, User $user): array
+    public function execute(int $reportId, string $transcript, int $templateId, User $user): ExtractionResult
     {
         $this->permissionService->ensure($user, 'report.edit');
 
@@ -65,7 +67,7 @@ class ExtractReportDataCommand
                 ? count($templateStructure['sections'])
                 : 0,
             'transcript_length' => mb_strlen($transcript),
-            'patient_context_keys' => array_keys($patientContext),
+            'patient_context_keys' => ['edad', 'sexo', 'medicacion', 'last_reports'],
         ];
 
         $startTime = microtime(true);
@@ -100,12 +102,9 @@ class ExtractReportDataCommand
     }
 
     /**
-     * Build the patient context array for the LLM prompt.
-     *
-     * @param PatientReport $report
-     * @return array{edad: int|null, sexo: string|null, medicacion: string, last_reports: array}
+     * Build the patient context for the LLM prompt.
      */
-    private function buildPatientContext(PatientReport $report): array
+    private function buildPatientContext(PatientReport $report): PatientContext
     {
         $patient = $report->patient;
 
@@ -135,11 +134,11 @@ class ExtractReportDataCommand
             ? implode(', ', array_filter($medicationValues))
             : 'No reportada';
 
-        return [
-            'edad' => $edad,
-            'sexo' => $sexo,
-            'medicacion' => $medicacion,
-            'last_reports' => $lastReports,
-        ];
+        return new PatientContext(
+            edad: $edad,
+            sexo: $sexo,
+            medicacion: $medicacion,
+            lastReports: $lastReports,
+        );
     }
 }

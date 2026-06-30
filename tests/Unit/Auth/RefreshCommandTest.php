@@ -3,6 +3,7 @@
 namespace Tests\Unit\Auth;
 
 use App\Commands\Auth\RefreshCommand;
+use App\DTOs\TokenPair;
 use App\Repositories\RefreshToken\GetRefreshTokenRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
 use App\Services\JwtService;
@@ -35,13 +36,13 @@ class RefreshCommandTest extends TestCase
             'revoked' => false,
         ]);
 
-        $newTokens = [
+        $newTokens = TokenPair::fromArray([
             'access_token' => 'new-access-token-hash',
             'refresh_token' => 'new-refresh-token-hash',
             'jti' => 'jti-abc-123',
             'access_expires_at' => now()->addHour()->timestamp,
             'refresh_expires_at' => now()->addDays(30)->toDateTimeString(),
-        ];
+        ]);
 
         $jwtService = $this->createMock(JwtService::class);
         $jwtService->expects($this->once())

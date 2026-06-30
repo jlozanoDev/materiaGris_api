@@ -3,6 +3,7 @@
 namespace App\Http\Actions\Auth;
 
 use App\Commands\Auth\LoginCommand;
+use App\DTOs\TokenPair;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 
@@ -15,7 +16,7 @@ class LoginAction
         $this->command = $command;
     }
 
-    public function execute(Request $request): array
+    public function execute(Request $request): TokenPair
     {
         $request->validate(['email' => 'required|email', 'password' => 'required']);
 
@@ -36,7 +37,7 @@ class LoginAction
             $sameSite = $secure ? 'None' : 'Lax';
             Cookie::queue(Cookie::make(
                 config('jwt.cookie_name'),
-                $tokens['refresh_token'],
+                $tokens->refreshToken,
                 config('jwt.refresh_ttl') * 24 * 60,
                 null,
                 config('jwt.cookie_domain'),
@@ -47,8 +48,8 @@ class LoginAction
             ));
 
             return [
-                'access_token' => $tokens['access_token'],
-                'expires_at' => $tokens['access_expires_at'],
+                'access_token' => $tokens->accessToken,
+                'expires_at' => $tokens->accessExpiresAt,
             ];
         } catch (\RuntimeException $e) {
             return response()->json(['message' => 'Nombre de usuario o contraseña inválidos'], 401);

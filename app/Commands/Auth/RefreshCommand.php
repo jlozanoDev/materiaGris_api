@@ -2,6 +2,7 @@
 
 namespace App\Commands\Auth;
 
+use App\DTOs\TokenPair;
 use App\Repositories\RefreshToken\GetRefreshTokenRepository;
 use App\Repositories\RefreshToken\SaveRefreshTokenRepository;
 use App\Services\JwtService;
@@ -22,7 +23,7 @@ class RefreshCommand
     /**
      * @throws \RuntimeException on invalid or missing refresh token
      */
-    public function execute(string $refreshValue, string $ip, string $userAgent): array
+    public function execute(string $refreshValue, string $ip, string $userAgent): TokenPair
     {
         $tokenHash = hash('sha256', $refreshValue);
         $rt = $this->leer->buscarPorHash($tokenHash);
@@ -36,7 +37,7 @@ class RefreshCommand
         $rt->revoked = true;
         $rt->save();
 
-        $this->escribir->guardar($user, $tokens['refresh_token'], $tokens['jti'], $ip, $userAgent, $tokens['refresh_expires_at']);
+        $this->escribir->guardar($user, $tokens->refreshToken, $tokens->jti, $ip, $userAgent, $tokens->refreshExpiresAt);
 
         return $tokens;
     }

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DTOs\Segment;
+
 class SpeakerClassifierService
 {
     // Heuristic patterns for Spanish medical conversations
@@ -33,22 +35,23 @@ class SpeakerClassifierService
      */
     public function classify(array $segments): array
     {
+        $segments = array_map(fn ($s) => Segment::fromArray($s), $segments);
+
         $speakerTexts = $this->groupBySpeaker($segments);
 
-        // Single speaker — use heuristics to determine role
         if (count($speakerTexts) <= 1) {
-            return $this->classifySingleSpeaker($segments, $speakerTexts);
+            $segments = $this->classifySingleSpeaker($segments, $speakerTexts);
+        } else {
+            $classification = $this->classifyByHeuristics($speakerTexts);
+
+            if ($classification === null) {
+                $classification = $this->classifyByLlm($segments);
+            }
+
+            $segments = $this->applyClassification($segments, $classification);
         }
 
-        // Try heuristics first
-        $classification = $this->classifyByHeuristics($speakerTexts);
-
-        // Fallback to LLM if heuristics inconclusive
-        if ($classification === null) {
-            $classification = $this->classifyByLlm($segments);
-        }
-
-        return $this->applyClassification($segments, $classification);
+        return array_map(fn (Segment $s) => $s->toArray(), $segments);
     }
 
     /**
@@ -63,13 +66,11 @@ class SpeakerClassifierService
             $scores[$speaker] = $this->scoreSpeaker($fullText);
         }
 
-        // Determine role: the speaker with higher doctor score is Médico
         $speakers = array_keys($scores);
         $diff = abs($scores[$speakers[0]] - $scores[$speakers[1]]);
 
-        // Need clear difference to be confident
         if ($diff < 2) {
-            return null; // inconclusive
+            return null;
         }
 
         $result = [];
@@ -81,9 +82,6 @@ class SpeakerClassifierService
         return $result;
     }
 
-    /**
-     * Score a speaker: positive = doctor, negative = patient.
-     */
     private function scoreSpeaker(string $text): int
     {
         $score = 0;
@@ -96,7 +94,6 @@ class SpeakerClassifierService
             $score -= substr_count($text, $pattern);
         }
 
-        // Questions heavily indicate doctor
         foreach (self::QUESTION_PATTERNS as $pattern) {
             $score += substr_count($text, $pattern);
         }
@@ -105,23 +102,23 @@ class SpeakerClassifierService
     }
 
     /**
-     * @param array<int, array{speaker: string, text: string, start: float, end: float}> $segments
+     * @param Segment[] $segments
      * @return array<string, string[]>
      */
     private function groupBySpeaker(array $segments): array
     {
         $grouped = [];
         foreach ($segments as $segment) {
-            $speaker = $segment['speaker'];
-            $grouped[$speaker][] = $segment['text'];
+            $grouped[$segment->speaker][] = $segment->text;
         }
 
         return $grouped;
     }
 
     /**
-     * @param array<int, array{speaker: string, text: string, start: float, end: float}> $segments
-     * @return array<int, array{speaker: string, text: string, start: float, end: float}>
+     * @param Segment[] $segments
+     * @param array<string, string[]> $speakerTexts
+     * @return Segment[]
      */
     private function classifySingleSpeaker(array $segments, array $speakerTexts): array
     {
@@ -129,25 +126,27 @@ class SpeakerClassifierService
         $fullText = mb_strtolower(implode(' ', $speakerTexts[$speaker]));
         $score = $this->scoreSpeaker($fullText);
 
-        // Score > 0 → more doctor-like → Médico. Otherwise → Paciente.
         $role = $score > 0 ? 'Médico' : 'Paciente';
 
-        return array_map(function ($segment) use ($role) {
-            $segment['speaker'] = $role;
-            return $segment;
+        return array_map(function (Segment $segment) use ($role) {
+            return new Segment(
+                speaker: $role,
+                text: $segment->text,
+                start: $segment->start,
+                end: $segment->end,
+            );
         }, $segments);
     }
 
     /**
-     * @param array<int, array{speaker: string, text: string, start: float, end: float}> $segments
+     * @param Segment[] $segments
      * @return array<string, string>
      */
     private function classifyByLlm(array $segments): array
     {
-        // Build a simple transcript for context
         $transcript = '';
         foreach ($segments as $seg) {
-            $transcript .= $seg['speaker'] . ': ' . $seg['text'] . "\n";
+            $transcript .= $seg->speaker . ': ' . $seg->text . "\n";
         }
 
         $payload = [
@@ -170,8 +169,11 @@ class SpeakerClassifierService
         $classification = json_decode($content, true);
 
         if (!is_array($classification) || empty($classification)) {
-            // Last resort: assign Speaker 1 = Médico
-            $speakers = array_unique(array_column($segments, 'speaker'));
+            $speakers = [];
+            foreach ($segments as $segment) {
+                $speakers[$segment->speaker] = true;
+            }
+            $speakers = array_keys($speakers);
             $classification = [];
             foreach ($speakers as $i => $speaker) {
                 $classification[$speaker] = $i === 0 ? 'Médico' : 'Paciente';
@@ -182,15 +184,20 @@ class SpeakerClassifierService
     }
 
     /**
-     * @param array<int, array{speaker: string, text: string, start: float, end: float}> $segments
+     * @param Segment[] $segments
      * @param array<string, string> $classification
-     * @return array<int, array{speaker: string, text: string, start: float, end: float}>
+     * @return Segment[]
      */
     private function applyClassification(array $segments, array $classification): array
     {
-        return array_map(function ($segment) use ($classification) {
-            if (isset($classification[$segment['speaker']])) {
-                $segment['speaker'] = $classification[$segment['speaker']];
+        return array_map(function (Segment $segment) use ($classification) {
+            if (isset($classification[$segment->speaker])) {
+                return new Segment(
+                    speaker: $classification[$segment->speaker],
+                    text: $segment->text,
+                    start: $segment->start,
+                    end: $segment->end,
+                );
             }
             return $segment;
         }, $segments);

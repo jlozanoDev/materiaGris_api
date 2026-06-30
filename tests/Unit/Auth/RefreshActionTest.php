@@ -4,6 +4,7 @@ namespace Tests\Unit\Auth;
 
 use App\Http\Actions\Auth\RefreshAction;
 use App\Commands\Auth\RefreshCommand;
+use App\DTOs\TokenPair;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
@@ -13,11 +14,11 @@ class RefreshActionTest extends TestCase
     {
         $refreshValue = 'refresh-token-xyz';
 
-        $tokens = [
+        $tokens = TokenPair::fromArray([
             'access_token' => 'a',
             'refresh_token' => $refreshValue,
             'access_expires_at' => now()->addHour()->timestamp,
-        ];
+        ]);
 
         $command = $this->createMock(RefreshCommand::class);
         $command->expects($this->once())->method('execute')->with($refreshValue, '127.0.0.1', 'phpunit')->willReturn($tokens);
@@ -51,13 +52,13 @@ class RefreshActionTest extends TestCase
     {
         $refreshValue = 'refresh-invoke-test';
 
-        $tokens = [
+        $tokens = TokenPair::fromArray([
             'access_token' => 'at',
             'refresh_token' => $refreshValue,
             'jti' => 'jti-x',
             'access_expires_at' => now()->addHour()->timestamp,
             'refresh_expires_at' => now()->addDays(30)->toDateTimeString(),
-        ];
+        ]);
 
         $command = $this->createMock(RefreshCommand::class);
         $command->expects($this->once())
@@ -78,7 +79,7 @@ class RefreshActionTest extends TestCase
         $this->assertArrayHasKey('access_token', $result);
         $this->assertArrayHasKey('expires_at', $result);
         $this->assertEquals('at', $result['access_token']);
-        $this->assertEquals($tokens['access_expires_at'], $result['expires_at']);
+        $this->assertEquals($tokens->accessExpiresAt, $result['expires_at']);
     }
 
     public function test_invoke_returns_401_when_runtime_exception(): void
