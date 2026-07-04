@@ -1,8 +1,5 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "dockerfile": "docker/app/Dockerfile.prod"
-  },
   "deploy": {
     "healthcheckPath": "/up",
     "healthcheckTimeout": 100,
