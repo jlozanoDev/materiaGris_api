@@ -33,6 +33,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 # 2) Copiar el codigo de la app (respetar .dockerignore: sin vendor/node_modules/tests/.env)
 COPY . /var/www/html
 
+# Rediscover paquetes SIN dev (descarta caches stale del host que referencian paquetes dev como pail)
+RUN rm -f bootstrap/cache/services.php bootstrap/cache/packages.php \
+    && php artisan package:discover --ansi --no-interaction
+
 # Permisos de storage y cache para php-fpm (www-data)
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache

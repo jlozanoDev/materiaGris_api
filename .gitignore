@@ -16,6 +16,11 @@
 /storage/*.key
 /storage/pail
 
+# Laravel package discovery caches (regenerated at build/runtime; must not be committed
+# because dev-only providers like Laravel\Pail leak into prod builds and break bootstrap)
+/bootstrap/cache/services.php
+/bootstrap/cache/packages.php
+
 # Docker
 docker/app/Dockerfile.bak
 
