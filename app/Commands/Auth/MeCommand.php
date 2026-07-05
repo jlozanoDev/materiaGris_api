@@ -25,7 +25,10 @@ class MeCommand
             return null;
         }
 
-        $roles = $user->roles->pluck('slug')->all();
+        $roles = $user->roles->map(fn ($role) => [
+            'id'   => $role->id,
+            'name' => $role->name,
+        ])->values()->all();
         $permissions = $this->permissionService->getEffectivePermissions($user);
 
         return [

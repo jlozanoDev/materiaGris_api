@@ -46,7 +46,7 @@ class MeEndpointTest extends TestCase
             'id' => 1,
             'name' => $user->name,
             'email' => $user->email,
-            'roles' => ['admin'],
+            'roles' => [['id' => 1, 'name' => 'Admin']],
             'permissions' => ['admin.user.view' => 1],
             'permissions_version' => now()->toIso8601String(),
         ];

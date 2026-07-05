@@ -66,9 +66,13 @@ class MeCommandTest extends TestCase
     public function test_execute_includes_roles_and_permissions(): void
     {
         $role1 = new Role();
+        $role1->id = 1;
+        $role1->name = 'Medico';
         $role1->slug = 'medico';
 
         $role2 = new Role();
+        $role2->id = 2;
+        $role2->name = 'Admin';
         $role2->slug = 'admin';
 
         $user = new User();
@@ -97,7 +101,10 @@ class MeCommandTest extends TestCase
         $command = new MeCommand($leer, $permService);
         $result = $command->execute(1);
 
-        $this->assertEquals(['medico', 'admin'], $result['roles']);
+        $this->assertEquals([
+            ['id' => 1, 'name' => 'Medico'],
+            ['id' => 2, 'name' => 'Admin'],
+        ], $result['roles']);
         $this->assertCount(2, $result['permissions']);
         $this->assertEquals($permissionsList, $result['permissions']);
     }
