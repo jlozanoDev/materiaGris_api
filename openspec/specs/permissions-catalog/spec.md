@@ -14,7 +14,7 @@ The system SHALL document 6 `report.*` permission slugs in both the technical mo
 
 - GIVEN the permissions seed table lists 12 entries
 - WHEN report permissions are added
-- THEN these 6 SHALL appear: `report.view`, `report.create`, `report.edit`, `report.sign`, `report.close`, `report.download-pdf`
+- THEN these 6 SHALL appear: `report.view`, `report.create`, `report.edit`, `report.sign`, `report.archive`, `report.download-pdf`
 - AND each SHALL map to categories: `report.view`|`create` → `pacientes` or new `informes` category
 
 #### Scenario: Report permissions in functional catalog

@@ -44,7 +44,7 @@ class PatientReportFactory extends Factory
             'signature_path' => null,
             'pdf_path' => null,
             'signed_at' => null,
-            'closed_at' => null,
+            'archived_at' => null,
         ];
     }
 
@@ -56,12 +56,12 @@ class PatientReportFactory extends Factory
         ]);
     }
 
-    public function closed(): static
+    public function archived(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => ReportStatus::Closed,
+            'status' => ReportStatus::Archived,
             'signed_at' => Carbon::now(),
-            'closed_at' => Carbon::now(),
+            'archived_at' => Carbon::now(),
             'pdf_path' => 'reports/report-' . fake()->uuid() . '.pdf',
         ]);
     }

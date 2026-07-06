@@ -35,7 +35,7 @@ use App\Http\Actions\Reports\InitReportAction;
 use App\Http\Actions\Reports\GetReportAction;
 use App\Http\Actions\Reports\SaveDraftReportAction;
 use App\Http\Actions\Reports\SignReportAction;
-use App\Http\Actions\Reports\CloseReportAction;
+use App\Http\Actions\Reports\ArchiveReportAction;
 use App\Http\Actions\Reports\DownloadPdfReportAction;
 use App\Http\Actions\Reports\GetActiveTemplatesAction;
 use App\Http\Actions\Reports\ExtractReportDataAction;
@@ -159,9 +159,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::post('/{id}/sign', SignReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.sign');
-    Route::post('/{id}/close', CloseReportAction::class)
+    Route::post('/{id}/archive', ArchiveReportAction::class)
         ->whereNumber('id')
-        ->middleware('require_permissions:report.close');
+        ->middleware('require_permissions:report.archive');
     Route::get('/{id}/pdf', DownloadPdfReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.download-pdf');

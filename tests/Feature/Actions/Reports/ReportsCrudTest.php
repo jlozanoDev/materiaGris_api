@@ -336,9 +336,9 @@ class ReportsCrudTest extends TestCase
         $report = PatientReport::factory()->create([
             'user_id' => $user->id,
             'template_id' => $template->id,
-            'status' => ReportStatus::Closed,
+            'status' => ReportStatus::Archived,
             'signed_at' => Carbon::now(),
-            'closed_at' => Carbon::now(),
+            'archived_at' => Carbon::now(),
         ]);
 
         $response = $this->postJson("/reports/{$report->id}/sign", [
@@ -369,11 +369,11 @@ class ReportsCrudTest extends TestCase
         $response->assertStatus(403);
     }
 
-    // ─── CLOSE ───────────────────────────────────────────────
+    // ─── ARCHIVE ─────────────────────────────────────────────
 
-    public function test_close_updates_status_to_closed(): void
+    public function test_archive_updates_status_to_archived(): void
     {
-        $user = $this->actingWithPermissions(['report.close', 'report.sign']);
+        $user = $this->actingWithPermissions(['report.archive', 'report.sign']);
 
         $template = ReportTemplate::factory()->create();
         $report = PatientReport::factory()->create([
@@ -383,17 +383,17 @@ class ReportsCrudTest extends TestCase
             'signed_at' => Carbon::now(),
         ]);
 
-        $response = $this->postJson("/reports/{$report->id}/close", [], $this->authHeader());
+        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
 
         $response->assertStatus(200);
-        $this->assertEquals('closed', $response->json('status'));
-        $this->assertNotNull($response->json('closed_at'));
+        $this->assertEquals('archived', $response->json('status'));
+        $this->assertNotNull($response->json('archived_at'));
         $this->assertNotNull($response->json('pdf_path'));
     }
 
-    public function test_close_requires_signed_status(): void
+    public function test_archive_requires_signed_status(): void
     {
-        $user = $this->actingWithPermission('report.close');
+        $user = $this->actingWithPermission('report.archive');
 
         $template = ReportTemplate::factory()->create();
         $report = PatientReport::factory()->create([
@@ -402,12 +402,12 @@ class ReportsCrudTest extends TestCase
             'status' => ReportStatus::Draft,
         ]);
 
-        $response = $this->postJson("/reports/{$report->id}/close", [], $this->authHeader());
+        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
 
         $response->assertStatus(422);
     }
 
-    public function test_close_only_author_can_close(): void
+    public function test_archive_only_author_can_archive(): void
     {
         $author = User::factory()->create();
         $template = ReportTemplate::factory()->create();
@@ -418,21 +418,21 @@ class ReportsCrudTest extends TestCase
 
         $otherUser = User::factory()->create();
         $this->mockJwtForUserId($otherUser->id);
-        $this->grantPermission($otherUser, 'report.close');
+        $this->grantPermission($otherUser, 'report.archive');
 
-        $response = $this->postJson("/reports/{$report->id}/close", [], $this->authHeader());
+        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
 
         $response->assertStatus(403);
     }
 
     // ─── PDF DOWNLOAD ────────────────────────────────────────
 
-    public function test_download_pdf_returns_file_for_closed_report(): void
+    public function test_download_pdf_returns_file_for_archived_report(): void
     {
         $user = $this->actingWithPermission('report.download-pdf');
 
         $template = ReportTemplate::factory()->create();
-        $report = PatientReport::factory()->closed()->create([
+        $report = PatientReport::factory()->archived()->create([
             'template_id' => $template->id,
             'values' => ['diagnostico' => 'Test'],
         ]);
@@ -443,7 +443,7 @@ class ReportsCrudTest extends TestCase
         $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
     }
 
-    public function test_download_pdf_requires_signed_or_closed(): void
+    public function test_download_pdf_requires_signed_or_archived(): void
     {
         $user = $this->actingWithPermission('report.download-pdf');
 
@@ -465,7 +465,7 @@ class ReportsCrudTest extends TestCase
         $this->mockJwtForUserId($user->id);
 
         $template = ReportTemplate::factory()->create();
-        $report = PatientReport::factory()->closed()->create([
+        $report = PatientReport::factory()->archived()->create([
             'template_id' => $template->id,
         ]);
 

@@ -27,11 +27,11 @@ class DownloadPdfReportCommand
 
         $report = PatientReport::with(['patient', 'user'])->findOrFail($id);
 
-        if (! in_array($report->status, [ReportStatus::Signed, ReportStatus::Closed])) {
-            throw new \RuntimeException('El PDF solo está disponible para informes firmados o cerrados');
+        if (! in_array($report->status, [ReportStatus::Signed, ReportStatus::Archived])) {
+            throw new \RuntimeException('El PDF solo está disponible para informes firmados o archivados');
         }
 
-        // Regenerate if pdf_path is missing (e.g. signed but not yet closed)
+        // Regenerate if pdf_path is missing (e.g. signed but not yet archived)
         if (! $report->pdf_path || ! Storage::disk('local')->exists($report->pdf_path)) {
             $pdf = Pdf::loadView('reports.pdf', [
                 'report' => $report,

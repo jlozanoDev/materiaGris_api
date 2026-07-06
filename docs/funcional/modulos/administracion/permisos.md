@@ -69,7 +69,7 @@ Proveer un catálogo legible de todos los permisos del sistema, organizados por 
 | `report.create` | create | Informes |
 | `report.edit` | update | Informes |
 | `report.sign` | sign | Informes |
-| `report.close` | close | Informes |
+| `report.archive` | archive | Informes |
 | `report.download-pdf` | download | Informes |
 
 ## Dependencias

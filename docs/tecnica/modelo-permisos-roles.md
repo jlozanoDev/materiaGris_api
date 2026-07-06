@@ -120,7 +120,7 @@ Route::post('/admin/users', ...)->middleware('require_permissions:admin.user.cre
     "report.create": true,
     "report.edit": true,
     "report.sign": true,
-    "report.close": true,
+    "report.archive": true,
     "report.download-pdf": true
   },
   "permissions_version": "2026-04-12T08:00:00Z"

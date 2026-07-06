@@ -10,7 +10,7 @@ use App\Enums\ReportStatus;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
-class CloseReportCommand
+class ArchiveReportCommand
 {
     public function __construct(
         private PatientReportSaveRepository $repo,
@@ -24,21 +24,21 @@ class CloseReportCommand
             throw new PermissionDeniedException('Unauthorized');
         }
 
-        $this->permissionService->ensure($user, 'report.close');
+        $this->permissionService->ensure($user, 'report.archive');
 
         $report = PatientReport::findOrFail($id);
 
         if ($report->status !== ReportStatus::Signed) {
-            throw new \RuntimeException('Solo se pueden cerrar informes firmados');
+            throw new \RuntimeException('Solo se pueden archivar informes firmados');
         }
 
         if ($report->user_id !== $user->id) {
-            throw new PermissionDeniedException('Solo el autor puede cerrar este informe');
+            throw new PermissionDeniedException('Solo el autor puede archivar este informe');
         }
 
         $pdfPath = $this->generatePdf($report);
 
-        return $this->repo->cerrar($id, $pdfPath);
+        return $this->repo->archivar($id, $pdfPath);
     }
 
     private function generatePdf(PatientReport $report): string

@@ -8,7 +8,7 @@ Update `docs/tecnica/estructura-base-datos.md` from 19 tables to 22 tables, addi
 
 ### Requirement: patient_reports Table Documented
 
-The system SHALL document `patient_reports` table with columns: `id`, `patient_id` (FK→patients), `template_id` (FK→report_templates), `content` (json), `status` (enum: draft/signed/closed), `transcript_text` (nullable), `signed_by` (FK→users, nullable), `signed_at`, `closed_at`, timestamps, soft delete.
+The system SHALL document `patient_reports` table with columns: `id`, `patient_id` (FK→patients), `template_id` (FK→report_templates), `content` (json), `status` (enum: draft/signed/archived), `transcript_text` (nullable), `signed_by` (FK→users, nullable), `signed_at`, `archived_at`, timestamps, soft delete.
 
 #### Scenario: Table schema complete
 

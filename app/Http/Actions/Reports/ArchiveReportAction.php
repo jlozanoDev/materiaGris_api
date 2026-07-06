@@ -2,14 +2,14 @@
 
 namespace App\Http\Actions\Reports;
 
-use App\Commands\Reports\CloseReportCommand;
+use App\Commands\Reports\ArchiveReportCommand;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
-class CloseReportAction
+class ArchiveReportAction
 {
     public function __construct(
-        private CloseReportCommand $command,
+        private ArchiveReportCommand $command,
     ) {}
 
     public function __invoke(int $id): JsonResponse
@@ -22,7 +22,7 @@ class CloseReportAction
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (\Exception $e) {
-            Log::error('CloseReportAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('ArchiveReportAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Internal server error'], 500);
         }
     }

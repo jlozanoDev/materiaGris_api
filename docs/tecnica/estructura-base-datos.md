@@ -147,19 +147,19 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 | `patient_id` | bigint unsigned | NOT NULL, FK → `patients.id` |
 | `user_id` | bigint unsigned | NOT NULL, FK → `users.id` |
 | `template_id` | bigint unsigned | NULLABLE, FK → `report_templates.id` ON DELETE SET NULL |
-| `status` | varchar(255) | NOT NULL, DEFAULT `'draft'`, INDEX. Valores: `draft`, `signed`, `closed` |
+| `status` | varchar(255) | NOT NULL, DEFAULT `'draft'`, INDEX. Valores: `draft`, `signed`, `archived` |
 | `template_structure_snapshot` | json | NOT NULL |
 | `values` | json | NOT NULL, DEFAULT `'{}'` |
 | `signature_path` | varchar(255) | NULLABLE |
 | `pdf_path` | varchar(255) | NULLABLE |
 | `signed_at` | timestamp | NULLABLE |
-| `closed_at` | timestamp | NULLABLE |
+| `archived_at` | timestamp | NULLABLE |
 | `created_at` | timestamp | NULLABLE |
 | `updated_at` | timestamp | NULLABLE |
 
 **Índices:** `patient_id`, `user_id`, `status`, `(patient_id, status)`.
 
-**Modelo:** `App\Models\PatientReport` — `$casts: ['status' => ReportStatus::class, 'values' => 'array', 'template_structure_snapshot' => 'array']`, `$fillable: ['patient_id', 'user_id', 'template_id', 'status', 'template_structure_snapshot', 'values', 'signature_path', 'pdf_path', 'signed_at', 'closed_at']`.
+**Modelo:** `App\Models\PatientReport` — `$casts: ['status' => ReportStatus::class, 'values' => 'array', 'template_structure_snapshot' => 'array']`, `$fillable: ['patient_id', 'user_id', 'template_id', 'status', 'template_structure_snapshot', 'values', 'signature_path', 'pdf_path', 'signed_at', 'archived_at']`.
 
 **Relaciones:** `patient()` (BelongsTo Patient), `user()` (BelongsTo User), `template()` (BelongsTo ReportTemplate, withTrashed).
 

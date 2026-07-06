@@ -19,7 +19,7 @@ The system SHALL create `docs/tecnica/modules/reports/modulo-informes.md` coveri
 
 #### Scenario: Model PatientReport is documented
 
-- GIVEN the `PatientReport` model exists with fields: content, patient_id, template_id, status, signed_by, signed_at, closed_at
+- GIVEN the `PatientReport` model exists with fields: content, patient_id, template_id, status, signed_by, signed_at, archived_at
 - WHEN the technical doc describes the data layer
 - THEN the `PatientReport` model SHALL be listed with key attributes and relationships
 

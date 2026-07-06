@@ -36,7 +36,7 @@ class ReportPermissionsTest extends TestCase
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
             'report.download-pdf',
         ];
 
@@ -71,7 +71,7 @@ class ReportPermissionsTest extends TestCase
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
             'report.download-pdf',
         ];
 
@@ -101,7 +101,7 @@ class ReportPermissionsTest extends TestCase
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
             'report.download-pdf',
         ];
 

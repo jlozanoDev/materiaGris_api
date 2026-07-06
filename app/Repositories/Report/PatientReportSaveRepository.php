@@ -42,12 +42,12 @@ class PatientReportSaveRepository
         return $report->fresh(['patient', 'user', 'template']);
     }
 
-    public function cerrar(int $id, string $pdfPath): PatientReport
+    public function archivar(int $id, string $pdfPath): PatientReport
     {
         $report = PatientReport::findOrFail($id);
-        $report->status = ReportStatus::Closed;
+        $report->status = ReportStatus::Archived;
         $report->pdf_path = $pdfPath;
-        $report->closed_at = now();
+        $report->archived_at = now();
         $report->save();
 
         return $report->fresh(['patient', 'user', 'template']);

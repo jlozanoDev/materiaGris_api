@@ -82,19 +82,19 @@ Content-Type: application/json
 
 ---
 
-### 4. Cerrar Informe
+### 4. Archivar Informe
 
-Genera el PDF y cambia estado a `closed`.
+Genera el PDF y cambia estado a `archived`.
 
 **Request:**
 ```
-POST /api/reports/42/close
+POST /api/reports/42/archive
 Authorization: Bearer <token>
 ```
 
-**Response (200):** Informe con `status: "closed"`, `pdf_path` y `closed_at`.
+**Response (200):** Informe con `status: "archived"`, `pdf_path` y `archived_at`.
 
-**Permiso requerido:** `report.close`
+**Permiso requerido:** `report.archive`
 **Restricciones:** Solo en estado `signed`. Solo el autor.
 
 ---
@@ -113,7 +113,7 @@ Authorization: Bearer <token>
 - Nombre de archivo: `informe_42.pdf`
 
 **Permiso requerido:** `report.download-pdf`
-**Restricciones:** Disponible solo para informes `signed` o `closed`. Si el PDF no existe (ej. firmado pero no cerrado), se regenera automáticamente.
+**Restricciones:** Disponible solo para informes `signed` o `archived`. Si el PDF no existe (ej. firmado pero no archivado), se regenera automáticamente.
 
 ---
 
@@ -247,16 +247,16 @@ Content-Type: application/json
                     ┌────▼─────┐
                     │  signed  │
                     └────┬─────┘
-                         │ close
+                         │ archive
                     ┌────▼─────┐
-                    │  closed  │
+                    │ archived │
                     └──────────┘
 
 Transiciones:
-  draft  → signed : POST /reports/{id}/sign
-  signed → closed : POST /reports/{id}/close
+  draft    → signed  : POST /reports/{id}/sign
+  signed   → archived: POST /reports/{id}/archive
 
 Lectura/descarga permitida en:
-  signed : GET /reports/{id}, GET /reports/{id}/pdf
-  closed : GET /reports/{id}, GET /reports/{id}/pdf
+  signed   : GET /reports/{id}, GET /reports/{id}/pdf
+  archived : GET /reports/{id}, GET /reports/{id}/pdf
 ```
