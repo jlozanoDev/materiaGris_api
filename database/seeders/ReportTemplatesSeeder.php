@@ -63,29 +63,6 @@ class ReportTemplatesSeeder extends Seeder
                                             'id' => 'uuid-hcg-header-col-1',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-hcg-field-header-clinica',
-                                                    'key' => 'hcg_header_clinica',
-                                                    'type' => 'fixed_text',
-                                                    'label' => 'Clínica',
-                                                    'required' => false,
-                                                    'showLabel' => false,
-                                                    'text_content' => '{clinica.nombre}',
-                                                    'styling_options' => [
-                                                        'bold' => true,
-                                                        'size' => 'lg',
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                [
-                                    'id' => 'uuid-hcg-header-row-2',
-                                    'columns' => [
-                                        [
-                                            'id' => 'uuid-hcg-header-col-2',
-                                            'fields' => [
-                                                [
                                                     'id' => 'uuid-hcg-field-header-titulo',
                                                     'key' => 'hcg_header_titulo',
                                                     'type' => 'fixed_text',
@@ -103,29 +80,119 @@ class ReportTemplatesSeeder extends Seeder
                                     ],
                                 ],
                                 [
-                                    'id' => 'uuid-hcg-header-row-3',
+                                    'id' => 'uuid-hcg-header-row-2',
                                     'columns' => [
                                         [
-                                            'id' => 'uuid-hcg-header-col-3',
+                                            'id' => 'uuid-hcg-header-col-2a',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-hcg-field-header-datos',
-                                                    'key' => 'hcg_header_datos',
+                                                    'id' => 'uuid-hcg-field-header-clinica-nombre',
+                                                    'key' => 'hcg_header_clinica_nombre',
                                                     'type' => 'fixed_text',
-                                                    'label' => 'Datos paciente',
+                                                    'label' => 'Clínica',
                                                     'required' => false,
                                                     'showLabel' => false,
-                                                    'text_content' => 'Paciente: {paciente.nombre} | HC N°: {paciente.nro_historia} | Edad: {paciente.edad} | Sexo: {paciente.sexo} | Fecha: {fecha.formato_largo}',
+                                                    'text_content' => '{clinica.nombre}',
+                                                    'styling_options' => [
+                                                        'bold' => true,
+                                                        'size' => 'lg',
+                                                    ],
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-clinica-cuit',
+                                                    'key' => 'hcg_header_clinica_cuit',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'CUIT',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'CUIT: {clinica.cuit}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-clinica-direccion',
+                                                    'key' => 'hcg_header_clinica_direccion',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Dirección',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.direccion}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-clinica-contacto',
+                                                    'key' => 'hcg_header_clinica_contacto',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Contacto',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.email} | Tel: {clinica.telefono}',
+                                                ],
+                                            ],
+                                        ],
+                                        [
+                                            'id' => 'uuid-hcg-header-col-2b',
+                                            'fields' => [
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-nombre',
+                                                    'key' => 'hcg_header_paciente_nombre',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Paciente',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{paciente.nombre}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-hc',
+                                                    'key' => 'hcg_header_paciente_hc',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'HC',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'HC N°: {paciente.nro_historia}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-dni',
+                                                    'key' => 'hcg_header_paciente_dni',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'DNI',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'DNI: {paciente.dni}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-nacimiento',
+                                                    'key' => 'hcg_header_paciente_nacimiento',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Fecha de nacimiento',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Fecha de nacimiento: {paciente.fecha_nacimiento}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-edad-sexo',
+                                                    'key' => 'hcg_header_paciente_edad_sexo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Edad y sexo',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Edad: {paciente.edad} | Sexo: {paciente.sexo}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-hcg-field-header-paciente-domicilio',
+                                                    'key' => 'hcg_header_paciente_domicilio',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Domicilio',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Domicilio: {paciente.domicilio}',
                                                 ],
                                             ],
                                         ],
                                     ],
                                 ],
                                 [
-                                    'id' => 'uuid-hcg-header-row-4',
+                                    'id' => 'uuid-hcg-header-row-3',
                                     'columns' => [
                                         [
-                                            'id' => 'uuid-hcg-header-col-4',
+                                            'id' => 'uuid-hcg-header-col-3',
                                             'fields' => [
                                                 [
                                                     'id' => 'uuid-hcg-field-header-medico',
@@ -141,10 +208,10 @@ class ReportTemplatesSeeder extends Seeder
                                     ],
                                 ],
                                 [
-                                    'id' => 'uuid-hcg-header-row-5',
+                                    'id' => 'uuid-hcg-header-row-4',
                                     'columns' => [
                                         [
-                                            'id' => 'uuid-hcg-header-col-5',
+                                            'id' => 'uuid-hcg-header-col-4',
                                             'fields' => [
                                                 [
                                                     'id' => 'uuid-hcg-field-fecha-documento',
@@ -643,48 +710,6 @@ class ReportTemplatesSeeder extends Seeder
                                             'id' => 'uuid-ia-header-col-1',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-ia-field-header-clinica',
-                                                    'key' => 'ia_header_clinica',
-                                                    'type' => 'fixed_text',
-                                                    'label' => 'Clínica',
-                                                    'required' => false,
-                                                    'showLabel' => false,
-                                                    'text_content' => '{clinica.nombre}',
-                                                    'styling_options' => [
-                                                        'bold' => true,
-                                                        'size' => 'lg',
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                [
-                                    'id' => 'uuid-ia-header-row-2',
-                                    'columns' => [
-                                        [
-                                            'id' => 'uuid-ia-header-col-2',
-                                            'fields' => [
-                                                [
-                                                    'id' => 'uuid-ia-field-header-direccion',
-                                                    'key' => 'ia_header_direccion',
-                                                    'type' => 'fixed_text',
-                                                    'label' => 'Dirección',
-                                                    'required' => false,
-                                                    'showLabel' => false,
-                                                    'text_content' => '{clinica.direccion} | Tel: {clinica.telefono}',
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                [
-                                    'id' => 'uuid-ia-header-row-3',
-                                    'columns' => [
-                                        [
-                                            'id' => 'uuid-ia-header-col-3',
-                                            'fields' => [
-                                                [
                                                     'id' => 'uuid-ia-field-header-titulo',
                                                     'key' => 'ia_header_titulo',
                                                     'type' => 'fixed_text',
@@ -702,19 +727,109 @@ class ReportTemplatesSeeder extends Seeder
                                     ],
                                 ],
                                 [
-                                    'id' => 'uuid-ia-header-row-4',
+                                    'id' => 'uuid-ia-header-row-2',
                                     'columns' => [
                                         [
-                                            'id' => 'uuid-ia-header-col-4',
+                                            'id' => 'uuid-ia-header-col-2a',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-ia-field-header-paciente',
-                                                    'key' => 'ia_header_paciente',
+                                                    'id' => 'uuid-ia-field-header-clinica-nombre',
+                                                    'key' => 'ia_header_clinica_nombre',
                                                     'type' => 'fixed_text',
-                                                    'label' => 'Datos paciente',
+                                                    'label' => 'Clínica',
                                                     'required' => false,
                                                     'showLabel' => false,
-                                                    'text_content' => 'Paciente: {paciente.nombre} | HC N°: {paciente.nro_historia}',
+                                                    'text_content' => '{clinica.nombre}',
+                                                    'styling_options' => [
+                                                        'bold' => true,
+                                                        'size' => 'lg',
+                                                    ],
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-clinica-cuit',
+                                                    'key' => 'ia_header_clinica_cuit',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'CUIT',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'CUIT: {clinica.cuit}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-clinica-direccion',
+                                                    'key' => 'ia_header_clinica_direccion',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Dirección',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.direccion}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-clinica-contacto',
+                                                    'key' => 'ia_header_clinica_contacto',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Contacto',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.email} | Tel: {clinica.telefono}',
+                                                ],
+                                            ],
+                                        ],
+                                        [
+                                            'id' => 'uuid-ia-header-col-2b',
+                                            'fields' => [
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-nombre',
+                                                    'key' => 'ia_header_paciente_nombre',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Paciente',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{paciente.nombre}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-hc',
+                                                    'key' => 'ia_header_paciente_hc',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'HC',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'HC N°: {paciente.nro_historia}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-dni',
+                                                    'key' => 'ia_header_paciente_dni',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'DNI',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'DNI: {paciente.dni}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-nacimiento',
+                                                    'key' => 'ia_header_paciente_nacimiento',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Fecha de nacimiento',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Fecha de nacimiento: {paciente.fecha_nacimiento}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-edad-sexo',
+                                                    'key' => 'ia_header_paciente_edad_sexo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Edad y sexo',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Edad: {paciente.edad} | Sexo: {paciente.sexo}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ia-field-header-paciente-domicilio',
+                                                    'key' => 'ia_header_paciente_domicilio',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Domicilio',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Domicilio: {paciente.domicilio}',
                                                 ],
                                             ],
                                         ],
@@ -1087,48 +1202,6 @@ class ReportTemplatesSeeder extends Seeder
                                             'id' => 'uuid-ci-header-col-1',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-ci-field-header-clinica',
-                                                    'key' => 'ci_header_clinica',
-                                                    'type' => 'fixed_text',
-                                                    'label' => 'Clínica',
-                                                    'required' => false,
-                                                    'showLabel' => false,
-                                                    'text_content' => '{clinica.nombre}',
-                                                    'styling_options' => [
-                                                        'bold' => true,
-                                                        'size' => 'lg',
-                                                    ],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                [
-                                    'id' => 'uuid-ci-header-row-2',
-                                    'columns' => [
-                                        [
-                                            'id' => 'uuid-ci-header-col-2',
-                                            'fields' => [
-                                                [
-                                                    'id' => 'uuid-ci-field-header-direccion',
-                                                    'key' => 'ci_header_direccion',
-                                                    'type' => 'fixed_text',
-                                                    'label' => 'Dirección',
-                                                    'required' => false,
-                                                    'showLabel' => false,
-                                                    'text_content' => '{clinica.direccion} | Tel: {clinica.telefono}',
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                [
-                                    'id' => 'uuid-ci-header-row-3',
-                                    'columns' => [
-                                        [
-                                            'id' => 'uuid-ci-header-col-3',
-                                            'fields' => [
-                                                [
                                                     'id' => 'uuid-ci-field-header-titulo',
                                                     'key' => 'ci_header_titulo',
                                                     'type' => 'fixed_text',
@@ -1146,19 +1219,109 @@ class ReportTemplatesSeeder extends Seeder
                                     ],
                                 ],
                                 [
-                                    'id' => 'uuid-ci-header-row-4',
+                                    'id' => 'uuid-ci-header-row-2',
                                     'columns' => [
                                         [
-                                            'id' => 'uuid-ci-header-col-4',
+                                            'id' => 'uuid-ci-header-col-2a',
                                             'fields' => [
                                                 [
-                                                    'id' => 'uuid-ci-field-nro-historia',
-                                                    'key' => 'ci_nro_historia',
-                                                    'type' => 'text',
-                                                    'label' => 'Nro. Historia Clínica',
-                                                    'required' => true,
-                                                    'default_value' => '{paciente.nro_historia}',
-                                                    'ai_help_description' => 'Número de historia clínica del paciente. Se completa automáticamente con el número registrado en el sistema.',
+                                                    'id' => 'uuid-ci-field-header-clinica-nombre',
+                                                    'key' => 'ci_header_clinica_nombre',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Clínica',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.nombre}',
+                                                    'styling_options' => [
+                                                        'bold' => true,
+                                                        'size' => 'lg',
+                                                    ],
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-clinica-cuit',
+                                                    'key' => 'ci_header_clinica_cuit',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'CUIT',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'CUIT: {clinica.cuit}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-clinica-direccion',
+                                                    'key' => 'ci_header_clinica_direccion',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Dirección',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.direccion}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-clinica-contacto',
+                                                    'key' => 'ci_header_clinica_contacto',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Contacto',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.email} | Tel: {clinica.telefono}',
+                                                ],
+                                            ],
+                                        ],
+                                        [
+                                            'id' => 'uuid-ci-header-col-2b',
+                                            'fields' => [
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-nombre',
+                                                    'key' => 'ci_header_paciente_nombre',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Paciente',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{paciente.nombre}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-hc',
+                                                    'key' => 'ci_header_paciente_hc',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'HC',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'HC N°: {paciente.nro_historia}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-dni',
+                                                    'key' => 'ci_header_paciente_dni',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'DNI',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'DNI: {paciente.dni}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-nacimiento',
+                                                    'key' => 'ci_header_paciente_nacimiento',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Fecha de nacimiento',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Fecha de nacimiento: {paciente.fecha_nacimiento}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-edad-sexo',
+                                                    'key' => 'ci_header_paciente_edad_sexo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Edad y sexo',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Edad: {paciente.edad} | Sexo: {paciente.sexo}',
+                                                ],
+                                                [
+                                                    'id' => 'uuid-ci-field-header-paciente-domicilio',
+                                                    'key' => 'ci_header_paciente_domicilio',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Domicilio',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => 'Domicilio: {paciente.domicilio}',
                                                 ],
                                             ],
                                         ],
