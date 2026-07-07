@@ -5,6 +5,7 @@ namespace Tests\Unit\Admin\Role;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\Role\GetRoleCommand;
+use App\DTOs\RoleDetail;
 use App\Repositories\Role\RoleRepository;
 use App\Services\PermissionService;
 use App\Models\User;
@@ -79,10 +80,10 @@ class GetRoleCommandTest extends TestCase
         $command = new GetRoleCommand($repo, $permService);
         $result = $command->execute($role->id);
 
-        $this->assertIsArray($result);
-        $this->assertEquals($role->id, $result['id']);
-        $this->assertEquals('Médico', $result['name']);
-        $this->assertArrayHasKey('permissions', $result);
+        $this->assertInstanceOf(RoleDetail::class, $result);
+        $this->assertEquals($role->id, $result->id);
+        $this->assertEquals('Médico', $result->name);
+        $this->assertIsArray($result->permissions);
     }
 
     public function test_execute_includes_permissions_with_grant(): void
@@ -113,14 +114,13 @@ class GetRoleCommandTest extends TestCase
         $command = new GetRoleCommand($repo, $permService);
         $result = $command->execute($role->id);
 
-        $this->assertCount(2, $result['permissions']);
+        $this->assertCount(2, $result->permissions);
 
-        $permissionsArray = $result['permissions']->toArray();
-        $slugs = array_column($permissionsArray, 'slug');
+        $slugs = array_column($result->permissions, 'slug');
         $this->assertContains('getrole.patientb.view', $slugs);
         $this->assertContains('getrole.report.create', $slugs);
 
-        foreach ($result['permissions'] as $p) {
+        foreach ($result->permissions as $p) {
             $this->assertArrayHasKey('id', $p);
             $this->assertArrayHasKey('slug', $p);
             $this->assertArrayHasKey('grant', $p);

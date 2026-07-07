@@ -12,6 +12,7 @@ use App\Models\LlmInteraction;
 use App\Services\LlmExtractorService;
 use App\Exceptions\AiTimeoutException;
 use App\Exceptions\AiResponseException;
+use App\DTOs\ExtractionResult;
 
 class ExtractReportDataTest extends TestCase
 {
@@ -80,18 +81,18 @@ class ExtractReportDataTest extends TestCase
         $this->mock(LlmExtractorService::class, function ($mock) {
             $mock->shouldReceive('extract')
                 ->once()
-                ->andReturn([
-                    'extracted_data' => [
+                ->andReturn(new ExtractionResult(
+                    extractedData: [
                         'observaciones' => 'Paciente refiere dolor de cabeza',
                         'diagnostico' => 'Hipertensión arterial',
                     ],
-                    'confidence_scores' => [
+                    confidenceScores: [
                         'observaciones' => 0.95,
                         'diagnostico' => 0.98,
                     ],
-                    'warnings' => [],
-                    'processing_time_ms' => 150,
-                ]);
+                    warnings: [],
+                    processingTimeMs: 150,
+                ));
         });
     }
 
@@ -316,20 +317,20 @@ class ExtractReportDataTest extends TestCase
         $this->mock(LlmExtractorService::class, function ($mock) {
             $mock->shouldReceive('extract')
                 ->once()
-                ->andReturn([
-                    'extracted_data' => [
+                ->andReturn(new ExtractionResult(
+                    extractedData: [
                         'observaciones' => 'Paciente refiere dolor',
                         'diagnostico' => 'Gripe común',
                         'extra_field' => 'should_not_appear',
                     ],
-                    'confidence_scores' => [
+                    confidenceScores: [
                         'observaciones' => 0.9,
                         'diagnostico' => 0.95,
                         'extra_field' => 0.5,
                     ],
-                    'warnings' => [],
-                    'processing_time_ms' => 100,
-                ]);
+                    warnings: [],
+                    processingTimeMs: 100,
+                ));
         });
 
         $response = $this->postJson(

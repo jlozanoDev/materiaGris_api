@@ -5,6 +5,7 @@ namespace Tests\Unit\Admin;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\User\UpdateUserCommand;
+use App\DTOs\UserDetail;
 use App\Repositories\User\GetUserRepository;
 use App\Repositories\User\SaveUserRepository;
 use App\Repositories\Role\RoleRepository;
@@ -78,8 +79,8 @@ class UpdateUserCommandTest extends TestCase
         $command = $this->getCommand($actor);
         $result = $command->execute($user->id, ['name' => 'Nuevo Nombre']);
 
-        $this->assertIsArray($result);
-        $this->assertEquals('Nuevo Nombre', $result['name']);
+        $this->assertInstanceOf(UserDetail::class, $result);
+        $this->assertEquals('Nuevo Nombre', $result->name);
     }
 
     public function test_assign_role_to_user(): void
@@ -104,8 +105,8 @@ class UpdateUserCommandTest extends TestCase
         $command = $this->getCommand($actor);
         $result = $command->execute($user->id, ['roles' => [$newRole->id]]);
 
-        $this->assertIsArray($result);
-        $this->assertCount(1, $result['roles']);
+        $this->assertInstanceOf(UserDetail::class, $result);
+        $this->assertCount(1, $result->roles);
     }
 
     public function test_revoke_role_from_user(): void
@@ -124,8 +125,8 @@ class UpdateUserCommandTest extends TestCase
         $command = $this->getCommand($actor);
         $result = $command->execute($user->id, ['roles_remove' => [$role->id]]);
 
-        $this->assertIsArray($result);
-        $this->assertCount(0, $result['roles']);
+        $this->assertInstanceOf(UserDetail::class, $result);
+        $this->assertCount(0, $result->roles);
     }
 
     public function test_add_permission_override(): void
@@ -146,9 +147,9 @@ class UpdateUserCommandTest extends TestCase
             ]
         ]);
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(UserDetail::class, $result);
         $found = false;
-        foreach ($result['user_permissions'] as $perm) {
+        foreach ($result->userPermissions as $perm) {
             if ($perm['permission_id'] == $permission->id) {
                 $found = true;
                 $this->assertEquals(1, $perm['grant']);

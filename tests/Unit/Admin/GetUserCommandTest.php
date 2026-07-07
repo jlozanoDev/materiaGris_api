@@ -5,6 +5,7 @@ namespace Tests\Unit\Admin;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Commands\Admin\User\GetUserCommand;
+use App\DTOs\UserDetail;
 use App\Repositories\User\GetUserRepository;
 use App\Services\PermissionService;
 use App\Models\User;
@@ -61,18 +62,14 @@ class GetUserCommandTest extends TestCase
         $command = new GetUserCommand($repo, $permissionService);
         $result = $command->execute($user->id);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('email', $result);
-        $this->assertArrayHasKey('active', $result);
-        $this->assertArrayHasKey('roles', $result);
-        $this->assertArrayHasKey('user_permissions', $result);
-        $this->assertArrayHasKey('effective_permissions', $result);
-
-        $this->assertIsArray($result['roles']);
-        $this->assertIsArray($result['user_permissions']);
-        $this->assertIsArray($result['effective_permissions']);
+        $this->assertInstanceOf(UserDetail::class, $result);
+        $this->assertNotNull($result->id);
+        $this->assertNotNull($result->name);
+        $this->assertNotNull($result->email);
+        $this->assertIsBool($result->active);
+        $this->assertIsArray($result->roles);
+        $this->assertIsArray($result->userPermissions);
+        $this->assertIsArray($result->effectivePermissions);
     }
 
     public function test_execute_includes_role_details(): void
@@ -94,10 +91,10 @@ class GetUserCommandTest extends TestCase
         $command = new GetUserCommand($repo, $permissionService);
         $result = $command->execute($user->id);
 
-        $this->assertCount(1, $result['roles']);
-        $this->assertEquals('Médico', $result['roles'][0]['name']);
-        $this->assertEquals('medico', $result['roles'][0]['slug']);
-        $this->assertFalse($result['roles'][0]['is_system']);
+        $this->assertCount(1, $result->roles);
+        $this->assertEquals('Médico', $result->roles[0]['name']);
+        $this->assertEquals('medico', $result->roles[0]['slug']);
+        $this->assertFalse($result->roles[0]['is_system']);
     }
 
     public function test_execute_includes_user_permission_details(): void
@@ -122,7 +119,7 @@ class GetUserCommandTest extends TestCase
         $command = new GetUserCommand($repo, $permissionService);
         $result = $command->execute($user->id);
 
-        $slugs = array_column($result['user_permissions'], 'slug');
+        $slugs = array_column($result->userPermissions, 'slug');
         $this->assertContains('patients.view', $slugs);
     }
 }

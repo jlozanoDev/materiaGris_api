@@ -4,6 +4,7 @@ namespace Tests\Unit\Admin\User;
 
 use App\Http\Actions\Admin\User\GetUserAction;
 use App\Commands\Admin\User\GetUserCommand;
+use App\DTOs\UserDetail;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
@@ -11,14 +12,15 @@ class GetUserActionTest extends TestCase
 {
     public function test_execute_returns_200_when_user_found(): void
     {
-        $userData = [
-            'id' => 1,
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'roles' => [],
-            'user_permissions' => [],
-            'effective_permissions' => [],
-        ];
+        $userData = new UserDetail(
+            id: 1,
+            name: 'Test User',
+            email: 'test@example.com',
+            active: true,
+            roles: [],
+            userPermissions: [],
+            effectivePermissions: []
+        );
 
         $command = $this->createMock(GetUserCommand::class);
         $command->expects($this->once())
@@ -31,7 +33,7 @@ class GetUserActionTest extends TestCase
 
         $this->assertInstanceOf(\Illuminate\Http\JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($userData, $response->getData(true));
+        $this->assertEquals($userData->jsonSerialize(), $response->getData(true));
     }
 
     public function test_execute_returns_404_when_user_not_found(): void
@@ -52,7 +54,14 @@ class GetUserActionTest extends TestCase
 
     public function test_invoke_delegates_to_execute(): void
     {
-        $userData = ['id' => 2, 'name' => 'Another User', 'email' => 'another@example.com'];
+        $userData = new UserDetail(
+            id: 2,
+            name: 'Another User',
+            email: 'another@example.com',
+            active: true,
+            roles: [],
+            userPermissions: [],
+        );
 
         $command = $this->createMock(GetUserCommand::class);
         $command->expects($this->once())
@@ -66,6 +75,6 @@ class GetUserActionTest extends TestCase
         $response = $action->__invoke($request, '2');
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($userData, $response->getData(true));
+        $this->assertEquals($userData->jsonSerialize(), $response->getData(true));
     }
 }

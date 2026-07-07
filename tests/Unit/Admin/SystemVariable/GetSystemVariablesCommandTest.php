@@ -3,6 +3,7 @@
 namespace Tests\Unit\Admin\SystemVariable;
 
 use App\Commands\Admin\SystemVariable\GetSystemVariablesCommand;
+use App\DTOs\SystemVariable;
 use Tests\TestCase;
 
 class GetSystemVariablesCommandTest extends TestCase
@@ -28,6 +29,10 @@ class GetSystemVariablesCommandTest extends TestCase
         $result = $this->command->execute();
 
         $categories = array_unique(array_column($result, 'category'));
+
+        foreach ($result as $variable) {
+            $this->assertInstanceOf(SystemVariable::class, $variable);
+        }
         $expected = ['paciente', 'clinica', 'fecha', 'usuario', 'medico', 'informe'];
 
         foreach ($expected as $cat) {
@@ -40,13 +45,11 @@ class GetSystemVariablesCommandTest extends TestCase
         $result = $this->command->execute();
 
         foreach ($result as $variable) {
-            $this->assertArrayHasKey('category', $variable);
-            $this->assertArrayHasKey('key', $variable);
-            $this->assertArrayHasKey('label', $variable);
-            $this->assertArrayHasKey('description', $variable);
-            $this->assertNotEmpty($variable['category']);
-            $this->assertNotEmpty($variable['key']);
-            $this->assertNotEmpty($variable['label']);
+            $this->assertInstanceOf(SystemVariable::class, $variable);
+            $this->assertNotEmpty($variable->category);
+            $this->assertNotEmpty($variable->key);
+            $this->assertNotEmpty($variable->label);
+            $this->assertNotNull($variable->description);
         }
     }
 
@@ -89,7 +92,8 @@ class GetSystemVariablesCommandTest extends TestCase
 
         $byCategory = [];
         foreach ($flat as $item) {
-            $byCategory[$item['category']][] = $item['key'];
+            $this->assertInstanceOf(SystemVariable::class, $item);
+            $byCategory[$item->category][] = $item->key;
         }
 
         foreach ($byCategory as $category => $keys) {
