@@ -7,7 +7,7 @@ use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\PatientReport;
 use App\Enums\ReportStatus;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class ArchiveReportCommand
@@ -17,7 +17,7 @@ class ArchiveReportCommand
         private PermissionService $permissionService,
     ) {}
 
-    public function execute(int $id): PatientReport
+    public function execute(int $id, ?UploadedFile $pdfFile = null): PatientReport
     {
         $user = auth()->user();
         if (! $user) {
@@ -36,20 +36,18 @@ class ArchiveReportCommand
             throw new PermissionDeniedException('Solo el autor puede archivar este informe');
         }
 
-        $pdfPath = $this->generatePdf($report);
-
-        return $this->repo->archivar($id, $pdfPath);
-    }
-
-    private function generatePdf(PatientReport $report): string
-    {
-        $pdf = Pdf::loadView('reports.pdf', [
-            'report' => $report->load(['patient', 'user']),
-        ]);
+        if (! $pdfFile) {
+            throw new \RuntimeException('El archivo PDF es requerido para archivar el informe');
+        }
 
         $filename = 'reports/report_' . $report->id . '_' . time() . '.pdf';
-        Storage::disk('local')->put($filename, $pdf->output());
+        $pdfFile->storeAs('reports', basename($filename));
 
-        return $filename;
+        // If there's an old pdf_path, clean it up
+        if ($report->pdf_path && Storage::disk('local')->exists($report->pdf_path)) {
+            Storage::disk('local')->delete($report->pdf_path);
+        }
+
+        return $this->repo->archivar($id, $filename);
     }
 }

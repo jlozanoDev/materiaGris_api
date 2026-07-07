@@ -7,7 +7,6 @@ use App\Services\PermissionService;
 use App\Exceptions\PermissionDeniedException;
 use App\Models\PatientReport;
 use App\Enums\ReportStatus;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadPdfReportCommand
@@ -31,16 +30,8 @@ class DownloadPdfReportCommand
             throw new \RuntimeException('El PDF solo está disponible para informes firmados o archivados');
         }
 
-        // Regenerate if pdf_path is missing (e.g. signed but not yet archived)
         if (! $report->pdf_path || ! Storage::disk('local')->exists($report->pdf_path)) {
-            $pdf = Pdf::loadView('reports.pdf', [
-                'report' => $report,
-            ]);
-
-            $filename = 'reports/report_' . $report->id . '_' . time() . '.pdf';
-            Storage::disk('local')->put($filename, $pdf->output());
-            $report->update(['pdf_path' => $filename]);
-            $report->refresh();
+            throw new \RuntimeException('El PDF no está disponible. Utilice la vista del informe para generar el PDF.');
         }
 
         $fullPath = Storage::disk('local')->path($report->pdf_path);

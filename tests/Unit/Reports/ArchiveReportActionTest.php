@@ -10,6 +10,15 @@ use Tests\TestCase;
 
 class ArchiveReportActionTest extends TestCase
 {
+    private function makeRequestWithPdf(): \Illuminate\Http\Request
+    {
+        $fakePdf = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 100, 'application/pdf');
+
+        return \Illuminate\Http\Request::create('/reports/1/archive', 'POST', [], [], [
+            'pdf' => $fakePdf,
+        ]);
+    }
+
     public function test_invoke_returns_403_on_permission_denied(): void
     {
         $command = $this->createMock(ArchiveReportCommand::class);
@@ -18,7 +27,7 @@ class ArchiveReportActionTest extends TestCase
             ->willThrowException(new PermissionDeniedException('Sin permisos'));
 
         $action = new ArchiveReportAction($command);
-        $response = $action->__invoke(1);
+        $response = $action->__invoke($this->makeRequestWithPdf(), 1);
 
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -31,7 +40,7 @@ class ArchiveReportActionTest extends TestCase
             ->willThrowException(new \RuntimeException('No se puede archivar'));
 
         $action = new ArchiveReportAction($command);
-        $response = $action->__invoke(1);
+        $response = $action->__invoke($this->makeRequestWithPdf(), 1);
 
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -46,7 +55,7 @@ class ArchiveReportActionTest extends TestCase
             ->willThrowException(new \Exception('Error crítico'));
 
         $action = new ArchiveReportAction($command);
-        $response = $action->__invoke(1);
+        $response = $action->__invoke($this->makeRequestWithPdf(), 1);
 
         $this->assertEquals(500, $response->getStatusCode());
 

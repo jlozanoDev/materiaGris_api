@@ -92,8 +92,8 @@ Todas las rutas requieren `auth.jwt`.
 | GET | `/api/reports/{id}` | `report.view` | `GetReportAction` | Obtener informe |
 | PUT | `/api/reports/{id}` | `report.edit` | `SaveDraftReportAction` | Guardar borrador |
 | POST | `/api/reports/{id}/sign` | `report.sign` | `SignReportAction` | Firmar informe |
-| POST | `/api/reports/{id}/archive` | `report.archive` | `ArchiveReportAction` | Archivar informe |
-| GET | `/api/reports/{id}/pdf` | `report.download-pdf` | `DownloadPdfReportAction` | Descargar PDF |
+| POST | `/api/reports/{id}/archive` | `report.archive` | `ArchiveReportAction` | multipart/form-data con campo `pdf` (PDF generado por el frontend) |
+| GET | `/api/reports/{id}/pdf` | `report.download-pdf` | `DownloadPdfReportAction` | Descarga el PDF almacenado (archived) o el frontend lo genera (signed) |
 | POST | `/api/reports/{id}/extract-data` | `report.edit` | `ExtractReportDataAction` | Extraer datos clínicos con IA |
 | POST | `/api/reports/{id}/transcribe` | `report.edit` | `TranscribeReportAction` | Transcribir audio |
 

@@ -48,14 +48,18 @@
 - **422:** Si el informe no está en estado `draft` o la firma es inválida.
 
 ### `ArchiveReportAction`
-- Invoca `ArchiveReportCommand` — genera PDF del informe firmado y lo almacena.
+- Recibe el PDF generado por el frontend mediante `multipart/form-data` con el campo `pdf`.
+- Valida que el archivo sea un PDF válido (MIME `application/pdf`, máximo 10 MB).
+- Invoca `ArchiveReportCommand` que almacena el PDF en `storage/app/reports/`.
 - **Response 200:** Retorna el informe archivado con `pdf_path`.
-- **422:** Si el informe no está en estado `signed`.
+- **422:** Si el informe no está en estado `signed` o el archivo PDF es inválido.
 
 ### `DownloadPdfReportAction`
-- Invoca `DownloadPdfReportCommand` — descarga el PDF generado.
+- Invoca `DownloadPdfReportCommand` — descarga el PDF almacenado.
+- Para informes archivados, devuelve el PDF almacenado en disco.
+- Para informes firmados sin archivar, lanza error 422 (el frontend debe generar el PDF localmente).
 - **Response:** `BinaryFileResponse` con `Content-Type: application/pdf`.
-- **422:** Si el informe no está firmado ni archivado.
+- **422:** Si el informe no está firmado ni archivado, o si el PDF no está disponible.
 
 ### `ExtractReportDataAction`
 - Ver `modulo-dictado-autocompletado.md` para detalles completos.
@@ -83,7 +87,7 @@
 | `GetReportCommand` | `(int $id): PatientReport` | Verifica `report.view`, busca por ID |
 | `SaveDraftReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.edit`, valida que sea el autor, valida estado `draft` |
 | `SignReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.sign`, valida autoría y estado `draft`, almacena firma en base64 como PNG |
-| `ArchiveReportCommand` | `(int $id): PatientReport` | Verifica `report.archive`, valida autoría y estado `signed`, genera PDF con `DomPDF` |
+| `ArchiveReportCommand` | `(int $id, ?UploadedFile $pdfFile = null): PatientReport` | Verifica `report.archive`, valida autoría y estado `signed`, almacena PDF recibido del frontend |
 | `DownloadPdfReportCommand` | `(int $id): PdfFileInfo` | Verifica `report.download-pdf`, regenera PDF si falta `pdf_path` |
 
 ### Ciclo de vida de estados
@@ -194,7 +198,8 @@ POST /api/reports/{id}/archive
   → ArchiveReportAction → ArchiveReportCommand
     → PermissionService::ensure('report.archive')
     → Validar: status === signed, user === author
-    → DomPDF::loadView('reports.pdf', report)
+    → Validar: archivo PDF presente y válido
+    → Storage::storeAs(reports/, pdfFile)
     → PatientReportSaveRepository::archivar(id, pdfPath)
     ← 200 { report }
 
@@ -211,7 +216,7 @@ GET /api/reports/{id}/pdf
 
 - **Permisos:** `report.view`, `report.create`, `report.edit`, `report.sign`, `report.archive`, `report.download-pdf`
 - **Modelos relacionados:** `Patient`, `User`, `ReportTemplate`
-- **Librerías externas:** `barryvdh/laravel-dompdf` (generación de PDF)
+- **Librerías externas:** `html2pdf.js` (frontend, generación de PDF), `barryvdh/laravel-dompdf` (ya no usado para archivar; mantenido como dependencia por compatibilidad)
 
 ## Estado de Desarrollo
 

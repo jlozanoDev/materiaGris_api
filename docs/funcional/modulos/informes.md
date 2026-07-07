@@ -31,7 +31,7 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 - El flujo de estados es: `draft` → `signed` → `archived`.
 - Una vez archivado, solo está disponible para descarga PDF.
 - La firma se captura como imagen base64 y se almacena de forma segura.
-- El PDF se genera con DomPDF al archivar el informe.
+- El PDF se genera en el frontend con `html2pdf.js` renderizando el mismo diseño que la vista del informe, y se envía al backend durante el archivado.
 - La transcripción de audio y extracción de datos con IA son procesos síncronos.
 
 ## Reglas de Negocio
@@ -41,8 +41,8 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 1. **Creación (Init):** El médico selecciona paciente y plantilla. Se crea el informe en estado `draft` con una copia de la estructura de la plantilla (`template_structure_snapshot`).
 2. **Edición (Draft):** El médico completa los campos del informe. Solo se puede editar en estado `draft`. Solo el autor puede editar.
 3. **Firma (Sign):** El médico firma electrónicamente (imagen PNG). Requiere estado `draft`, solo el autor. Al firmar, cambia a estado `signed` y el contenido queda bloqueado.
-4. **Archivado (Archive):** El médico archiva el informe. Requiere estado `signed`, solo el autor. Se genera el PDF automáticamente y cambia a estado `archived`.
-5. **Descarga:** Disponible para informes firmados o archivados. Si el PDF no existe (ej. firmado pero sin archivar), se regenera automáticamente.
+4. **Archivado (Archive):** El médico archiva el informe. Requiere estado `signed`, solo el autor. El frontend genera el PDF con el diseño del informe y lo envía al backend, que lo almacena. Cambia a estado `archived`.
+5. **Descarga:** Para informes archivados, se descarga el PDF almacenado en el backend. Para informes firmados sin archivar, el frontend genera y descarga el PDF directamente sin llamar al backend.
 
 ### Restricciones
 

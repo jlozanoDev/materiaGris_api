@@ -383,7 +383,11 @@ class ReportsCrudTest extends TestCase
             'signed_at' => Carbon::now(),
         ]);
 
-        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
+        $fakePdf = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 100, 'application/pdf');
+
+        $response = $this->postJson("/reports/{$report->id}/archive", [
+            'pdf' => $fakePdf,
+        ], $this->authHeader());
 
         $response->assertStatus(200);
         $this->assertEquals('archived', $response->json('status'));
@@ -402,7 +406,11 @@ class ReportsCrudTest extends TestCase
             'status' => ReportStatus::Draft,
         ]);
 
-        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
+        $fakePdf = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 100, 'application/pdf');
+
+        $response = $this->postJson("/reports/{$report->id}/archive", [
+            'pdf' => $fakePdf,
+        ], $this->authHeader());
 
         $response->assertStatus(422);
     }
@@ -420,7 +428,11 @@ class ReportsCrudTest extends TestCase
         $this->mockJwtForUserId($otherUser->id);
         $this->grantPermission($otherUser, 'report.archive');
 
-        $response = $this->postJson("/reports/{$report->id}/archive", [], $this->authHeader());
+        $fakePdf = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 100, 'application/pdf');
+
+        $response = $this->postJson("/reports/{$report->id}/archive", [
+            'pdf' => $fakePdf,
+        ], $this->authHeader());
 
         $response->assertStatus(403);
     }
@@ -436,6 +448,10 @@ class ReportsCrudTest extends TestCase
             'template_id' => $template->id,
             'values' => ['diagnostico' => 'Test'],
         ]);
+
+        // Ensure the PDF file actually exists on disk
+        $fakePdf = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 100, 'application/pdf');
+        $fakePdf->storeAs(dirname($report->pdf_path), basename($report->pdf_path), 'local');
 
         $response = $this->getJson("/reports/{$report->id}/pdf", $this->authHeader());
 
