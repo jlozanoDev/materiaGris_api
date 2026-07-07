@@ -88,7 +88,7 @@
 | `SaveDraftReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.edit`, valida que sea el autor, valida estado `draft` |
 | `SignReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.sign`, valida autoría y estado `draft`, almacena firma en base64 como PNG |
 | `ArchiveReportCommand` | `(int $id, ?UploadedFile $pdfFile = null): PatientReport` | Verifica `report.archive`, valida autoría y estado `signed`, almacena PDF recibido del frontend |
-| `DownloadPdfReportCommand` | `(int $id): PdfFileInfo` | Verifica `report.download-pdf`, regenera PDF si falta `pdf_path` |
+| `DownloadPdfReportCommand` | `(int $id): PdfFileInfo` | Verifica `report.download-pdf`, lanza 422/404 si falta `pdf_path` |
 
 ### Ciclo de vida de estados
 
@@ -208,7 +208,7 @@ GET /api/reports/{id}/pdf
   → DownloadPdfReportAction → DownloadPdfReportCommand
     → PermissionService::ensure('report.download-pdf')
     → Validar: status === signed || status === archived
-    → Regenerar PDF si falta pdf_path
+    → Error si falta pdf_path (422 signed, 404 archived)
     ← BinaryFileResponse (PDF)
 ```
 
@@ -220,4 +220,4 @@ GET /api/reports/{id}/pdf
 
 ## Estado de Desarrollo
 
-✅ Completo — 9 endpoints implementados, reports CRUD funcional, ciclo draft→sign→archive implementado, PDF con DomPDF, extract-data con IA, transcribe con STT.
+✅ Completo — 9 endpoints implementados, reports CRUD funcional, ciclo draft→sign→archive implementado, PDF con html2pdf.js (frontend), extract-data con IA, transcribe con STT.

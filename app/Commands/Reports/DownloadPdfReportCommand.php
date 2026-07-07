@@ -31,6 +31,9 @@ class DownloadPdfReportCommand
         }
 
         if (! $report->pdf_path || ! Storage::disk('local')->exists($report->pdf_path)) {
+            if ($report->status === ReportStatus::Archived) {
+                throw new \Illuminate\Database\Eloquent\ModelNotFoundException('PDF del informe no encontrado');
+            }
             throw new \RuntimeException('El PDF no está disponible. Utilice la vista del informe para generar el PDF.');
         }
 
