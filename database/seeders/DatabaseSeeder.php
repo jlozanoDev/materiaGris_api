@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProfessionalUserSeeder::class);
         // Plantillas de informes médicos
         $this->call(ReportTemplatesSeeder::class);
+        // Datos de la clínica
+        $this->call(ClinicSeeder::class);
     }
 }

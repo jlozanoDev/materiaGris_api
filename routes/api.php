@@ -29,6 +29,8 @@ use App\Http\Actions\Admin\ReportTemplate\CreateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\GetReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\UpdateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\DeleteReportTemplateAction;
+use App\Http\Actions\Admin\Clinic\GetClinicAction;
+use App\Http\Actions\Admin\Clinic\UpdateClinicAction;
 use App\Http\Actions\Admin\SystemVariable\GetSystemVariablesAction;
 use App\Http\Actions\Reports\ListReportsAction;
 use App\Http\Actions\Reports\InitReportAction;
@@ -135,6 +137,10 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
 
     // System variables catalog (for report template builder autocomplete)
     Route::get('/system-variables', GetSystemVariablesAction::class);
+
+    // Clinic settings (singleton — GET to read, PUT to update)
+    Route::get('/clinic', GetClinicAction::class);
+    Route::put('/clinic', UpdateClinicAction::class);
 });
 
 // Patients routes (grouped) - protected by JWT

@@ -34,7 +34,11 @@ class MeCommand
         return [
             'id' => $user->id,
             'name' => $user->name,
+            'apellido' => $user->apellido,
             'email' => $user->email,
+            'num_colegiado' => $user->num_colegiado,
+            'especialidad' => $user->especialidad,
+            'telefono' => $user->telefono,
             'roles' => $roles,
             'permissions' => $permissions,
             'permissions_version' => Carbon::now()->toIso8601String(),

@@ -43,6 +43,7 @@ class GetSystemVariablesCommand
             new SystemVariable('clinica',  'provincia',       'Provincia',                  'Provincia donde se ubica la clínica'),
             new SystemVariable('clinica',  'codigo_postal',   'Código Postal',              'Código postal de la clínica'),
             new SystemVariable('clinica',  'web',             'Sitio web',                  'URL del sitio web de la clínica'),
+            new SystemVariable('clinica',  'cuit',            'CUIT',                       'CUIT de la clínica o institución'),
             new SystemVariable('clinica',  'logo',            'Logo',                       'Logo o imagen institucional'),
 
             // ── fecha ──────────────────────────────────────────────────
