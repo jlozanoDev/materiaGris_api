@@ -437,6 +437,92 @@ class ReportsCrudTest extends TestCase
         $response->assertStatus(403);
     }
 
+    // ─── DELETE ──────────────────────────────────────────────
+
+    public function test_delete_destroys_draft_report(): void
+    {
+        $user = $this->actingWithPermissions(['report.delete', 'report.create']);
+
+        $patient = Patient::factory()->create();
+        $template = ReportTemplate::factory()->create(['is_active' => true]);
+
+        $initResponse = $this->postJson('/reports', [
+            'patient_id' => $patient->id,
+            'template_id' => $template->id,
+        ], $this->authHeader());
+        $reportId = $initResponse->json('id');
+
+        $response = $this->deleteJson("/reports/{$reportId}", [], $this->authHeader());
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('patient_reports', ['id' => $reportId]);
+    }
+
+    public function test_delete_requires_draft_status(): void
+    {
+        $user = $this->actingWithPermissions(['report.delete', 'report.sign']);
+
+        $template = ReportTemplate::factory()->create();
+        $report = PatientReport::factory()->create([
+            'user_id' => $user->id,
+            'template_id' => $template->id,
+            'status' => ReportStatus::Signed,
+            'signed_at' => Carbon::now(),
+        ]);
+
+        $response = $this->deleteJson("/reports/{$report->id}", [], $this->authHeader());
+
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('patient_reports', ['id' => $report->id]);
+    }
+
+    public function test_delete_only_author_can_delete(): void
+    {
+        $author = $this->actingWithPermissions(['report.delete', 'report.create']);
+
+        $patient = Patient::factory()->create();
+        $template = ReportTemplate::factory()->create(['is_active' => true]);
+
+        $initResponse = $this->postJson('/reports', [
+            'patient_id' => $patient->id,
+            'template_id' => $template->id,
+        ], $this->authHeader());
+        $reportId = $initResponse->json('id');
+
+        $otherUser = User::factory()->create();
+        $this->mockJwtForUserId($otherUser->id);
+        $this->grantPermission($otherUser, 'report.delete');
+
+        $response = $this->deleteJson("/reports/{$reportId}", [], $this->authHeader());
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('patient_reports', ['id' => $reportId]);
+    }
+
+    public function test_delete_requires_permission(): void
+    {
+        $user = User::factory()->create();
+        $this->mockJwtForUserId($user->id);
+
+        $template = ReportTemplate::factory()->create();
+        $report = PatientReport::factory()->create([
+            'template_id' => $template->id,
+        ]);
+
+        $response = $this->deleteJson("/reports/{$report->id}", [], $this->authHeader());
+
+        $response->assertStatus(403);
+    }
+
+    public function test_delete_not_found_returns_404(): void
+    {
+        $this->actingWithPermission('report.delete');
+
+        $response = $this->deleteJson('/reports/99999', [], $this->authHeader());
+
+        $response->assertStatus(404);
+    }
+
     // ─── PDF DOWNLOAD ────────────────────────────────────────
 
     public function test_download_pdf_returns_file_for_archived_report(): void

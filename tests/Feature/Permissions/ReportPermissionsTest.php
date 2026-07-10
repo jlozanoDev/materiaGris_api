@@ -37,6 +37,7 @@ class ReportPermissionsTest extends TestCase
             'report.edit',
             'report.sign',
             'report.archive',
+            'report.delete',
             'report.download-pdf',
         ];
 
@@ -58,7 +59,7 @@ class ReportPermissionsTest extends TestCase
     }
 
     #[Test]
-    public function all_six_report_permissions_belong_to_report_category(): void
+    public function all_report_permissions_belong_to_report_category(): void
     {
         $category = DB::table('permission_categories')
             ->where('slug', 'informes')
@@ -72,6 +73,7 @@ class ReportPermissionsTest extends TestCase
             'report.edit',
             'report.sign',
             'report.archive',
+            'report.delete',
             'report.download-pdf',
         ];
 
@@ -79,7 +81,7 @@ class ReportPermissionsTest extends TestCase
             ->whereIn('slug', $slugs)
             ->get();
 
-        $this->assertCount(6, $permissions);
+        $this->assertCount(7, $permissions);
 
         foreach ($permissions as $permission) {
             $this->assertEquals(
@@ -102,6 +104,7 @@ class ReportPermissionsTest extends TestCase
             'report.edit',
             'report.sign',
             'report.archive',
+            'report.delete',
             'report.download-pdf',
         ];
 
@@ -110,7 +113,7 @@ class ReportPermissionsTest extends TestCase
             ->pluck('id')
             ->toArray();
 
-        $this->assertCount(6, $permissionIds, 'All 6 report permissions should exist');
+        $this->assertCount(7, $permissionIds, 'All 7 report permissions should exist');
 
         foreach ($permissionIds as $permissionId) {
             $rolePerm = DB::table('role_permissions')

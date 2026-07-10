@@ -52,4 +52,10 @@ class PatientReportSaveRepository
 
         return $report->fresh(['patient', 'user', 'template']);
     }
+
+    public function delete(int $id): void
+    {
+        $report = PatientReport::findOrFail($id);
+        $report->delete();
+    }
 }

@@ -40,6 +40,7 @@ use App\Http\Actions\Reports\DownloadPdfReportAction;
 use App\Http\Actions\Reports\GetActiveTemplatesAction;
 use App\Http\Actions\Reports\ExtractReportDataAction;
 use App\Http\Actions\Reports\TranscribeReportAction;
+use App\Http\Actions\Reports\DeleteReportAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -171,6 +172,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::post('/{id}/transcribe', TranscribeReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.edit');
+    Route::delete('/{id}', DeleteReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.delete');
 });
 
 // Templates routes - protected by JWT
