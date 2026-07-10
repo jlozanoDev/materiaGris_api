@@ -13,8 +13,9 @@ class ClinicSaveRepository
 
     public function update(array $data): Clinic
     {
-        $clinic = Clinic::firstOrFail();
-        $clinic->update($data);
+        $clinic = Clinic::first() ?? new Clinic();
+        $clinic->fill($data);
+        $clinic->save();
         return $clinic->fresh();
     }
 }
