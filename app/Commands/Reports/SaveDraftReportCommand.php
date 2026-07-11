@@ -34,6 +34,9 @@ class SaveDraftReportCommand
             throw new PermissionDeniedException('Solo el autor puede editar este informe');
         }
 
-        return $this->repo->actualizarValores($id, $data['values']);
+        $values = $data['values'];
+        unset($values['_signature']);
+
+        return $this->repo->actualizarValores($id, $values);
     }
 }

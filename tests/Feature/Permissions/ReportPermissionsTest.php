@@ -36,7 +36,8 @@ class ReportPermissionsTest extends TestCase
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
+            'report.delete',
             'report.download-pdf',
         ];
 
@@ -58,7 +59,7 @@ class ReportPermissionsTest extends TestCase
     }
 
     #[Test]
-    public function all_six_report_permissions_belong_to_report_category(): void
+    public function all_report_permissions_belong_to_report_category(): void
     {
         $category = DB::table('permission_categories')
             ->where('slug', 'informes')
@@ -71,7 +72,8 @@ class ReportPermissionsTest extends TestCase
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
+            'report.delete',
             'report.download-pdf',
         ];
 
@@ -79,7 +81,7 @@ class ReportPermissionsTest extends TestCase
             ->whereIn('slug', $slugs)
             ->get();
 
-        $this->assertCount(6, $permissions);
+        $this->assertCount(7, $permissions);
 
         foreach ($permissions as $permission) {
             $this->assertEquals(
@@ -91,17 +93,18 @@ class ReportPermissionsTest extends TestCase
     }
 
     #[Test]
-    public function admin_role_has_all_report_permissions_with_grant(): void
+    public function admin_role_has_admin_report_permissions_with_grant(): void
     {
         $adminRole = DB::table('roles')->where('slug', 'admin')->first();
         $this->assertNotNull($adminRole, 'Admin role should exist');
 
+        // Admin has 6 of the 7 report permissions (report.delete belongs to professional)
         $slugs = [
             'report.view',
             'report.create',
             'report.edit',
             'report.sign',
-            'report.close',
+            'report.archive',
             'report.download-pdf',
         ];
 
@@ -110,7 +113,7 @@ class ReportPermissionsTest extends TestCase
             ->pluck('id')
             ->toArray();
 
-        $this->assertCount(6, $permissionIds, 'All 6 report permissions should exist');
+        $this->assertCount(6, $permissionIds, 'All 6 admin report permissions should exist');
 
         foreach ($permissionIds as $permissionId) {
             $rolePerm = DB::table('role_permissions')
@@ -129,5 +132,23 @@ class ReportPermissionsTest extends TestCase
                 "Permission grant should be 1 for permission_id={$permissionId}"
             );
         }
+    }
+
+    #[Test]
+    public function professional_role_has_report_delete_permission(): void
+    {
+        $professionalRole = DB::table('roles')->where('slug', 'professional')->first();
+        $this->assertNotNull($professionalRole, 'Professional role should exist');
+
+        $permissionId = DB::table('permissions')->where('slug', 'report.delete')->value('id');
+        $this->assertNotNull($permissionId, 'report.delete permission should exist');
+
+        $rolePerm = DB::table('role_permissions')
+            ->where('role_id', $professionalRole->id)
+            ->where('permission_id', $permissionId)
+            ->first();
+
+        $this->assertNotNull($rolePerm, 'Professional role should have report.delete permission');
+        $this->assertEquals(1, $rolePerm->grant, 'Grant should be 1');
     }
 }

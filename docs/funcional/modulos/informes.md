@@ -18,7 +18,7 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 | `/api/reports/{id}` | GET | Obtener detalle de un informe | `report.view` |
 | `/api/reports/{id}` | PUT | Guardar borrador del informe | `report.edit` |
 | `/api/reports/{id}/sign` | POST | Firmar informe | `report.sign` |
-| `/api/reports/{id}/close` | POST | Cerrar informe y generar PDF | `report.close` |
+| `/api/reports/{id}/archive` | POST | Archivar informe y generar PDF | `report.archive` |
 | `/api/reports/{id}/pdf` | GET | Descargar PDF del informe | `report.download-pdf` |
 | `/api/reports/{id}/extract-data` | POST | Extraer datos clínicos con IA | `report.edit` |
 | `/api/reports/{id}/transcribe` | POST | Transcribir audio a texto | `report.edit` |
@@ -27,12 +27,11 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 
 - Los médicos pueden crear informes a partir de plantillas predefinidas.
 - Los informes pueden guardarse como borrador y editarse múltiples veces.
-- Solo el autor puede firmar y cerrar un informe.
-- El flujo de estados es: `draft` → `signed` → `closed`.
-- Una vez firmado, no se puede editar el contenido.
-- Una vez cerrado, solo está disponible para descarga PDF.
+- Solo el autor puede firmar y archivar un informe.
+- El flujo de estados es: `draft` → `signed` → `archived`.
+- Una vez archivado, solo está disponible para descarga PDF.
 - La firma se captura como imagen base64 y se almacena de forma segura.
-- El PDF se genera con DomPDF al cerrar el informe.
+- El PDF se genera en el frontend con `html2pdf.js` renderizando el mismo diseño que la vista del informe, y se envía al backend durante el archivado.
 - La transcripción de audio y extracción de datos con IA son procesos síncronos.
 
 ## Reglas de Negocio
@@ -42,14 +41,14 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 1. **Creación (Init):** El médico selecciona paciente y plantilla. Se crea el informe en estado `draft` con una copia de la estructura de la plantilla (`template_structure_snapshot`).
 2. **Edición (Draft):** El médico completa los campos del informe. Solo se puede editar en estado `draft`. Solo el autor puede editar.
 3. **Firma (Sign):** El médico firma electrónicamente (imagen PNG). Requiere estado `draft`, solo el autor. Al firmar, cambia a estado `signed` y el contenido queda bloqueado.
-4. **Cierre (Close):** El médico cierra el informe. Requiere estado `signed`, solo el autor. Se genera el PDF automáticamente y cambia a estado `closed`.
-5. **Descarga:** Disponible para informes firmados o cerrados. Si el PDF no existe (ej. firmado pero sin cerrar), se regenera automáticamente.
+4. **Archivado (Archive):** El médico archiva el informe. Requiere estado `signed`, solo el autor. El frontend genera el PDF con el diseño del informe y lo envía al backend, que lo almacena. Cambia a estado `archived`.
+5. **Descarga:** Para informes archivados, se descarga el PDF almacenado en el backend. Para informes firmados sin archivar, el frontend genera y descarga el PDF directamente sin llamar al backend.
 
 ### Restricciones
 
 - Un informe no puede editarse después de firmado.
-- Un informe no puede cerrarse sin estar firmado.
-- Solo el autor del informe puede firmarlo, cerrarlo o editarlo.
+- Un informe no puede archivarse sin estar firmado.
+- Solo el autor del informe puede firmarlo, archivarlo o editarlo.
 - Si se elimina la plantilla asociada a un informe, el informe conserva la estructura mediante `template_structure_snapshot`.
 
 ## Estructura de Datos
@@ -74,7 +73,7 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
   "template_structure_snapshot": { ... },
   "values": {},
   "signed_at": null,
-  "closed_at": null,
+  "archived_at": null,
   "created_at": "2026-06-10T10:00:00Z",
   "updated_at": "2026-06-10T10:00:00Z"
 }
@@ -101,11 +100,11 @@ Proveer a los profesionales médicos de una herramienta digital para crear, edit
 
 ## Dependencias
 
-- **Permisos:** `report.*` (6 permisos: view, create, edit, sign, close, download-pdf)
+- **Permisos:** `report.*` (6 permisos: view, create, edit, sign, archive, download-pdf)
 - **Módulo Pacientes:** para asociar informes a pacientes
 - **Módulo Plantillas de Informe:** para la estructura del formulario
 - **Módulo Dictado y Autocompletado:** para transcripción y extracción con IA
 
 ## Estado de Desarrollo
 
-✅ Implementado — Completo. CRUD funcional, ciclo draft→sign→closed, PDF, IA integrada.
+✅ Implementado — Completo. CRUD funcional, ciclo draft→sign→archived, PDF, IA integrada.

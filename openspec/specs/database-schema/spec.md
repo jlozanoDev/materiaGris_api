@@ -8,7 +8,7 @@ Update `docs/tecnica/estructura-base-datos.md` from 19 tables to 22 tables, addi
 
 ### Requirement: patient_reports Table Documented
 
-The system SHALL document `patient_reports` table with columns: `id`, `patient_id` (FK→patients), `template_id` (FK→report_templates), `content` (json), `status` (enum: draft/signed/closed), `transcript_text` (nullable), `signed_by` (FK→users, nullable), `signed_at`, `closed_at`, timestamps, soft delete.
+The system SHALL document `patient_reports` table with columns: `id`, `patient_id` (FK→patients), `template_id` (FK→report_templates), `content` (json), `status` (enum: draft/signed/archived), `transcript_text` (nullable), `signed_by` (FK→users, nullable), `signed_at`, `archived_at`, timestamps, soft delete.
 
 #### Scenario: Table schema complete
 
@@ -38,6 +38,17 @@ The system SHALL document `llm_interactions` table with columns: `id`, `patient_
 - WHEN the DB doc is updated
 - THEN the table SHALL show FK to `patient_reports` with CASCADE delete
 - AND the LlmInteraction model reference SHALL be included
+
+### Requirement: Clinic Logo Column Documented
+
+The system SHALL document the new `logo` column (nullable varchar) in the `clinics` table entry within `docs/tecnica/estructura-base-datos.md`.
+
+#### Scenario: Logo column listed
+
+- GIVEN the `clinics` table documentation exists in the DB doc
+- WHEN the logo migration (`add_logo_to_clinics`) is applied
+- THEN the clinics table entry SHALL list `logo` as nullable varchar
+- AND the Clinic model reference SHALL include `logo` and `logo_url` accessor in its documented attributes
 
 ### Requirement: Summary Updated
 

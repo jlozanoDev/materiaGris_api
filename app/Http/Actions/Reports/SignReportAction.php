@@ -23,7 +23,7 @@ class SignReportAction
             return response()->json(['message' => $e->getMessage()], 403);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('SignReportAction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Internal server error'], 500);
         }

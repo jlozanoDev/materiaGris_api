@@ -15,7 +15,7 @@ class ListReportsRequest extends FormRequest
     {
         return [
             'patient_id' => ['nullable', 'integer'],
-            'status' => ['nullable', 'string', 'in:draft,signed,closed'],
+            'status' => ['nullable', 'string', 'in:draft,signed,archived'],
             'patient' => ['nullable', 'string', 'max:255'],
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date'],

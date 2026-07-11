@@ -258,6 +258,13 @@ class SpeechToTextService
             throw new AiTimeoutException('STT request timed out after ' . $timeout . ' seconds');
         }
 
+        if ($response->failed()) {
+            $errorBody = $response->body();
+            $decoded = json_decode($errorBody, true);
+            $message = $decoded['error']['message'] ?? 'STT request failed with status ' . $response->status();
+            throw new AiResponseException($message);
+        }
+
         return $response;
     }
 

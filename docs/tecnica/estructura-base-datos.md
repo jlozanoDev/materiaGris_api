@@ -147,19 +147,19 @@ Renombrada de `direcciones`. Almacena direcciones de usuarios.
 | `patient_id` | bigint unsigned | NOT NULL, FK → `patients.id` |
 | `user_id` | bigint unsigned | NOT NULL, FK → `users.id` |
 | `template_id` | bigint unsigned | NULLABLE, FK → `report_templates.id` ON DELETE SET NULL |
-| `status` | varchar(255) | NOT NULL, DEFAULT `'draft'`, INDEX. Valores: `draft`, `signed`, `closed` |
+| `status` | varchar(255) | NOT NULL, DEFAULT `'draft'`, INDEX. Valores: `draft`, `signed`, `archived` |
 | `template_structure_snapshot` | json | NOT NULL |
 | `values` | json | NOT NULL, DEFAULT `'{}'` |
 | `signature_path` | varchar(255) | NULLABLE |
 | `pdf_path` | varchar(255) | NULLABLE |
 | `signed_at` | timestamp | NULLABLE |
-| `closed_at` | timestamp | NULLABLE |
+| `archived_at` | timestamp | NULLABLE |
 | `created_at` | timestamp | NULLABLE |
 | `updated_at` | timestamp | NULLABLE |
 
 **Índices:** `patient_id`, `user_id`, `status`, `(patient_id, status)`.
 
-**Modelo:** `App\Models\PatientReport` — `$casts: ['status' => ReportStatus::class, 'values' => 'array', 'template_structure_snapshot' => 'array']`, `$fillable: ['patient_id', 'user_id', 'template_id', 'status', 'template_structure_snapshot', 'values', 'signature_path', 'pdf_path', 'signed_at', 'closed_at']`.
+**Modelo:** `App\Models\PatientReport` — `$casts: ['status' => ReportStatus::class, 'values' => 'array', 'template_structure_snapshot' => 'array']`, `$fillable: ['patient_id', 'user_id', 'template_id', 'status', 'template_structure_snapshot', 'values', 'signature_path', 'pdf_path', 'signed_at', 'archived_at']`.
 
 **Relaciones:** `patient()` (BelongsTo Patient), `user()` (BelongsTo User), `template()` (BelongsTo ReportTemplate, withTrashed).
 
@@ -326,6 +326,32 @@ Registro append-only de eventos del sistema.
 - Índices: `type`, `module`, `actor_id`, `(target_type, target_id)`, `created_at`.
 
 **Modelo:** `App\Models\Audit` — `$timestamps = false`.
+
+---
+
+---
+
+## 23. `clinics`
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| `id` | bigint unsigned | PK, AUTO_INCREMENT |
+| `nombre` | varchar(255) | NULLABLE |
+| `direccion` | varchar(255) | NULLABLE |
+| `telefono` | varchar(255) | NULLABLE |
+| `email` | varchar(255) | NULLABLE |
+| `ciudad` | varchar(255) | NULLABLE |
+| `provincia` | varchar(255) | NULLABLE |
+| `codigo_postal` | varchar(255) | NULLABLE |
+| `web` | varchar(255) | NULLABLE |
+| `cuit` | varchar(255) | NULLABLE |
+| `logo` | varchar(255) | NULLABLE — filename only, refers to `logos/{filename}` in storage |
+| `created_at` | timestamp | NULLABLE |
+| `updated_at` | timestamp | NULLABLE |
+
+**Modelo:** `App\Models\Clinic` — `$appends = ['logo_url']`.
+
+**Nota:** La tabla `clinics` funciona como singleton: solo existe una fila que representa la clínica del profesional.
 
 ---
 

@@ -83,20 +83,20 @@ class PatientReportModelTest extends TestCase
     }
 
     #[Test]
-    public function status_can_transition_from_signed_to_closed(): void
+    public function status_can_transition_from_signed_to_archived(): void
     {
         $report = PatientReport::factory()->create([
             'status' => ReportStatus::Signed,
             'signed_at' => Carbon::now(),
         ]);
 
-        $report->status = ReportStatus::Closed;
-        $report->closed_at = Carbon::now();
+        $report->status = ReportStatus::Archived;
+        $report->archived_at = Carbon::now();
         $report->save();
 
         $report->refresh();
-        $this->assertEquals(ReportStatus::Closed, $report->status);
-        $this->assertNotNull($report->closed_at);
+        $this->assertEquals(ReportStatus::Archived, $report->status);
+        $this->assertNotNull($report->archived_at);
     }
 
     #[Test]

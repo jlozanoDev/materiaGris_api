@@ -14,7 +14,7 @@ The system SHALL document 6 `report.*` permission slugs in both the technical mo
 
 - GIVEN the permissions seed table lists 12 entries
 - WHEN report permissions are added
-- THEN these 6 SHALL appear: `report.view`, `report.create`, `report.edit`, `report.sign`, `report.close`, `report.download-pdf`
+- THEN these 6 SHALL appear: `report.view`, `report.create`, `report.edit`, `report.sign`, `report.archive`, `report.download-pdf`
 - AND each SHALL map to categories: `report.view`|`create` → `pacientes` or new `informes` category
 
 #### Scenario: Report permissions in functional catalog
@@ -42,6 +42,18 @@ The system SHALL document `admin.permission.view` and any other view permissions
 - GIVEN `GET /admin/permissions` uses `admin.permission.view`
 - WHEN the seed data table is reviewed
 - THEN `admin.permission.view` SHALL be listed explicitly if missing from current docs
+
+### Requirement: Clinic Permission Scope Documented
+
+The system SHALL document that `admin.clinic.update` now covers logo upload in addition to clinic profile updates.
+(Previously: `admin.clinic.update` only covered text-based `PUT /admin/clinic`)
+
+#### Scenario: Permission scope updated
+
+- GIVEN `docs/tecnica/modelo-permisos-roles.md` and `docs/funcional/modulos/administracion/permisos.md` document `admin.clinic.update`
+- WHEN the logo upload feature is added
+- THEN the permission entry SHALL note it covers both `PUT /admin/clinic` and `POST /admin/clinic/logo`
+- AND no new permission slug is required
 
 ### Requirement: Technical RBAC Doc Updated
 

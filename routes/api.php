@@ -29,17 +29,22 @@ use App\Http\Actions\Admin\ReportTemplate\CreateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\GetReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\UpdateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\DeleteReportTemplateAction;
+use App\Http\Actions\Admin\Clinic\GetClinicAction;
+use App\Http\Actions\Admin\Clinic\UpdateClinicAction;
+use App\Http\Actions\Admin\Clinic\UploadClinicLogoAction;
+use App\Http\Actions\ShowLogoAction;
 use App\Http\Actions\Admin\SystemVariable\GetSystemVariablesAction;
 use App\Http\Actions\Reports\ListReportsAction;
 use App\Http\Actions\Reports\InitReportAction;
 use App\Http\Actions\Reports\GetReportAction;
 use App\Http\Actions\Reports\SaveDraftReportAction;
 use App\Http\Actions\Reports\SignReportAction;
-use App\Http\Actions\Reports\CloseReportAction;
+use App\Http\Actions\Reports\ArchiveReportAction;
 use App\Http\Actions\Reports\DownloadPdfReportAction;
 use App\Http\Actions\Reports\GetActiveTemplatesAction;
 use App\Http\Actions\Reports\ExtractReportDataAction;
 use App\Http\Actions\Reports\TranscribeReportAction;
+use App\Http\Actions\Reports\DeleteReportAction;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +139,13 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
 
     // System variables catalog (for report template builder autocomplete)
     Route::get('/system-variables', GetSystemVariablesAction::class);
+
+    // Clinic settings (singleton — GET to read, PUT to update)
+    Route::get('/clinic', GetClinicAction::class);
+    Route::put('/clinic', UpdateClinicAction::class);
+
+    // Clinic logo upload
+    Route::post('/clinic/logo', UploadClinicLogoAction::class);
 });
 
 // Patients routes (grouped) - protected by JWT
@@ -159,9 +171,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::post('/{id}/sign', SignReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.sign');
-    Route::post('/{id}/close', CloseReportAction::class)
+    Route::post('/{id}/archive', ArchiveReportAction::class)
         ->whereNumber('id')
-        ->middleware('require_permissions:report.close');
+        ->middleware('require_permissions:report.archive');
     Route::get('/{id}/pdf', DownloadPdfReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.download-pdf');
@@ -171,6 +183,9 @@ Route::prefix('reports')->middleware('auth.jwt')->group(function () {
     Route::post('/{id}/transcribe', TranscribeReportAction::class)
         ->whereNumber('id')
         ->middleware('require_permissions:report.edit');
+    Route::delete('/{id}', DeleteReportAction::class)
+        ->whereNumber('id')
+        ->middleware('require_permissions:report.delete');
 });
 
 // Templates routes - protected by JWT
@@ -178,3 +193,6 @@ Route::prefix('templates')->middleware('auth.jwt')->group(function () {
     Route::get('/active', GetActiveTemplatesAction::class)
         ->middleware('require_permissions:report.create');
 });
+
+// Public logo serving — no auth required
+Route::get('/logos/{filename}', ShowLogoAction::class)->name('logo.show');

@@ -27,7 +27,7 @@ class PatientReport extends Model
         'signature_path',
         'pdf_path',
         'signed_at',
-        'closed_at',
+        'archived_at',
     ];
 
     protected $casts = [
@@ -35,7 +35,7 @@ class PatientReport extends Model
         'values' => 'array',
         'template_structure_snapshot' => 'array',
         'signed_at' => 'datetime',
-        'closed_at' => 'datetime',
+        'archived_at' => 'datetime',
     ];
 
     public function patient(): BelongsTo

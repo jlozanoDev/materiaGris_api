@@ -12,6 +12,26 @@ class MeEndpointTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function mockJwtForUserId(int $id): void
+    {
+        $token = new class($id) {
+            private $id;
+            public function __construct($id) { $this->id = $id; }
+            public function claims() {
+                $id = $this->id;
+                return new class($id) {
+                    private $id;
+                    public function __construct($id) { $this->id = $id; }
+                    public function get($key) { return $key === 'sub' ? $this->id : null; }
+                };
+            }
+        };
+
+        $jwtMock = $this->createMock(JwtService::class);
+        $jwtMock->method('parseAndValidate')->willReturn($token);
+        $this->app->instance(JwtService::class, $jwtMock);
+    }
+
     public function test_me_requires_authentication(): void
     {
         $response = $this->getJson('/auth/me');
@@ -46,7 +66,7 @@ class MeEndpointTest extends TestCase
             'id' => 1,
             'name' => $user->name,
             'email' => $user->email,
-            'roles' => ['admin'],
+            'roles' => [['id' => 1, 'name' => 'Admin']],
             'permissions' => ['admin.user.view' => 1],
             'permissions_version' => now()->toIso8601String(),
         ];
@@ -59,5 +79,27 @@ class MeEndpointTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertExactJson($expected);
+    }
+
+    public function test_me_includes_professional_fields(): void
+    {
+        $user = User::factory()->create([
+            'apellido' => 'García',
+            'num_colegiado' => '12345',
+            'especialidad' => 'Cardiología',
+            'telefono' => '987654321',
+        ]);
+
+        $this->mockJwtForUserId($user->id);
+
+        $response = $this->getJson('/auth/me', ['Authorization' => 'Bearer token']);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'apellido' => 'García',
+            'num_colegiado' => '12345',
+            'especialidad' => 'Cardiología',
+            'telefono' => '987654321',
+        ]);
     }
 }

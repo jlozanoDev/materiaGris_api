@@ -23,8 +23,10 @@ class TranscribeReportAction
                 language: $request->input('language'),
                 user: auth()->user(),
             );
-        } catch (AiTimeoutException | AiResponseException $e) {
+        } catch (AiTimeoutException $e) {
             return response()->json(['message' => 'Error al procesar el audio'], 500);
+        } catch (AiResponseException $e) {
+            return response()->json(['message' => $e->getMessage()], 502);
         } catch (AiUnavailableException $e) {
             return response()->json(['message' => 'Servicio de transcripción temporalmente no disponible'], 503);
         } catch (ModelNotFoundException $e) {

@@ -16,7 +16,7 @@
         .signature-box img { max-width: 200px; max-height: 80px; }
         .status-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; }
         .status-signed { background: #d4edda; color: #155724; }
-        .status-closed { background: #cce5ff; color: #004085; }
+        .status-archived { background: #cce5ff; color: #004085; }
         .status-draft { background: #fff3cd; color: #856404; }
     </style>
 </head>
@@ -28,14 +28,14 @@
         <strong>Autor:</strong> {{ $report->user->name ?? 'N/A' }} {{ $report->user->lastname ?? '' }}<br>
         <strong>Estado:</strong>
         <span class="status-badge status-{{ $report->status->value }}">
-            {{ match($report->status->value) { 'draft' => 'Borrador', 'signed' => 'Firmado', 'closed' => 'Cerrado', default => $report->status->value } }}
+            {{ match($report->status->value) { 'draft' => 'Borrador', 'signed' => 'Firmado', 'archived' => 'Archivado', default => $report->status->value } }}
         </span><br>
         <strong>Fecha:</strong> {{ $report->created_at->format('d/m/Y H:i') }}
         @if($report->signed_at)
             <br><strong>Firmado:</strong> {{ $report->signed_at->format('d/m/Y H:i') }}
         @endif
-        @if($report->closed_at)
-            <br><strong>Cerrado:</strong> {{ $report->closed_at->format('d/m/Y H:i') }}
+        @if($report->archived_at)
+            <br><strong>Archivado:</strong> {{ $report->archived_at->format('d/m/Y H:i') }}
         @endif
     </div>
 

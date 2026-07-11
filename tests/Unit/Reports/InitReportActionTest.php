@@ -20,13 +20,10 @@ class InitReportActionTest extends TestCase
 
         $action = new InitReportAction($command);
 
-        $request = $this->getMockBuilder(InitReportRequest::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['validated'])
-            ->getMock();
-        $request->expects($this->once())
-            ->method('validated')
-            ->willReturn(['template_id' => 1, 'patient_id' => 2]);
+        $request = \Mockery::mock(InitReportRequest::class);
+        $request->shouldReceive('validated')
+            ->once()
+            ->andReturn(['template_id' => 1, 'patient_id' => 2]);
 
         $response = $action->__invoke($request);
 
@@ -42,13 +39,10 @@ class InitReportActionTest extends TestCase
 
         $action = new InitReportAction($command);
 
-        $request = $this->getMockBuilder(InitReportRequest::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['validated'])
-            ->getMock();
-        $request->expects($this->once())
-            ->method('validated')
-            ->willReturn(['template_id' => 1, 'patient_id' => 2]);
+        $request = \Mockery::mock(InitReportRequest::class);
+        $request->shouldReceive('validated')
+            ->once()
+            ->andReturn(['template_id' => 1, 'patient_id' => 2]);
 
         $response = $action->__invoke($request);
 
@@ -66,13 +60,10 @@ class InitReportActionTest extends TestCase
 
         $action = new InitReportAction($command);
 
-        $request = $this->getMockBuilder(InitReportRequest::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['validated'])
-            ->getMock();
-        $request->expects($this->once())
-            ->method('validated')
-            ->willReturn(['template_id' => 1, 'patient_id' => 2]);
+        $request = \Mockery::mock(InitReportRequest::class);
+        $request->shouldReceive('validated')
+            ->once()
+            ->andReturn(['template_id' => 1, 'patient_id' => 2]);
 
         $response = $action->__invoke($request);
 

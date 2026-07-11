@@ -22,6 +22,8 @@ class DownloadPdfReportAction
             ]);
         } catch (\App\Exceptions\PermissionDeniedException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'PDF del informe no encontrado'], 404);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (\Exception $e) {

@@ -13,7 +13,7 @@
 | GET | `/api/reports/{id}` | `auth.jwt`, `require_permissions:report.view` | `report.view` | `GetReportAction` |
 | PUT | `/api/reports/{id}` | `auth.jwt`, `require_permissions:report.edit` | `report.edit` | `SaveDraftReportAction` |
 | POST | `/api/reports/{id}/sign` | `auth.jwt`, `require_permissions:report.sign` | `report.sign` | `SignReportAction` |
-| POST | `/api/reports/{id}/close` | `auth.jwt`, `require_permissions:report.close` | `report.close` | `CloseReportAction` |
+| POST | `/api/reports/{id}/archive` | `auth.jwt`, `require_permissions:report.archive` | `report.archive` | `ArchiveReportAction` |
 | GET | `/api/reports/{id}/pdf` | `auth.jwt`, `require_permissions:report.download-pdf` | `report.download-pdf` | `DownloadPdfReportAction` |
 | POST | `/api/reports/{id}/extract-data` | `auth.jwt`, `require_permissions:report.edit` | `report.edit` | `ExtractReportDataAction` |
 | POST | `/api/reports/{id}/transcribe` | `auth.jwt`, `require_permissions:report.edit` | `report.edit` | `TranscribeReportAction` |
@@ -47,15 +47,19 @@
 - **Response 200:** Retorna el informe firmado.
 - **422:** Si el informe no está en estado `draft` o la firma es inválida.
 
-### `CloseReportAction`
-- Invoca `CloseReportCommand` — genera PDF del informe firmado y lo almacena.
-- **Response 200:** Retorna el informe cerrado con `pdf_path`.
-- **422:** Si el informe no está en estado `signed`.
+### `ArchiveReportAction`
+- Recibe el PDF generado por el frontend mediante `multipart/form-data` con el campo `pdf`.
+- Valida que el archivo sea un PDF válido (MIME `application/pdf`, máximo 10 MB).
+- Invoca `ArchiveReportCommand` que almacena el PDF en `storage/app/reports/`.
+- **Response 200:** Retorna el informe archivado con `pdf_path`.
+- **422:** Si el informe no está en estado `signed` o el archivo PDF es inválido.
 
 ### `DownloadPdfReportAction`
-- Invoca `DownloadPdfReportCommand` — descarga el PDF generado.
+- Invoca `DownloadPdfReportCommand` — descarga el PDF almacenado.
+- Para informes archivados, devuelve el PDF almacenado en disco.
+- Para informes firmados sin archivar, lanza error 422 (el frontend debe generar el PDF localmente).
 - **Response:** `BinaryFileResponse` con `Content-Type: application/pdf`.
-- **422:** Si el informe no está firmado ni cerrado.
+- **422:** Si el informe no está firmado ni archivado, o si el PDF no está disponible.
 
 ### `ExtractReportDataAction`
 - Ver `modulo-dictado-autocompletado.md` para detalles completos.
@@ -83,15 +87,15 @@
 | `GetReportCommand` | `(int $id): PatientReport` | Verifica `report.view`, busca por ID |
 | `SaveDraftReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.edit`, valida que sea el autor, valida estado `draft` |
 | `SignReportCommand` | `(int $id, array $data): PatientReport` | Verifica `report.sign`, valida autoría y estado `draft`, almacena firma en base64 como PNG |
-| `CloseReportCommand` | `(int $id): PatientReport` | Verifica `report.close`, valida autoría y estado `signed`, genera PDF con `DomPDF` |
-| `DownloadPdfReportCommand` | `(int $id): PdfFileInfo` | Verifica `report.download-pdf`, regenera PDF si falta `pdf_path` |
+| `ArchiveReportCommand` | `(int $id, ?UploadedFile $pdfFile = null): PatientReport` | Verifica `report.archive`, valida autoría y estado `signed`, almacena PDF recibido del frontend |
+| `DownloadPdfReportCommand` | `(int $id): PdfFileInfo` | Verifica `report.download-pdf`, lanza 422/404 si falta `pdf_path` |
 
 ### Ciclo de vida de estados
 
 ```
-draft ──sign──▶ signed ──close──▶ closed
-  │                                  │
-  └── edit (solo en draft)           └── download PDF
+draft ──sign──▶ signed ──archive──▶ archived
+  │                                     │
+  └── edit (solo en draft)              └── download PDF
 ```
 
 ## Repositories
@@ -104,7 +108,7 @@ draft ──sign──▶ signed ──close──▶ closed
 - `iniciar(array $data): PatientReport` — crea un nuevo informe.
 - `actualizarValores(int $id, array $values): PatientReport` — actualiza los valores del contenido.
 - `firmar(int $id, string $signaturePath): PatientReport` — firma el informe, actualiza `signature_path` y `signed_at`.
-- `cerrar(int $id, string $pdfPath): PatientReport` — cierra el informe, actualiza `pdf_path` y `closed_at`.
+- `archivar(int $id, string $pdfPath): PatientReport` — archiva el informe, actualiza `pdf_path` y `archived_at`.
 
 ## Modelos
 
@@ -116,13 +120,13 @@ draft ──sign──▶ signed ──close──▶ closed
 | `patient_id` | bigint unsigned | FK → `patients.id` |
 | `user_id` | bigint unsigned | FK → `users.id` |
 | `template_id` | bigint unsigned | NULLABLE, FK → `report_templates.id` ON DELETE SET NULL |
-| `status` | string(255) | DEFAULT `'draft'`. Valores: `draft`, `signed`, `closed` |
+| `status` | string(255) | DEFAULT `'draft'`. Valores: `draft`, `signed`, `archived` |
 | `template_structure_snapshot` | json | NO NULL — copia de la estructura de la plantilla al momento de creación |
 | `values` | json | DEFAULT `'{}'` — valores del contenido del informe |
 | `signature_path` | string(255) | NULLABLE — ruta a la imagen de la firma |
 | `pdf_path` | string(255) | NULLABLE — ruta al PDF generado |
 | `signed_at` | timestamp | NULLABLE |
-| `closed_at` | timestamp | NULLABLE |
+| `archived_at` | timestamp | NULLABLE |
 | `created_at` | timestamp | NULLABLE |
 | `updated_at` | timestamp | NULLABLE |
 
@@ -156,7 +160,7 @@ Ver `modulo-plantillas.md` para detalles completos.
 
 | Código | Cuándo ocurre |
 |--------|---------------|
-| 403 | Sin permiso requerido (`report.view`, `report.create`, `report.edit`, `report.sign`, `report.close`, `report.download-pdf`) |
+| 403 | Sin permiso requerido (`report.view`, `report.create`, `report.edit`, `report.sign`, `report.archive`, `report.download-pdf`) |
 | 404 | Informe no encontrado |
 | 422 | Validación fallida / estado incorrecto (ej. firmar un informe no-draft) |
 | 500 | Error interno del servidor |
@@ -189,30 +193,31 @@ POST /api/reports/{id}/sign
     → PatientReportSaveRepository::firmar(id, signaturePath)
     ← 200 { report }
 
-POST /api/reports/{id}/close
-  → auth.jwt → require_permissions:report.close
-  → CloseReportAction → CloseReportCommand
-    → PermissionService::ensure('report.close')
+POST /api/reports/{id}/archive
+  → auth.jwt → require_permissions:report.archive
+  → ArchiveReportAction → ArchiveReportCommand
+    → PermissionService::ensure('report.archive')
     → Validar: status === signed, user === author
-    → DomPDF::loadView('reports.pdf', report)
-    → PatientReportSaveRepository::cerrar(id, pdfPath)
+    → Validar: archivo PDF presente y válido
+    → Storage::storeAs(reports/, pdfFile)
+    → PatientReportSaveRepository::archivar(id, pdfPath)
     ← 200 { report }
 
 GET /api/reports/{id}/pdf
   → auth.jwt → require_permissions:report.download-pdf
   → DownloadPdfReportAction → DownloadPdfReportCommand
     → PermissionService::ensure('report.download-pdf')
-    → Validar: status === signed || status === closed
-    → Regenerar PDF si falta pdf_path
+    → Validar: status === signed || status === archived
+    → Error si falta pdf_path (422 signed, 404 archived)
     ← BinaryFileResponse (PDF)
 ```
 
 ## Dependencias
 
-- **Permisos:** `report.view`, `report.create`, `report.edit`, `report.sign`, `report.close`, `report.download-pdf`
+- **Permisos:** `report.view`, `report.create`, `report.edit`, `report.sign`, `report.archive`, `report.download-pdf`
 - **Modelos relacionados:** `Patient`, `User`, `ReportTemplate`
-- **Librerías externas:** `barryvdh/laravel-dompdf` (generación de PDF)
+- **Librerías externas:** `html2pdf.js` (frontend, generación de PDF), `barryvdh/laravel-dompdf` (ya no usado para archivar; mantenido como dependencia por compatibilidad)
 
 ## Estado de Desarrollo
 
-✅ Completo — 9 endpoints implementados, reports CRUD funcional, ciclo draft→sign→close implementado, PDF con DomPDF, extract-data con IA, transcribe con STT.
+✅ Completo — 9 endpoints implementados, reports CRUD funcional, ciclo draft→sign→archive implementado, PDF con html2pdf.js (frontend), extract-data con IA, transcribe con STT.

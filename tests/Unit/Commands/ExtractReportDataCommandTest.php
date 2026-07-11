@@ -3,6 +3,7 @@
 namespace Tests\Unit\Commands;
 
 use App\Commands\Reports\ExtractReportDataCommand;
+use App\DTOs\ExtractionResult;
 use App\Repositories\Report\PatientReportReadRepository;
 use App\Repositories\ReportTemplate\ReportTemplateReadRepository;
 use App\Services\PermissionService;
@@ -45,12 +46,12 @@ class ExtractReportDataCommandTest extends TestCase
         ]);
 
         // Mock the LLM service
-        $expectedLlmResult = [
-            'extracted_data' => ['motivo_consulta' => 'Dolor de cabeza'],
-            'confidence_scores' => ['motivo_consulta' => 1.0],
-            'warnings' => [],
-            'processing_time_ms' => 150,
-        ];
+        $expectedLlmResult = new ExtractionResult(
+            extractedData: ['motivo_consulta' => 'Dolor de cabeza'],
+            confidenceScores: ['motivo_consulta' => 1.0],
+            warnings: [],
+            processingTimeMs: 150,
+        );
 
         $llmService = $this->createMock(LlmExtractorService::class);
         $llmService->expects($this->once())
@@ -59,9 +60,10 @@ class ExtractReportDataCommandTest extends TestCase
                 ['sections' => []],
                 'Paciente presenta dolor de cabeza',
                 $this->callback(function ($context) {
-                    return isset($context['edad'], $context['sexo'], $context['medicacion'], $context['last_reports'])
-                        && $context['edad'] === 46
-                        && $context['sexo'] === 'Masculino';
+                    return $context instanceof \App\DTOs\PatientContext
+                        && isset($context->edad, $context->sexo, $context->medicacion, $context->lastReports)
+                        && $context->edad === 46
+                        && $context->sexo === 'Masculino';
                 })
             )
             ->willReturn($expectedLlmResult);
@@ -92,9 +94,8 @@ class ExtractReportDataCommandTest extends TestCase
 
         $result = $command->execute($report->id, 'Paciente presenta dolor de cabeza', $template->id, $user);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('extracted_data', $result);
-        $this->assertEquals('Dolor de cabeza', $result['extracted_data']['motivo_consulta']);
+        $this->assertInstanceOf(ExtractionResult::class, $result);
+        $this->assertEquals('Dolor de cabeza', $result->extractedData['motivo_consulta']);
 
         $this->assertDatabaseHas('llm_interactions', [
             'patient_report_id' => $report->id,
