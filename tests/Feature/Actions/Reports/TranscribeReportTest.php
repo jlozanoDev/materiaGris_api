@@ -354,7 +354,7 @@ class TranscribeReportTest extends TestCase
 
     // ---- TEST 11: STT MALFORMED JSON -----------------------
 
-    public function test_transcribe_audio_stt_malformed_json_returns_500(): void
+    public function test_transcribe_audio_stt_malformed_json_returns_502(): void
     {
         $user = $this->actingWithPermission('report.edit');
         $report = $this->createTestReport();
@@ -366,9 +366,9 @@ class TranscribeReportTest extends TestCase
             $this->authHeader()
         );
 
-        $response->assertStatus(500);
+        $response->assertStatus(502);
         $response->assertJsonFragment([
-            'message' => 'Error al procesar el audio',
+            'message' => 'Invalid JSON response from STT',
         ]);
     }
 

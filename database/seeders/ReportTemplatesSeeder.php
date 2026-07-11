@@ -86,6 +86,15 @@ class ReportTemplatesSeeder extends Seeder
                                             'id' => 'uuid-hcg-header-col-2a',
                                             'fields' => [
                                                 [
+                                                    'id' => 'uuid-hcg-field-header-clinica-logo',
+                                                    'key' => 'hcg_header_clinica_logo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Logo de la clínica',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.logo}',
+                                                ],
+                                                [
                                                     'id' => 'uuid-hcg-field-header-clinica-nombre',
                                                     'key' => 'hcg_header_clinica_nombre',
                                                     'type' => 'fixed_text',
@@ -733,6 +742,15 @@ class ReportTemplatesSeeder extends Seeder
                                             'id' => 'uuid-ia-header-col-2a',
                                             'fields' => [
                                                 [
+                                                    'id' => 'uuid-ia-field-header-clinica-logo',
+                                                    'key' => 'ia_header_clinica_logo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Logo de la clínica',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.logo}',
+                                                ],
+                                                [
                                                     'id' => 'uuid-ia-field-header-clinica-nombre',
                                                     'key' => 'ia_header_clinica_nombre',
                                                     'type' => 'fixed_text',
@@ -1224,6 +1242,15 @@ class ReportTemplatesSeeder extends Seeder
                                         [
                                             'id' => 'uuid-ci-header-col-2a',
                                             'fields' => [
+                                                [
+                                                    'id' => 'uuid-ci-field-header-clinica-logo',
+                                                    'key' => 'ci_header_clinica_logo',
+                                                    'type' => 'fixed_text',
+                                                    'label' => 'Logo de la clínica',
+                                                    'required' => false,
+                                                    'showLabel' => false,
+                                                    'text_content' => '{clinica.logo}',
+                                                ],
                                                 [
                                                     'id' => 'uuid-ci-field-header-clinica-nombre',
                                                     'key' => 'ci_header_clinica_nombre',
