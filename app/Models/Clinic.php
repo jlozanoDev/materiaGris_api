@@ -21,5 +21,20 @@ class Clinic extends Model
         'codigo_postal',
         'web',
         'cuit',
+        'logo',
     ];
+
+    /**
+     * Transform logo from raw filename to absolute URL in JSON responses.
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        if (! empty($this->attributes['logo'])) {
+            $data['logo'] = route('logo.show', ['filename' => $this->attributes['logo']]);
+        }
+
+        return $data;
+    }
 }

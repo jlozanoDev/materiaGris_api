@@ -91,6 +91,14 @@ Route::post('/admin/users', ...)->middleware('require_permissions:admin.user.cre
 - Si el usuario no tiene el permiso: registra `policy.denied` en auditoría y responde `401`.
 - Se usa `401` (no `403`) por decisión del equipo, unificando con JWT expirado.
 
+## Permisos de Clínica
+
+El permiso `admin.clinic.update` se utiliza en dos endpoints:
+- `PUT /api/admin/clinic` — actualizar datos de la clínica (`UpdateClinicAction`/`UpdateClinicCommand`)
+- `POST /api/admin/clinic/logo` — subir logo de la clínica (`UploadClinicLogoAction`/`UploadClinicLogoCommand`)
+
+Ambos verifican el permiso dentro del Command via `PermissionService::ensure()`, sin depender de middleware de ruta.
+
 ## Contrato `/api/auth/me`
 
 ```json

@@ -31,6 +31,8 @@ use App\Http\Actions\Admin\ReportTemplate\UpdateReportTemplateAction;
 use App\Http\Actions\Admin\ReportTemplate\DeleteReportTemplateAction;
 use App\Http\Actions\Admin\Clinic\GetClinicAction;
 use App\Http\Actions\Admin\Clinic\UpdateClinicAction;
+use App\Http\Actions\Admin\Clinic\UploadClinicLogoAction;
+use App\Http\Actions\ShowLogoAction;
 use App\Http\Actions\Admin\SystemVariable\GetSystemVariablesAction;
 use App\Http\Actions\Reports\ListReportsAction;
 use App\Http\Actions\Reports\InitReportAction;
@@ -141,6 +143,9 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     // Clinic settings (singleton — GET to read, PUT to update)
     Route::get('/clinic', GetClinicAction::class);
     Route::put('/clinic', UpdateClinicAction::class);
+
+    // Clinic logo upload
+    Route::post('/clinic/logo', UploadClinicLogoAction::class);
 });
 
 // Patients routes (grouped) - protected by JWT
@@ -188,3 +193,6 @@ Route::prefix('templates')->middleware('auth.jwt')->group(function () {
     Route::get('/active', GetActiveTemplatesAction::class)
         ->middleware('require_permissions:report.create');
 });
+
+// Public logo serving — no auth required
+Route::get('/logos/{filename}', ShowLogoAction::class)->name('logo.show');

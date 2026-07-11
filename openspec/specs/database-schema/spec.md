@@ -39,6 +39,17 @@ The system SHALL document `llm_interactions` table with columns: `id`, `patient_
 - THEN the table SHALL show FK to `patient_reports` with CASCADE delete
 - AND the LlmInteraction model reference SHALL be included
 
+### Requirement: Clinic Logo Column Documented
+
+The system SHALL document the new `logo` column (nullable varchar) in the `clinics` table entry within `docs/tecnica/estructura-base-datos.md`.
+
+#### Scenario: Logo column listed
+
+- GIVEN the `clinics` table documentation exists in the DB doc
+- WHEN the logo migration (`add_logo_to_clinics`) is applied
+- THEN the clinics table entry SHALL list `logo` as nullable varchar
+- AND the Clinic model reference SHALL include `logo` and `logo_url` accessor in its documented attributes
+
 ### Requirement: Summary Updated
 
 The system SHALL update the header from "19 tablas en total" to "22 tablas en total" and renumber tables 10-19 as 13-22.

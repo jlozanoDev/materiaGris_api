@@ -45,6 +45,14 @@ Proveer un catálogo legible de todos los permisos del sistema, organizados por 
 }
 ```
 
+## Permisos de Clínica
+
+El permiso `admin.clinic.update` cubre dos endpoints:
+- **PUT /api/admin/clinic** — actualizar datos de la clínica
+- **POST /api/admin/clinic/logo** — subir logo institucional
+
+La verificación se realiza dentro del Command (`UpdateClinicCommand` y `UploadClinicLogoCommand` respectivamente) mediante `PermissionService::ensure()`, no a través de middleware de ruta.
+
 ## Permisos del Sistema
 
 | Slug | Acción | Categoría |

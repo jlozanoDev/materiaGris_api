@@ -329,6 +329,32 @@ Registro append-only de eventos del sistema.
 
 ---
 
+---
+
+## 23. `clinics`
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| `id` | bigint unsigned | PK, AUTO_INCREMENT |
+| `nombre` | varchar(255) | NULLABLE |
+| `direccion` | varchar(255) | NULLABLE |
+| `telefono` | varchar(255) | NULLABLE |
+| `email` | varchar(255) | NULLABLE |
+| `ciudad` | varchar(255) | NULLABLE |
+| `provincia` | varchar(255) | NULLABLE |
+| `codigo_postal` | varchar(255) | NULLABLE |
+| `web` | varchar(255) | NULLABLE |
+| `cuit` | varchar(255) | NULLABLE |
+| `logo` | varchar(255) | NULLABLE — filename only, refers to `logos/{filename}` in storage |
+| `created_at` | timestamp | NULLABLE |
+| `updated_at` | timestamp | NULLABLE |
+
+**Modelo:** `App\Models\Clinic` — `$appends = ['logo_url']`.
+
+**Nota:** La tabla `clinics` funciona como singleton: solo existe una fila que representa la clínica del profesional.
+
+---
+
 ## Resumen de Relaciones (FK)
 
 | Tabla | Columna FK | Referencia | On Delete |

@@ -67,6 +67,14 @@ Todas las rutas de administración requieren `auth.jwt`.
 |--------|-----|---------|--------|-------------|
 | GET | `/api/admin/system-variables` | — (solo `auth.jwt`) | `GetSystemVariablesAction` | Catálogo de variables para plantillas de informe |
 
+### Clínica
+
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| GET | `/api/admin/clinic` | — (solo `auth.jwt`) | `GetClinicAction` | Obtener datos de la clínica. Respuesta incluye `logo_url` (string\|null). |
+| PUT | `/api/admin/clinic` | `admin.clinic.update` (via Command) | `UpdateClinicAction` | Actualizar datos de la clínica |
+| POST | `/api/admin/clinic/logo` | `admin.clinic.update` (via Command) | `UploadClinicLogoAction` | Subir logo de la clínica. Campo `logo` (file): PNG/JPEG/SVG/WebP, ≤5 MB |
+
 ### Plantillas de Informe (Report Templates)
 
 | Método | URI | Permiso | Action | Descripción |
@@ -128,11 +136,19 @@ Todas las rutas requieren `auth.jwt`.
 |-----------|-----------|-------------|--------------|
 | Health | 1 | 0 | 0 |
 | Auth | 6 | 1 | 0 |
-| Admin | 17 | 17 | 16 |
+| Admin | 18 | 18 | 16 |
 | Patients | 4 | 4 | 4 |
 | Reports | 9 | 9 | 9 |
 | Templates | 1 | 1 | 1 |
-| **Total** | **38** | **32** | **30** |
+| **Total** | **39** | **33** | **30** |
+
+### Logo Serving (público)
+
+| Método | URI | Permiso | Action | Descripción |
+|--------|-----|---------|--------|-------------|
+| GET | `/api/logos/{filename}` | — (público) | `ShowLogoAction` | Servir archivo de logo. `Content-Type` automático. CORS manejado por middleware global. |
+
+---
 
 ## Middlewares
 
