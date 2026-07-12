@@ -12,7 +12,7 @@ class ProfessionalUserSeeder extends Seeder
     {
         $user = User::factory()->create([
             'name' => 'Usuario Profesional',
-            'email' => 'testprofesional@materiagis.local',
+            'email' => 'testprofesional@materiagris.local',
             'password' => bcrypt('secret123'),
         ]);
 
