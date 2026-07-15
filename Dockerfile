@@ -33,6 +33,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 # 2) Copiar el codigo de la app (respetar .dockerignore: sin vendor/node_modules/tests/.env)
 COPY . /var/www/html
 
+# 2b) PHP upload limits para STT (audio puede pesar > 2MB)
+COPY docker/app/conf.d/99-uploads.ini /usr/local/etc/php/conf.d/
+
 # Rediscover paquetes SIN dev (descarta caches stale del host que referencian paquetes dev como pail)
 RUN rm -f bootstrap/cache/services.php bootstrap/cache/packages.php \
     && php artisan package:discover --ansi --no-interaction
